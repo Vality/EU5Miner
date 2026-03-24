@@ -64,6 +64,7 @@ class GameInstall:
     def representative_files(self) -> dict[str, Path]:
         return {
             "events_readme": self.phase_dir(ContentPhase.IN_GAME) / "events" / "readme.txt",
+            "event_sample": self.phase_dir(ContentPhase.IN_GAME) / "events" / "civil_war.txt",
             "scripted_trigger": self.phase_dir(ContentPhase.IN_GAME)
             / "common"
             / "scripted_triggers"

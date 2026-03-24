@@ -49,10 +49,11 @@ Do not push EU5-specific behavior down into the CST or semantic layers unless th
 - scripted triggers
 - scripted effects
 - setup countries
+- events
 
 Next planned target:
 
-- events
+- missions
 
 ## EU5 Install Facts
 
