@@ -4,13 +4,14 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from eu5miner.domains.localization_helpers import CustomizableLocalizationDocument
-from eu5miner.domains.localization_helpers import EffectLocalizationDefinition
-from eu5miner.domains.localization_helpers import EffectLocalizationDocument
-from eu5miner.domains.localization_helpers import TriggerLocalizationDefinition
-from eu5miner.domains.localization_helpers import TriggerLocalizationDocument
-from eu5miner.formats.localization import LocalizationFile
-from eu5miner.formats.localization import parse_localization
+from eu5miner.domains.localization_helpers import (
+    CustomizableLocalizationDocument,
+    EffectLocalizationDefinition,
+    EffectLocalizationDocument,
+    TriggerLocalizationDefinition,
+    TriggerLocalizationDocument,
+)
+from eu5miner.formats.localization import LocalizationFile, parse_localization
 
 
 @dataclass(frozen=True)

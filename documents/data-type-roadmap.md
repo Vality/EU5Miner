@@ -165,9 +165,10 @@ Implemented:
 - situations
 - disasters
 - customizable localization and effect/trigger localization helpers
+- localization bundles and cross-reference helpers
 
 Next recommended target:
 
-- localization bundles and cross-reference helpers
+- GUI script and scripted GUI
 
 This gives broad value quickly while staying aligned with the current parser architecture.
