@@ -169,9 +169,10 @@ Implemented:
 - GUI script and scripted GUI
 - loading screen and main menu content helpers
 - map text files such as `default.map`
+- map CSV helpers such as adjacencies and ports
 
 Next recommended target:
 
-- map CSV helpers such as adjacencies and ports
+- location/setup cross-linking helpers
 
 This gives broad value quickly while staying aligned with the current parser architecture.

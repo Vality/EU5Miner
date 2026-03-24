@@ -136,6 +136,7 @@ Implemented and green:
 - GUI parsing adapter for top-level constants, templates, grouped `types` libraries, and standalone root definitions such as `window = { ... }` and `basic_priority_dialog = { ... }`
 - frontend content helpers for main-menu scenarios plus phase-aware localization discovery and bundle assembly for `loading_screen` and `main_menu`
 - default.map adapter covering referenced file paths, scalar settings like `equator_y` and `wrap_x`, sound-toll mappings, and large named-location blocks such as volcanoes, earthquakes, sea zones, lakes, impassable mountains, and non-ownable corridors
+- typed CSV helpers for `adjacencies.csv` and `ports.csv`, including integer coordinate parsing and normalization of the trailing marker column in ports rows
 
 Recently validated:
 
@@ -145,10 +146,11 @@ Recently validated:
 - shipped GUI files include stable top-level shapes for constants like `@illustration_wide`, templates like `template advances_button_icon`, grouped type libraries like `types EventWindows`, and standalone root objects such as `window = { ... }`
 - main-menu scenario files are simple top-level keyed objects with stable fields such as `country`, optional `flag`, `player_playstyle`, and `player_proficiency`; phase-localization content for `loading_screen` and `main_menu` is recursive beneath `localization/<language>` and can be indexed directly
 - `default.map` has a small stable top-level contract for referenced file names plus scalar map settings, while its large gameplay-relevant blocks are mostly list-like named-location sets that can be normalized without adding map-specific logic to the generic parser layers
+- `adjacencies.csv` currently uses a stable `From/To/Type/Through/start_x/start_y/stop_x/stop_y/Comment` schema with all observed rows typed as `sea`, while `ports.csv` uses `LandProvince/SeaZone/x/y` plus a trailing constant marker column that is better normalized in a typed helper than exposed directly from the generic CSV reader
 
 ## Next Planned Work
 
-The next recommended domain target is `map CSV helpers such as adjacencies and ports`.
+The next recommended domain target is `location/setup cross-linking helpers`.
 
 The broader validation sweep is intentionally deferred for later and should stay optional rather than becoming part of the default fast development loop.
 
