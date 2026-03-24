@@ -135,6 +135,7 @@ Implemented and green:
 - localization bundle indexing and cross-reference helpers for customizable, effect, and trigger localization keys
 - GUI parsing adapter for top-level constants, templates, grouped `types` libraries, and standalone root definitions such as `window = { ... }` and `basic_priority_dialog = { ... }`
 - frontend content helpers for main-menu scenarios plus phase-aware localization discovery and bundle assembly for `loading_screen` and `main_menu`
+- default.map adapter covering referenced file paths, scalar settings like `equator_y` and `wrap_x`, sound-toll mappings, and large named-location blocks such as volcanoes, earthquakes, sea zones, lakes, impassable mountains, and non-ownable corridors
 
 Recently validated:
 
@@ -143,10 +144,11 @@ Recently validated:
 - localization `.yml` parsing now strips a leading UTF-8 BOM before reading the language header, which matches shipped English bundle files
 - shipped GUI files include stable top-level shapes for constants like `@illustration_wide`, templates like `template advances_button_icon`, grouped type libraries like `types EventWindows`, and standalone root objects such as `window = { ... }`
 - main-menu scenario files are simple top-level keyed objects with stable fields such as `country`, optional `flag`, `player_playstyle`, and `player_proficiency`; phase-localization content for `loading_screen` and `main_menu` is recursive beneath `localization/<language>` and can be indexed directly
+- `default.map` has a small stable top-level contract for referenced file names plus scalar map settings, while its large gameplay-relevant blocks are mostly list-like named-location sets that can be normalized without adding map-specific logic to the generic parser layers
 
 ## Next Planned Work
 
-The next recommended domain target is `map text files such as default.map`.
+The next recommended domain target is `map CSV helpers such as adjacencies and ports`.
 
 The broader validation sweep is intentionally deferred for later and should stay optional rather than becoming part of the default fast development loop.
 
