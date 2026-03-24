@@ -95,7 +95,9 @@ def tokenize_script_text(text: str) -> list[Token]:
                     index += 1
                     break
                 index += 1
-            tokens.append(Token(TokenKind.STRING, text[start:index], start, index))
+            token_text = text[start:index]
+            token_kind = _classify_string_token(token_text)
+            tokens.append(Token(token_kind, token_text, start, index))
             continue
 
         if char == "$":
@@ -181,3 +183,11 @@ def _match_operator(text: str, index: int) -> str | None:
 
 def _is_token_boundary(char: str) -> bool:
     return char.isspace() or char in '#"${}[]=<>'
+
+
+def _classify_string_token(token_text: str) -> TokenKind:
+    if len(token_text) >= 4 and token_text[0] == '"' and token_text[-1] == '"':
+        inner_text = token_text[1:-1]
+        if inner_text.startswith("[") and inner_text.endswith("]"):
+            return TokenKind.BRACKET_EXPRESSION
+    return TokenKind.STRING
