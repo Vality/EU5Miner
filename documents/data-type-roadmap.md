@@ -164,9 +164,10 @@ Implemented:
 - missions
 - situations
 - disasters
+- customizable localization and effect/trigger localization helpers
 
 Next recommended target:
 
-- customizable localization and effect/trigger localization helpers
+- localization bundles and cross-reference helpers
 
 This gives broad value quickly while staying aligned with the current parser architecture.

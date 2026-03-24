@@ -131,7 +131,7 @@ Implemented and green:
 - semantic helper layer
 - CLI commands for install inspection and script analysis
 - typed adapters for scripted triggers, scripted effects, and setup countries
-- typed adapters for scripted triggers, scripted effects, setup countries, events, missions, situations, and disasters
+- typed adapters for scripted triggers, scripted effects, setup countries, events, missions, situations, disasters, and localization helper families
 
 Recently validated:
 
@@ -140,7 +140,7 @@ Recently validated:
 
 ## Next Planned Work
 
-The next recommended domain target is `customizable localization and effect/trigger localization helpers`.
+The next recommended domain target is `localization bundles and cross-reference helpers`.
 
 The broader validation sweep is intentionally deferred for later and should stay optional rather than becoming part of the default fast development loop.
 

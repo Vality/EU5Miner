@@ -53,10 +53,11 @@ Do not push EU5-specific behavior down into the CST or semantic layers unless th
 - missions
 - situations
 - disasters
+- customizable localization and effect/trigger localization helpers
 
 Next planned target:
 
-- customizable localization and effect/trigger localization helpers
+- localization bundles and cross-reference helpers
 
 The optional broader validation sweep remains deferred until later; do not fold it into normal fast iteration work.
 
