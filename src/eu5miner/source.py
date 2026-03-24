@@ -105,6 +105,18 @@ class GameInstall:
             / "common"
             / "trigger_localization"
             / "country_triggers.txt",
+            "english_effects_localization": self.phase_dir(ContentPhase.MAIN_MENU)
+            / "localization"
+            / "english"
+            / "effects_l_english.yml",
+            "english_triggers_localization": self.phase_dir(ContentPhase.MAIN_MENU)
+            / "localization"
+            / "english"
+            / "triggers_l_english.yml",
+            "english_laws_localization": self.phase_dir(ContentPhase.MAIN_MENU)
+            / "localization"
+            / "english"
+            / "laws_and_policies_l_english.yml",
             "scripted_trigger": self.phase_dir(ContentPhase.IN_GAME)
             / "common"
             / "scripted_triggers"
