@@ -44,6 +44,8 @@ The intended layering is:
 
 Do not push EU5-specific behavior down into the CST or semantic layers unless the behavior is truly generic.
 
+The roadmap also includes a later simple GUI viewer for convenient data inspection in addition to the CLI, but it should be built on top of stable library APIs rather than driving parser or domain design early.
+
 ## Implemented Domains
 
 - scripted triggers

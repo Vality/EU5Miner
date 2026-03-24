@@ -131,7 +131,18 @@ Order:
 3. align cross-domain naming and lookup patterns into one coherent model
 4. update README and CLI-facing examples around the final integrated API
 
-### 11. Broader Validation Sweep
+### 11. Data Viewer GUI
+
+Add a simple GUI viewer after the library and CLI surfaces are mature enough to support convenient inspection workflows without inventing separate logic.
+
+Order:
+
+1. define a narrow read-only viewer scope for browsing parsed/indexed data rather than editing content
+2. build the GUI on top of the same stable library APIs and indices used by the CLI
+3. support common inspection flows such as opening an install, browsing parsed definitions, filtering by type, and viewing linked localization or setup relationships
+4. keep the first GUI intentionally simple so it complements the CLI instead of creating a second competing product surface
+
+### 12. Broader Validation Sweep
 
 Add a larger optional validation layer once the core domain adapters are in place.
 
