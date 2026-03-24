@@ -65,6 +65,26 @@ class GameInstall:
         return {
             "events_readme": self.phase_dir(ContentPhase.IN_GAME) / "events" / "readme.txt",
             "event_sample": self.phase_dir(ContentPhase.IN_GAME) / "events" / "civil_war.txt",
+            "mission_readme": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "missions"
+            / "____Info.txt",
+            "mission_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "missions"
+            / "generic_conquer_province_mission_pack.txt",
+            "situation_readme": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "situations"
+            / "readme.txt",
+            "situation_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "situations"
+            / "black_death.txt",
+            "disaster_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "disasters"
+            / "english_civil_war.txt",
             "scripted_trigger": self.phase_dir(ContentPhase.IN_GAME)
             / "common"
             / "scripted_triggers"

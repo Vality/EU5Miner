@@ -62,6 +62,9 @@ Notes:
 
 - Yes, situations should absolutely be on the roadmap. They are a major scripted gameplay object and belong early in the dynamic-content phase.
 - Disasters are similarly important because they are heavily scripted and structurally close to other event-like systems.
+- Situation research against the shipped EU5 files shows a mostly flat top-level object model with fields such as `monthly_spawn_chance`, `hint_tag`, `can_start`, `can_end`, `visible`, `on_start`, `on_monthly`, `on_ending`, `on_ended`, `tooltip`, `map_color`, and `secondary_map_color`.
+- Some situations are simple single-phase lifecycle definitions, while others manage internal staged flow through variables and custom end-trigger helpers such as `*_end_trigger` flags checked from `can_end`.
+- The first situation adapter should therefore model stable top-level lifecycle fields first and preserve the full semantic body for situation-specific internal state machines.
 
 ### 4. Economy and Production Systems
 
@@ -117,6 +120,28 @@ Order:
 2. replace_paths and precedence-aware write planning
 3. mod skeleton creation and targeted emission helpers
 
+### 10. Library Integration Pass
+
+After the major module-level adapters exist, do a single public API integration pass instead of stabilizing each domain in isolation.
+
+Order:
+
+1. audit module-level parser and model names across the library
+2. define the stable package-level and domain-level export surface
+3. align cross-domain naming and lookup patterns into one coherent model
+4. update README and CLI-facing examples around the final integrated API
+
+### 11. Broader Validation Sweep
+
+Add a larger optional validation layer once the core domain adapters are in place.
+
+Order:
+
+1. add an optional slow test marker or dedicated test module for wide real-file coverage
+2. parse a broader sample of files across `events`, `missions`, `situations`, `setup`, `common/scripted_*`, `gui`, and `map_data`
+3. verify that representative adapters can load many files without crashing, hanging, or regressing on obvious structural expectations
+4. keep this suite optional by default so the fast local development loop stays tight
+
 ## Near-Term Focus
 
 The immediate sequence should be:
@@ -136,9 +161,12 @@ Implemented:
 - scripted effects
 - setup countries
 - events
+- missions
+- situations
+- disasters
 
 Next recommended target:
 
-- missions
+- customizable localization and effect/trigger localization helpers
 
 This gives broad value quickly while staying aligned with the current parser architecture.

@@ -50,10 +50,15 @@ Do not push EU5-specific behavior down into the CST or semantic layers unless th
 - scripted effects
 - setup countries
 - events
+- missions
+- situations
+- disasters
 
 Next planned target:
 
-- missions
+- customizable localization and effect/trigger localization helpers
+
+The optional broader validation sweep remains deferred until later; do not fold it into normal fast iteration work.
 
 ## EU5 Install Facts
 
