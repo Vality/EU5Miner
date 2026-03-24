@@ -10,7 +10,7 @@ The implementation now also includes a minimal CST tokenizer layer and first-pas
 
 On top of that, the project now includes a semantic helper layer for object-like definitions and key/value access.
 
-The first domain-specific adapter is now scripted trigger parsing.
+The first domain-specific adapters are now scripted trigger parsing and scripted effect parsing.
 
 Capabilities:
 
@@ -24,6 +24,7 @@ Capabilities:
 - grouping of top-level and nested statements into assignment-like entries, block entries, and scalar values
 - semantic access to object-like entries, first-entry lookup, and scalar child extraction for common modding structures
 - domain-level scripted trigger parsing with definition lookup and argument placeholder detection
+- domain-level scripted effect parsing with definition lookup and argument placeholder detection
 
 Applies to:
 
@@ -53,7 +54,7 @@ Supported for map tables such as adjacency data.
 ## Deferred
 
 - Full script parser and richer CST tree shapes beyond first-pass statement/block grouping
-- Strongly typed semantic models for events, scripted effects, missions, and other major domains
+- Strongly typed semantic models for events, missions, situations, setup-country definitions, and other major domains
 - Full GUI parser
 - Format-preserving writers
 - Image decoding for map assets

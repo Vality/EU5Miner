@@ -1,4 +1,4 @@
-"""Domain adapter for scripted trigger definitions."""
+"""Domain adapter for scripted effect definitions."""
 
 from __future__ import annotations
 
@@ -14,8 +14,8 @@ from eu5miner.formats.semantic import (
 
 
 @dataclass(frozen=True)
-class ScriptedTriggerDefinition:
-    """One scripted trigger definition."""
+class ScriptedEffectDefinition:
+    """One scripted effect definition."""
 
     name: str
     body: SemanticObject
@@ -24,41 +24,40 @@ class ScriptedTriggerDefinition:
 
 
 @dataclass(frozen=True)
-class ScriptedTriggerDocument:
-    """Parsed scripted trigger file."""
+class ScriptedEffectDocument:
+    """Parsed scripted effect file."""
 
-    definitions: tuple[ScriptedTriggerDefinition, ...]
+    definitions: tuple[ScriptedEffectDefinition, ...]
     semantic_document: SemanticDocument
 
     def names(self) -> tuple[str, ...]:
         return tuple(definition.name for definition in self.definitions)
 
-    def get_definition(self, name: str) -> ScriptedTriggerDefinition | None:
+    def get_definition(self, name: str) -> ScriptedEffectDefinition | None:
         for definition in self.definitions:
             if definition.name == name:
                 return definition
         return None
 
 
-def parse_scripted_trigger_document(text: str) -> ScriptedTriggerDocument:
+def parse_scripted_effect_document(text: str) -> ScriptedEffectDocument:
     semantic_document = parse_semantic_document(text)
-    definitions: list[ScriptedTriggerDefinition] = []
+    definitions: list[ScriptedEffectDefinition] = []
 
     for entry in semantic_document.entries:
         if not isinstance(entry.value, SemanticObject):
             continue
 
-        parameters = tuple(sorted(collect_parameters_from_object(entry.value)))
         definitions.append(
-            ScriptedTriggerDefinition(
+            ScriptedEffectDefinition(
                 name=entry.key,
                 body=entry.value,
-                parameters=parameters,
+                parameters=tuple(sorted(collect_parameters_from_object(entry.value))),
                 entry=entry,
             )
         )
 
-    return ScriptedTriggerDocument(
+    return ScriptedEffectDocument(
         definitions=tuple(definitions),
         semantic_document=semantic_document,
     )

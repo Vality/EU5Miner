@@ -128,4 +128,15 @@ The immediate sequence should be:
 5. missions
 6. situations
 
+## Current Status
+
+Implemented:
+
+- scripted triggers
+- scripted effects
+
+Next recommended target:
+
+- setup countries
+
 This gives broad value quickly while staying aligned with the current parser architecture.

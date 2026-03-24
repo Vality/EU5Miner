@@ -68,6 +68,10 @@ class GameInstall:
             / "common"
             / "scripted_triggers"
             / "country_triggers.txt",
+            "scripted_effect": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "scripted_effects"
+            / "country_effects.txt",
             "setup_country_readme": self.phase_dir(ContentPhase.IN_GAME)
             / "setup"
             / "countries"

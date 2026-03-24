@@ -13,7 +13,7 @@ The current implementation starts with layers 1 and 2.
 
 The current parser work now includes a minimal CST tokenizer layer, first-pass structural grouping for top-level statements, scalar values, and blocks, and a semantic helper layer for object-like definitions and key/value access. This keeps the model useful for inspection while staying small enough to refine against real game files.
 
-The next layer can now be domain adapters that interpret specific semantic patterns such as scripted triggers, setup countries, and event definitions without forcing the generic CST or semantic layers to become game-specific.
+The next layer can now be domain adapters that interpret specific semantic patterns such as scripted triggers, scripted effects, setup countries, and event definitions without forcing the generic CST or semantic layers to become game-specific.
 
 ## Source Model
 
@@ -40,7 +40,7 @@ This layer should eventually generalize to workshop mods, local mods, and overla
 - `eu5miner.vfs`: merged source modeling, provenance, and phase-aware file precedence.
 - `eu5miner.formats.cst`: tokenization and first-pass CST document model with statements, scalar values, and blocks for Clausewitz-style text.
 - `eu5miner.formats.semantic`: semantic helpers for object-like definitions, key/value access, and reusable entry lookup on top of the CST.
-- `eu5miner.domains`: domain adapters for specific EU5 data families such as scripted triggers and later events, missions, and situations.
+- `eu5miner.domains`: domain adapters for specific EU5 data families such as scripted triggers, scripted effects, and later events, missions, and situations.
 - `eu5miner.formats.script_text`: structural script analysis.
 - `eu5miner.formats.localization`: localization file reader.
 - `eu5miner.formats.map_csv`: semicolon CSV reader.
