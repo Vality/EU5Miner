@@ -21,6 +21,9 @@ dev = [
   "ruff>=0.11.0",
 ]
 
+[project.scripts]
+eu5miner = "eu5miner.cli:main"
+
 [tool.hatch.build.targets.wheel]
 packages = ["src/eu5miner"]
 
