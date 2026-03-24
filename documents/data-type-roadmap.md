@@ -167,9 +167,10 @@ Implemented:
 - customizable localization and effect/trigger localization helpers
 - localization bundles and cross-reference helpers
 - GUI script and scripted GUI
+- loading screen and main menu content helpers
 
 Next recommended target:
 
-- loading screen and main menu content helpers
+- map text files such as `default.map`
 
 This gives broad value quickly while staying aligned with the current parser architecture.

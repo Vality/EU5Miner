@@ -134,6 +134,7 @@ Implemented and green:
 - typed adapters for scripted triggers, scripted effects, setup countries, events, missions, situations, disasters, and localization helper families
 - localization bundle indexing and cross-reference helpers for customizable, effect, and trigger localization keys
 - GUI parsing adapter for top-level constants, templates, grouped `types` libraries, and standalone root definitions such as `window = { ... }` and `basic_priority_dialog = { ... }`
+- frontend content helpers for main-menu scenarios plus phase-aware localization discovery and bundle assembly for `loading_screen` and `main_menu`
 
 Recently validated:
 
@@ -141,10 +142,11 @@ Recently validated:
 - parser-sensitive tests now run with timeouts so performance regressions fail quickly
 - localization `.yml` parsing now strips a leading UTF-8 BOM before reading the language header, which matches shipped English bundle files
 - shipped GUI files include stable top-level shapes for constants like `@illustration_wide`, templates like `template advances_button_icon`, grouped type libraries like `types EventWindows`, and standalone root objects such as `window = { ... }`
+- main-menu scenario files are simple top-level keyed objects with stable fields such as `country`, optional `flag`, `player_playstyle`, and `player_proficiency`; phase-localization content for `loading_screen` and `main_menu` is recursive beneath `localization/<language>` and can be indexed directly
 
 ## Next Planned Work
 
-The next recommended domain target is `loading screen and main menu content helpers`.
+The next recommended domain target is `map text files such as default.map`.
 
 The broader validation sweep is intentionally deferred for later and should stay optional rather than becoming part of the default fast development loop.
 
