@@ -11,9 +11,11 @@ from eu5miner.domains.localization_bundles import (
     collect_trigger_localization_references,
     find_missing_localization_references,
 )
-from eu5miner.domains.localization_helpers import parse_customizable_localization_document
-from eu5miner.domains.localization_helpers import parse_effect_localization_document
-from eu5miner.domains.localization_helpers import parse_trigger_localization_document
+from eu5miner.domains.localization_helpers import (
+    parse_customizable_localization_document,
+    parse_effect_localization_document,
+    parse_trigger_localization_document,
+)
 from eu5miner.source import GameInstall
 
 

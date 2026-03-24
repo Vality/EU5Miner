@@ -132,15 +132,17 @@ Implemented and green:
 - CLI commands for install inspection and script analysis
 - typed adapters for scripted triggers, scripted effects, and setup countries
 - typed adapters for scripted triggers, scripted effects, setup countries, events, missions, situations, disasters, and localization helper families
+- localization bundle indexing and cross-reference helpers for customizable, effect, and trigger localization keys
 
 Recently validated:
 
 - setup-country color fields may be scalar values such as `map_FRA` or object-like prefixed blocks such as `rgb { ... }` and `hsv360 { ... }`
 - parser-sensitive tests now run with timeouts so performance regressions fail quickly
+- localization `.yml` parsing now strips a leading UTF-8 BOM before reading the language header, which matches shipped English bundle files
 
 ## Next Planned Work
 
-The next recommended domain target is `localization bundles and cross-reference helpers`.
+The next recommended domain target is `GUI script and scripted GUI`.
 
 The broader validation sweep is intentionally deferred for later and should stay optional rather than becoming part of the default fast development loop.
 
