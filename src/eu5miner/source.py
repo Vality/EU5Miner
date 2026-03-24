@@ -85,6 +85,26 @@ class GameInstall:
             / "common"
             / "disasters"
             / "english_civil_war.txt",
+            "customizable_localization_info": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "customizable_localization"
+            / "customizable_localization.info",
+            "customizable_localization_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "customizable_localization"
+            / "00_customizable_localization.txt",
+            "effect_localization_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "effect_localization"
+            / "country_effects.txt",
+            "trigger_localization_info": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "trigger_localization"
+            / "_trigger_localization.info",
+            "trigger_localization_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "trigger_localization"
+            / "country_triggers.txt",
             "scripted_trigger": self.phase_dir(ContentPhase.IN_GAME)
             / "common"
             / "scripted_triggers"
