@@ -119,7 +119,7 @@ This phase split is important and should remain a first-class concept in the cod
 - `.metadata/metadata.json` matters for mod metadata.
 - Database entry modes such as `INJECT:key` and `REPLACE:key` are important future work.
 - Generated helper docs such as `script_docs` and `dump_data_types` are useful if present but cannot be required.
-- A later simple GUI viewer is planned for convenient read-only data inspection, but it should sit on top of the same mature library and CLI-facing APIs rather than introducing a separate logic path.
+- A GUI is planned for convenient data inspection and mod editing; it should sit on top of the same mature library and CLI-facing APIs rather than introducing a separate logic path. The initial phase is read-only browsing; a later phase adds mod data editing capabilities.
 
 ## Current State
 
