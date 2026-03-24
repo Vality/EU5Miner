@@ -57,6 +57,10 @@ eu5miner list-files --phase in_game --subpath gui --limit 10
 eu5miner analyze-script --representative scripted_trigger
 ```
 
+## Testing
+
+The suite includes timeout protection for parser-sensitive tests so future performance regressions fail quickly instead of appearing to hang indefinitely.
+
 ## Configuration
 
 The test suite and install-discovery helpers use this precedence for the game install path:

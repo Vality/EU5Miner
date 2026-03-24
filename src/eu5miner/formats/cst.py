@@ -6,9 +6,6 @@ from dataclasses import dataclass
 from enum import StrEnum
 
 
-type ValueNode = ScalarNode | BlockNode
-
-
 class TokenKind(StrEnum):
     """Token kinds preserved by the initial CST layer."""
 
@@ -71,6 +68,9 @@ class BlockNode:
         return " ".join(token.text for token in self.prefix_tokens)
 
 
+type ValueNode = ScalarNode | BlockNode
+
+
 @dataclass(frozen=True)
 class CstDocument:
     source_text: str
@@ -105,6 +105,9 @@ def parse_cst_document(text: str) -> CstDocument:
 
 
 def tokenize_script_text(text: str) -> list[Token]:
+    if text.startswith("\ufeff"):
+        text = text.removeprefix("\ufeff")
+
     tokens: list[Token] = []
     index = 0
     length = len(text)
@@ -308,7 +311,7 @@ class _CstParser:
 
     def _parse_block(self, prefix_tokens: tuple[Token, ...]) -> BlockNode:
         open_brace = self._consume_expected(TokenKind.OPEN_BRACE)
-        entries = tuple(self.parse_entries(stop_at_close_brace=True))
+        entries = tuple(self._parse_block_entries())
         close_brace = self._consume_if_kind(TokenKind.CLOSE_BRACE)
         return BlockNode(
             prefix_tokens=prefix_tokens,
@@ -316,6 +319,47 @@ class _CstParser:
             entries=entries,
             close_brace=close_brace,
         )
+
+    def _parse_block_entries(self) -> list[StatementNode]:
+        entries: list[StatementNode] = []
+
+        while True:
+            next_with_index = self._peek_significant()
+            if next_with_index is None:
+                break
+
+            next_index, next_token = next_with_index
+            if next_token.kind == TokenKind.CLOSE_BRACE:
+                break
+
+            line_indices = self._collect_same_line_significant_indices(next_index)
+
+            if next_token.kind == TokenKind.OPEN_BRACE:
+                self._index = next_index
+                entries.append(
+                    StatementNode(
+                        head_tokens=(),
+                        operator=None,
+                        value=self._parse_block(prefix_tokens=()),
+                    )
+                )
+                continue
+
+            if any(self._tokens[index].kind == TokenKind.OPERATOR for index in line_indices):
+                self._index = next_index
+                entries.append(self._parse_statement())
+                continue
+
+            self._index = next_index + 1
+            entries.append(
+                StatementNode(
+                    head_tokens=(next_token,),
+                    operator=None,
+                    value=None,
+                )
+            )
+
+        return entries
 
     def _collect_same_line_tokens(self, stop_kinds: set[TokenKind]) -> list[Token]:
         collected: list[Token] = []
@@ -356,6 +400,32 @@ class _CstParser:
         if next_with_index is None:
             return None
         return next_with_index[1]
+
+    def _peek_significant_from(self, start: int) -> tuple[int, Token] | None:
+        next_index = self._next_significant_index(start)
+        if next_index is None:
+            return None
+        return next_index, self._tokens[next_index]
+
+    def _collect_same_line_significant_indices(self, start_index: int) -> list[int]:
+        indices = [start_index]
+        current_index = start_index
+
+        while True:
+            following = self._peek_significant_from(current_index + 1)
+            if following is None:
+                break
+
+            following_index, following_token = following
+            if following_token.kind == TokenKind.CLOSE_BRACE:
+                break
+            if self._has_line_break_between(current_index, following_index):
+                break
+
+            indices.append(following_index)
+            current_index = following_index
+
+        return indices
 
     def _next_significant_index(self, start: int) -> int | None:
         for index in range(start, len(self._tokens)):

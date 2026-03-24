@@ -8,6 +8,8 @@ Supported today as structural analysis only.
 
 The implementation now also includes a minimal CST tokenizer layer and first-pass grouping into statements and blocks for script-like text.
 
+On top of that, the project now includes a semantic helper layer for object-like definitions and key/value access.
+
 Capabilities:
 
 - comment-aware brace balancing
@@ -18,6 +20,7 @@ Capabilities:
 - database entry mode detection such as `INJECT:key`
 - tokenization of comments, whitespace, strings, operators, braces, macros, atoms, and GUI bracket expressions
 - grouping of top-level and nested statements into assignment-like entries, block entries, and scalar values
+- semantic access to object-like entries, first-entry lookup, and scalar child extraction for common modding structures
 
 Applies to:
 
@@ -47,6 +50,7 @@ Supported for map tables such as adjacency data.
 ## Deferred
 
 - Full script parser and richer CST tree shapes beyond first-pass statement/block grouping
+- Strongly typed semantic models for events, scripted effects, missions, and other major domains
 - Full GUI parser
 - Format-preserving writers
 - Image decoding for map assets

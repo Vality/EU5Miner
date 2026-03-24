@@ -11,7 +11,7 @@ The project should evolve in four layers:
 
 The current implementation starts with layers 1 and 2.
 
-The current parser work now includes a minimal CST tokenizer layer and first-pass structural grouping for top-level statements, scalar values, and blocks. This keeps the model useful for inspection while staying small enough to refine against real game files.
+The current parser work now includes a minimal CST tokenizer layer, first-pass structural grouping for top-level statements, scalar values, and blocks, and a semantic helper layer for object-like definitions and key/value access. This keeps the model useful for inspection while staying small enough to refine against real game files.
 
 ## Source Model
 
@@ -37,6 +37,7 @@ This layer should eventually generalize to workshop mods, local mods, and overla
 - `eu5miner.source`: install discovery and phase-based file enumeration.
 - `eu5miner.vfs`: merged source modeling, provenance, and phase-aware file precedence.
 - `eu5miner.formats.cst`: tokenization and first-pass CST document model with statements, scalar values, and blocks for Clausewitz-style text.
+- `eu5miner.formats.semantic`: semantic helpers for object-like definitions, key/value access, and reusable entry lookup on top of the CST.
 - `eu5miner.formats.script_text`: structural script analysis.
 - `eu5miner.formats.localization`: localization file reader.
 - `eu5miner.formats.map_csv`: semicolon CSV reader.

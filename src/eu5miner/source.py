@@ -72,6 +72,10 @@ class GameInstall:
             / "setup"
             / "countries"
             / "00_readme.info",
+            "setup_country_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "setup"
+            / "countries"
+            / "france.txt",
             "gui_sample": self.phase_dir(ContentPhase.IN_GAME) / "gui" / "agenda_view.gui",
             "map_default": self.phase_dir(ContentPhase.IN_GAME) / "map_data" / "default.map",
             "map_adjacencies": self.phase_dir(ContentPhase.IN_GAME)

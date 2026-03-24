@@ -38,6 +38,12 @@ As the CST and writer arrive, the suite should add:
 - local-format-preservation tests
 - overlay precedence tests
 
+## Timeout Policy
+
+- The suite uses `pytest-timeout` with a global per-test timeout so pathological parser regressions fail quickly.
+- Parser-sensitive real-file tests can override this with tighter but realistic per-test timeouts.
+- Timeouts should be high enough to avoid flaky failures on slower machines, but low enough to surface accidental algorithmic blowups during development.
+
 ## Real-File Policy
 
 - Prefer tests that validate the parser against representative shipped files.

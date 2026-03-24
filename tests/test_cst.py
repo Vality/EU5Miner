@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
+
 from eu5miner.formats.cst import (
     BlockNode,
     CstDocument,
@@ -30,6 +32,7 @@ def test_tokenizer_detects_macros_comments_and_operators() -> None:
     assert TokenKind.CLOSE_BRACE in kinds
 
 
+@pytest.mark.timeout(5)
 def test_parse_real_script_file_to_balanced_document(game_install: GameInstall) -> None:
     document = parse_cst_document(
         _read_text(game_install.representative_files()["scripted_trigger"])
@@ -44,6 +47,7 @@ def test_parse_real_script_file_to_balanced_document(game_install: GameInstall) 
     assert isinstance(document.entries[0].value, BlockNode)
 
 
+@pytest.mark.timeout(5)
 def test_parse_real_gui_file_detects_bracket_expressions(game_install: GameInstall) -> None:
     document = parse_cst_document(_read_text(game_install.representative_files()["gui_sample"]))
 
