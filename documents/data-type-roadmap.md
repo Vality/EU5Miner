@@ -166,9 +166,10 @@ Implemented:
 - disasters
 - customizable localization and effect/trigger localization helpers
 - localization bundles and cross-reference helpers
+- GUI script and scripted GUI
 
 Next recommended target:
 
-- GUI script and scripted GUI
+- loading screen and main menu content helpers
 
 This gives broad value quickly while staying aligned with the current parser architecture.

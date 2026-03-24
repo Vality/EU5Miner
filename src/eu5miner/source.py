@@ -134,6 +134,12 @@ class GameInstall:
             / "countries"
             / "france.txt",
             "gui_sample": self.phase_dir(ContentPhase.IN_GAME) / "gui" / "agenda_view.gui",
+            "gui_types_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "gui"
+            / "eventwindow.gui",
+            "gui_library_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "gui"
+            / "ui_library.gui",
             "map_default": self.phase_dir(ContentPhase.IN_GAME) / "map_data" / "default.map",
             "map_adjacencies": self.phase_dir(ContentPhase.IN_GAME)
             / "map_data"
