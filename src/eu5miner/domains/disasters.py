@@ -71,7 +71,7 @@ def _parse_disaster_definition(entry: semantic.SemanticEntry) -> DisasterDefinit
     return DisasterDefinition(
         name=entry.key,
         body=entry.value,
-        image=entry.value.get_scalar("image"),
+        image=_strip_quotes(entry.value.get_scalar("image")),
         monthly_spawn_chance=_scalar_value(monthly_spawn_entry),
         monthly_spawn_chance_object=_object_value(monthly_spawn_entry),
         can_start=entry.value.get_object("can_start"),
@@ -107,3 +107,11 @@ def _parse_bool_or_none(value: str | None) -> bool | None:
     if value == "no":
         return False
     return None
+
+
+def _strip_quotes(value: str | None) -> str | None:
+    if value is None:
+        return None
+    if len(value) >= 2 and value.startswith('"') and value.endswith('"'):
+        return value[1:-1]
+    return value
