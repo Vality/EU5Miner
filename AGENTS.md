@@ -55,10 +55,11 @@ Do not push EU5-specific behavior down into the CST or semantic layers unless th
 - disasters
 - customizable localization and effect/trigger localization helpers
 - localization bundles and cross-reference helpers
+- GUI script and scripted GUI
 
 Next planned target:
 
-- GUI script and scripted GUI
+- loading screen and main menu content helpers
 
 The optional broader validation sweep remains deferred until later; do not fold it into normal fast iteration work.
 
@@ -82,6 +83,8 @@ Important representative files:
 - `game/in_game/setup/countries/00_readme.info`
 - `game/in_game/setup/countries/france.txt`
 - `game/in_game/gui/agenda_view.gui`
+- `game/in_game/gui/eventwindow.gui`
+- `game/in_game/gui/ui_library.gui`
 - `game/in_game/map_data/default.map`
 - `game/in_game/map_data/adjacencies.csv`
 - `game/main_menu/localization/english/actions_l_english.yml`
