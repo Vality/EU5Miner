@@ -152,6 +152,7 @@ class GameInstall:
             "map_adjacencies": self.phase_dir(ContentPhase.IN_GAME)
             / "map_data"
             / "adjacencies.csv",
+            "map_ports": self.phase_dir(ContentPhase.IN_GAME) / "map_data" / "ports.csv",
             "localization_sample": self.phase_dir(ContentPhase.MAIN_MENU)
             / "localization"
             / "english"

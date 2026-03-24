@@ -58,10 +58,11 @@ Do not push EU5-specific behavior down into the CST or semantic layers unless th
 - GUI script and scripted GUI
 - loading screen and main menu content helpers
 - map text files such as `default.map`
+- map CSV helpers such as adjacencies and ports
 
 Next planned target:
 
-- map CSV helpers such as adjacencies and ports
+- location/setup cross-linking helpers
 
 The optional broader validation sweep remains deferred until later; do not fold it into normal fast iteration work.
 
@@ -91,6 +92,7 @@ Important representative files:
 - `game/loading_screen/localization/english/load_tips_l_english.yml`
 - `game/in_game/map_data/default.map`
 - `game/in_game/map_data/adjacencies.csv`
+- `game/in_game/map_data/ports.csv`
 - `game/main_menu/localization/english/actions_l_english.yml`
 - `game/dlc/D000_shared/D000_shared.dlc.json`
 
