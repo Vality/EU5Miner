@@ -18,6 +18,9 @@ class LocalizationFile:
 
 
 def parse_localization(text: str) -> LocalizationFile:
+    if text.startswith("\ufeff"):
+        text = text.removeprefix("\ufeff")
+
     language = ""
     entries: list[LocalizationEntry] = []
 
