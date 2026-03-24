@@ -11,6 +11,8 @@ The project should evolve in four layers:
 
 The current implementation starts with layers 1 and 2.
 
+The current parser work now includes a minimal CST tokenizer layer that preserves trivia and token order for future round-trip parsing.
+
 ## Source Model
 
 The core install model should expose:
@@ -34,6 +36,7 @@ This layer should eventually generalize to workshop mods, local mods, and overla
 - `eu5miner.paths`: install path resolution.
 - `eu5miner.source`: install discovery and phase-based file enumeration.
 - `eu5miner.vfs`: merged source modeling, provenance, and phase-aware file precedence.
+- `eu5miner.formats.cst`: tokenization and minimal CST document model for Clausewitz-style text.
 - `eu5miner.formats.script_text`: structural script analysis.
 - `eu5miner.formats.localization`: localization file reader.
 - `eu5miner.formats.map_csv`: semicolon CSV reader.
