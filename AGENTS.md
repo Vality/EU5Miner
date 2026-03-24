@@ -56,10 +56,11 @@ Do not push EU5-specific behavior down into the CST or semantic layers unless th
 - customizable localization and effect/trigger localization helpers
 - localization bundles and cross-reference helpers
 - GUI script and scripted GUI
+- loading screen and main menu content helpers
 
 Next planned target:
 
-- loading screen and main menu content helpers
+- map text files such as `default.map`
 
 The optional broader validation sweep remains deferred until later; do not fold it into normal fast iteration work.
 
@@ -85,6 +86,8 @@ Important representative files:
 - `game/in_game/gui/agenda_view.gui`
 - `game/in_game/gui/eventwindow.gui`
 - `game/in_game/gui/ui_library.gui`
+- `game/main_menu/common/scenarios/00_scenarios.txt`
+- `game/loading_screen/localization/english/load_tips_l_english.yml`
 - `game/in_game/map_data/default.map`
 - `game/in_game/map_data/adjacencies.csv`
 - `game/main_menu/localization/english/actions_l_english.yml`

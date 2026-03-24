@@ -140,6 +140,14 @@ class GameInstall:
             "gui_library_sample": self.phase_dir(ContentPhase.IN_GAME)
             / "gui"
             / "ui_library.gui",
+            "main_menu_scenarios_sample": self.phase_dir(ContentPhase.MAIN_MENU)
+            / "common"
+            / "scenarios"
+            / "00_scenarios.txt",
+            "loading_screen_localization_sample": self.phase_dir(ContentPhase.LOADING_SCREEN)
+            / "localization"
+            / "english"
+            / "load_tips_l_english.yml",
             "map_default": self.phase_dir(ContentPhase.IN_GAME) / "map_data" / "default.map",
             "map_adjacencies": self.phase_dir(ContentPhase.IN_GAME)
             / "map_data"
