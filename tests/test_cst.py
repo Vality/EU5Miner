@@ -2,7 +2,14 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from eu5miner.formats.cst import CstDocument, TokenKind, parse_cst_document, tokenize_script_text
+from eu5miner.formats.cst import (
+    BlockNode,
+    CstDocument,
+    ScalarNode,
+    TokenKind,
+    parse_cst_document,
+    tokenize_script_text,
+)
 from eu5miner.source import GameInstall
 
 
@@ -31,6 +38,10 @@ def test_parse_real_script_file_to_balanced_document(game_install: GameInstall) 
     assert isinstance(document, CstDocument)
     assert document.is_brace_balanced
     assert len(document.non_trivia_tokens()) > 10
+    assert len(document.entries) > 5
+    assert document.entries[0].head_text == "country_can_ennoble_trigger"
+    assert document.entries[0].operator is not None
+    assert isinstance(document.entries[0].value, BlockNode)
 
 
 def test_parse_real_gui_file_detects_bracket_expressions(game_install: GameInstall) -> None:
@@ -38,3 +49,28 @@ def test_parse_real_gui_file_detects_bracket_expressions(game_install: GameInsta
 
     assert document.is_brace_balanced
     assert any(token.kind == TokenKind.BRACKET_EXPRESSION for token in document.tokens)
+    assert document.entries[0].head_text == "template agenda_scrollarea_setup"
+    assert isinstance(document.entries[0].value, BlockNode)
+
+
+def test_grouping_supports_typed_block_values() -> None:
+    document = parse_cst_document("color = hsv360 { 360 100 100 }\n")
+
+    assert len(document.entries) == 1
+    entry = document.entries[0]
+    assert entry.head_text == "color"
+    assert entry.operator is not None
+    assert isinstance(entry.value, BlockNode)
+    assert entry.value.prefix_text == "hsv360"
+    assert [nested.head_text for nested in entry.value.entries] == ["360", "100", "100"]
+
+
+def test_grouping_supports_scalar_assignments() -> None:
+    document = parse_cst_document("prestige > 70\n")
+
+    assert len(document.entries) == 1
+    entry = document.entries[0]
+    assert entry.head_text == "prestige"
+    assert entry.operator is not None
+    assert isinstance(entry.value, ScalarNode)
+    assert entry.value.text == "70"

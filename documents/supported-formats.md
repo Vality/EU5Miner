@@ -6,7 +6,7 @@
 
 Supported today as structural analysis only.
 
-The implementation now also includes a minimal CST tokenizer layer for script-like text.
+The implementation now also includes a minimal CST tokenizer layer and first-pass grouping into statements and blocks for script-like text.
 
 Capabilities:
 
@@ -17,6 +17,7 @@ Capabilities:
 - typed reference detection such as `government_type:republic`
 - database entry mode detection such as `INJECT:key`
 - tokenization of comments, whitespace, strings, operators, braces, macros, atoms, and GUI bracket expressions
+- grouping of top-level and nested statements into assignment-like entries, block entries, and scalar values
 
 Applies to:
 
@@ -45,7 +46,7 @@ Supported for map tables such as adjacency data.
 
 ## Deferred
 
-- Full script parser and richer CST tree shapes
+- Full script parser and richer CST tree shapes beyond first-pass statement/block grouping
 - Full GUI parser
 - Format-preserving writers
 - Image decoding for map assets

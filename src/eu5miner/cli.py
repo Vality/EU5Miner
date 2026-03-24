@@ -145,6 +145,7 @@ def _run_analyze_script(args: argparse.Namespace) -> int:
     _print_features(features)
     print(f"token_count: {len(document.tokens)}")
     print(f"non_trivia_token_count: {len(document.non_trivia_tokens())}")
+    print(f"top_level_entry_count: {len(document.entries)}")
     print(f"cst_brace_balanced: {document.is_brace_balanced}")
     return 0
 

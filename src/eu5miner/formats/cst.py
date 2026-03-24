@@ -6,6 +6,9 @@ from dataclasses import dataclass
 from enum import StrEnum
 
 
+type ValueNode = ScalarNode | BlockNode
+
+
 class TokenKind(StrEnum):
     """Token kinds preserved by the initial CST layer."""
 
@@ -31,9 +34,48 @@ class Token:
 
 
 @dataclass(frozen=True)
+class ScalarNode:
+    """A scalar value represented by one or more non-trivia tokens."""
+
+    tokens: tuple[Token, ...]
+
+    @property
+    def text(self) -> str:
+        return " ".join(token.text for token in self.tokens)
+
+
+@dataclass(frozen=True)
+class StatementNode:
+    """A top-level or nested statement in a Clausewitz-style document."""
+
+    head_tokens: tuple[Token, ...]
+    operator: Token | None
+    value: ValueNode | None
+
+    @property
+    def head_text(self) -> str:
+        return " ".join(token.text for token in self.head_tokens)
+
+
+@dataclass(frozen=True)
+class BlockNode:
+    """A block value with optional prefix tokens such as `hsv360 { ... }`."""
+
+    prefix_tokens: tuple[Token, ...]
+    open_brace: Token
+    entries: tuple[StatementNode, ...]
+    close_brace: Token | None
+
+    @property
+    def prefix_text(self) -> str:
+        return " ".join(token.text for token in self.prefix_tokens)
+
+
+@dataclass(frozen=True)
 class CstDocument:
     source_text: str
     tokens: tuple[Token, ...]
+    entries: tuple[StatementNode, ...]
 
     @property
     def is_brace_balanced(self) -> bool:
@@ -56,7 +98,10 @@ class CstDocument:
 
 
 def parse_cst_document(text: str) -> CstDocument:
-    return CstDocument(source_text=text, tokens=tuple(tokenize_script_text(text)))
+    tokens = tuple(tokenize_script_text(text))
+    parser = _CstParser(text, tokens)
+    entries = tuple(parser.parse_entries(stop_at_close_brace=False))
+    return CstDocument(source_text=text, tokens=tokens, entries=entries)
 
 
 def tokenize_script_text(text: str) -> list[Token]:
@@ -191,3 +236,158 @@ def _classify_string_token(token_text: str) -> TokenKind:
         if inner_text.startswith("[") and inner_text.endswith("]"):
             return TokenKind.BRACKET_EXPRESSION
     return TokenKind.STRING
+
+
+class _CstParser:
+    def __init__(self, source_text: str, tokens: tuple[Token, ...]) -> None:
+        self._source_text = source_text
+        self._tokens = tokens
+        self._index = 0
+
+    def parse_entries(self, stop_at_close_brace: bool) -> list[StatementNode]:
+        entries: list[StatementNode] = []
+
+        while True:
+            significant_index = self._next_significant_index(self._index)
+            if significant_index is None:
+                break
+
+            next_token = self._tokens[significant_index]
+            if stop_at_close_brace and next_token.kind == TokenKind.CLOSE_BRACE:
+                break
+
+            self._index = significant_index
+            entries.append(self._parse_statement())
+
+        return entries
+
+    def _parse_statement(self) -> StatementNode:
+        head_tokens = self._collect_same_line_tokens(
+            stop_kinds={TokenKind.OPERATOR, TokenKind.OPEN_BRACE, TokenKind.CLOSE_BRACE}
+        )
+
+        operator_token = self._consume_if_kind(TokenKind.OPERATOR)
+        if operator_token is not None:
+            return StatementNode(
+                head_tokens=tuple(head_tokens),
+                operator=operator_token,
+                value=self._parse_value(),
+            )
+
+        next_token = self._peek_significant_token()
+        if next_token is not None and next_token.kind == TokenKind.OPEN_BRACE:
+            return StatementNode(
+                head_tokens=tuple(head_tokens),
+                operator=None,
+                value=self._parse_block(prefix_tokens=()),
+            )
+
+        return StatementNode(head_tokens=tuple(head_tokens), operator=None, value=None)
+
+    def _parse_value(self) -> ValueNode:
+        prefix_tokens = self._collect_same_line_tokens(
+            stop_kinds={TokenKind.OPEN_BRACE, TokenKind.CLOSE_BRACE}
+        )
+        next_with_index = self._peek_significant()
+        if next_with_index is not None:
+            next_index, next_token = next_with_index
+            if next_token.kind == TokenKind.OPEN_BRACE:
+                if not prefix_tokens:
+                    return self._parse_block(prefix_tokens=())
+
+                last_prefix_index = self._find_last_consumed_index()
+                if last_prefix_index is not None and not self._has_line_break_between(
+                    last_prefix_index, next_index
+                ):
+                    return self._parse_block(prefix_tokens=tuple(prefix_tokens))
+
+        if prefix_tokens:
+            return ScalarNode(tokens=tuple(prefix_tokens))
+
+        raise ValueError("Expected a value while parsing Clausewitz-style statement")
+
+    def _parse_block(self, prefix_tokens: tuple[Token, ...]) -> BlockNode:
+        open_brace = self._consume_expected(TokenKind.OPEN_BRACE)
+        entries = tuple(self.parse_entries(stop_at_close_brace=True))
+        close_brace = self._consume_if_kind(TokenKind.CLOSE_BRACE)
+        return BlockNode(
+            prefix_tokens=prefix_tokens,
+            open_brace=open_brace,
+            entries=entries,
+            close_brace=close_brace,
+        )
+
+    def _collect_same_line_tokens(self, stop_kinds: set[TokenKind]) -> list[Token]:
+        collected: list[Token] = []
+
+        while True:
+            next_with_index = self._peek_significant()
+            if next_with_index is None:
+                break
+
+            next_index, next_token = next_with_index
+            if next_token.kind in stop_kinds:
+                break
+
+            self._index = next_index + 1
+            collected.append(next_token)
+
+            following = self._peek_significant()
+            if following is None:
+                break
+
+            following_index, following_token = following
+            if following_token.kind in stop_kinds:
+                continue
+
+            if self._has_line_break_between(next_index, following_index):
+                break
+
+        return collected
+
+    def _peek_significant(self) -> tuple[int, Token] | None:
+        next_index = self._next_significant_index(self._index)
+        if next_index is None:
+            return None
+        return next_index, self._tokens[next_index]
+
+    def _peek_significant_token(self) -> Token | None:
+        next_with_index = self._peek_significant()
+        if next_with_index is None:
+            return None
+        return next_with_index[1]
+
+    def _next_significant_index(self, start: int) -> int | None:
+        for index in range(start, len(self._tokens)):
+            if self._tokens[index].kind not in {TokenKind.WHITESPACE, TokenKind.COMMENT}:
+                return index
+        return None
+
+    def _consume_if_kind(self, kind: TokenKind) -> Token | None:
+        next_with_index = self._peek_significant()
+        if next_with_index is None:
+            return None
+
+        next_index, token = next_with_index
+        if token.kind != kind:
+            return None
+
+        self._index = next_index + 1
+        return token
+
+    def _consume_expected(self, kind: TokenKind) -> Token:
+        token = self._consume_if_kind(kind)
+        if token is None:
+            raise ValueError(f"Expected token kind {kind.value}")
+        return token
+
+    def _find_last_consumed_index(self) -> int | None:
+        last_index = self._index - 1
+        if last_index < 0:
+            return None
+        return last_index
+
+    def _has_line_break_between(self, left_index: int, right_index: int) -> bool:
+        left_token = self._tokens[left_index]
+        right_token = self._tokens[right_index]
+        return "\n" in self._source_text[left_token.end:right_token.start]
