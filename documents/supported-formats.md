@@ -10,6 +10,8 @@ The implementation now also includes a minimal CST tokenizer layer and first-pas
 
 On top of that, the project now includes a semantic helper layer for object-like definitions and key/value access.
 
+The first domain-specific adapter is now scripted trigger parsing.
+
 Capabilities:
 
 - comment-aware brace balancing
@@ -21,6 +23,7 @@ Capabilities:
 - tokenization of comments, whitespace, strings, operators, braces, macros, atoms, and GUI bracket expressions
 - grouping of top-level and nested statements into assignment-like entries, block entries, and scalar values
 - semantic access to object-like entries, first-entry lookup, and scalar child extraction for common modding structures
+- domain-level scripted trigger parsing with definition lookup and argument placeholder detection
 
 Applies to:
 

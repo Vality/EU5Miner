@@ -73,3 +73,5 @@ The test suite and install-discovery helpers use this precedence for the game in
 Design and research notes are stored in [documents/specification.md](documents/specification.md) and the other files in `documents/`.
 
 Developer environment notes for the OneDrive/`uv` workflow are in [documents/development-environment.md](documents/development-environment.md).
+
+The planned game-data implementation order is tracked in [documents/data-type-roadmap.md](documents/data-type-roadmap.md).
