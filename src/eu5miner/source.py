@@ -144,11 +144,22 @@ class GameInstall:
             / "common"
             / "scenarios"
             / "00_scenarios.txt",
+            "main_menu_country_setup_sample": self.phase_dir(ContentPhase.MAIN_MENU)
+            / "setup"
+            / "start"
+            / "10_countries.txt",
+            "main_menu_location_setup_sample": self.phase_dir(ContentPhase.MAIN_MENU)
+            / "setup"
+            / "start"
+            / "21_locations.txt",
             "loading_screen_localization_sample": self.phase_dir(ContentPhase.LOADING_SCREEN)
             / "localization"
             / "english"
             / "load_tips_l_english.yml",
             "map_default": self.phase_dir(ContentPhase.IN_GAME) / "map_data" / "default.map",
+            "map_definitions": self.phase_dir(ContentPhase.IN_GAME)
+            / "map_data"
+            / "definitions.txt",
             "map_adjacencies": self.phase_dir(ContentPhase.IN_GAME)
             / "map_data"
             / "adjacencies.csv",
