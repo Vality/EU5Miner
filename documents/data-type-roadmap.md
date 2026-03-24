@@ -170,9 +170,10 @@ Implemented:
 - loading screen and main menu content helpers
 - map text files such as `default.map`
 - map CSV helpers such as adjacencies and ports
+- location/setup cross-linking helpers
 
 Next recommended target:
 
-- location/setup cross-linking helpers
+- mod metadata and relationships
 
 This gives broad value quickly while staying aligned with the current parser architecture.
