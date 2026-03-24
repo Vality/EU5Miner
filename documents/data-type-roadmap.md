@@ -134,9 +134,10 @@ Implemented:
 
 - scripted triggers
 - scripted effects
+- setup countries
 
 Next recommended target:
 
-- setup countries
+- events
 
 This gives broad value quickly while staying aligned with the current parser architecture.
