@@ -131,16 +131,16 @@ Order:
 3. align cross-domain naming and lookup patterns into one coherent model
 4. update README and CLI-facing examples around the final integrated API
 
-### 11. Data Viewer GUI
+### 11. Data Viewer and Mod Editor GUI
 
-Add a simple GUI viewer after the library and CLI surfaces are mature enough to support convenient inspection workflows without inventing separate logic.
+Add a GUI after the library and CLI surfaces are mature enough to support convenient inspection and editing workflows without inventing separate logic.
 
 Order:
 
-1. define a narrow read-only viewer scope for browsing parsed/indexed data rather than editing content
+1. start with a read-only browser scope for inspecting parsed and indexed data — opening an install, browsing parsed definitions, filtering by type, and viewing linked localization or setup relationships
 2. build the GUI on top of the same stable library APIs and indices used by the CLI
-3. support common inspection flows such as opening an install, browsing parsed definitions, filtering by type, and viewing linked localization or setup relationships
-4. keep the first GUI intentionally simple so it complements the CLI instead of creating a second competing product surface
+3. extend the viewer with mod data editing capabilities — creating and modifying mod objects, managing replace paths, and emitting changes to the correct mod skeleton layout
+4. keep the tool focused so it complements the CLI rather than duplicating it
 
 ### 12. Broader Validation Sweep
 
@@ -152,6 +152,40 @@ Order:
 2. parse a broader sample of files across `events`, `missions`, `situations`, `setup`, `common/scripted_*`, `gui`, and `map_data`
 3. verify that representative adapters can load many files without crashing, hanging, or regressing on obvious structural expectations
 4. keep this suite optional by default so the fast local development loop stays tight
+
+### 13. MCP Server Interface
+
+Add an MCP (Model Context Protocol) server layer that exposes the library's parsed data through an LLM-friendly tool interface.
+
+Order:
+
+1. define a narrow set of MCP tools covering install inspection, file lookup, entity search, and domain object retrieval
+2. expose tool-based and semantic search over parsed game data so an LLM can browse entities, relationships, and scripted logic by name or by concept
+3. support natural-language prompts for common queries such as finding all events that fire for a country, listing scripted triggers by scope, or summarizing a location's setup data
+4. add LLM-assisted mod creation workflows — providing tools that let a model draft new game objects, validate them against known schemas, and write them into the correct mod file layout
+
+### 14. Machine-Generated Knowledge Pages
+
+Use the library to produce a machine-generated static website or a set of markdown pages that document game data for each game concept and major entity.
+
+Order:
+
+1. define a generation pipeline that walks the parsed and indexed domain data and emits one page per concept or entity type (scripted triggers, events, setup countries, locations, and so on)
+2. include machine-queryable structured metadata on each page — entity name, type, fields, cross-references, and source file provenance
+3. integrate Copilot SDK or equivalent library capabilities to enrich pages with natural-language descriptions and contextual cross-references where applicable
+4. add hash-based change detection using a hash of each entity's own parsed content and a hash of all objects that reference it — skip regeneration when neither has changed, so incremental game updates only rebuild affected pages
+5. support per-entity manual note files that are merged into the generated pages, allowing human-authored annotations to survive regeneration runs
+
+### 15. Package Modularization
+
+Split the major output-facing capabilities into separate focused packages once each is sufficiently stable, keeping the core library lean and each component independently usable.
+
+Order:
+
+1. extract the MCP server into its own installable package that depends on the core library but ships independently
+2. extract the website and markdown page generator into its own package with a clear CLI and configuration surface
+3. extract the GUI into its own package so it can evolve on a separate release cadence from the parser and domain layers
+4. keep the core `eu5miner` library as the shared dependency, maintaining stable APIs that each downstream package can rely on without pulling in GUI, server, or generation overhead
 
 ## Near-Term Focus
 
