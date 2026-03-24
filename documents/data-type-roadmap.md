@@ -168,9 +168,10 @@ Implemented:
 - localization bundles and cross-reference helpers
 - GUI script and scripted GUI
 - loading screen and main menu content helpers
+- map text files such as `default.map`
 
 Next recommended target:
 
-- map text files such as `default.map`
+- map CSV helpers such as adjacencies and ports
 
 This gives broad value quickly while staying aligned with the current parser architecture.

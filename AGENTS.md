@@ -57,10 +57,11 @@ Do not push EU5-specific behavior down into the CST or semantic layers unless th
 - localization bundles and cross-reference helpers
 - GUI script and scripted GUI
 - loading screen and main menu content helpers
+- map text files such as `default.map`
 
 Next planned target:
 
-- map text files such as `default.map`
+- map CSV helpers such as adjacencies and ports
 
 The optional broader validation sweep remains deferred until later; do not fold it into normal fast iteration work.
 
