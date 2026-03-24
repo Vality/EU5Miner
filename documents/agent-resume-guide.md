@@ -131,6 +131,7 @@ Implemented and green:
 - semantic helper layer
 - CLI commands for install inspection and script analysis
 - typed adapters for scripted triggers, scripted effects, and setup countries
+- typed adapters for scripted triggers, scripted effects, setup countries, and events
 
 Recently validated:
 
@@ -139,9 +140,9 @@ Recently validated:
 
 ## Next Planned Work
 
-The next recommended domain target is `events`.
+The next recommended domain target is `missions`.
 
-Real event structure confirmed during research:
+Real event structure confirmed during research and now covered by the first adapter:
 
 - files usually begin with `namespace = ...`
 - top-level event blocks are keyed like `namespace.1 = { ... }`
