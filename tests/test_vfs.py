@@ -3,7 +3,14 @@ from __future__ import annotations
 from pathlib import Path
 
 from eu5miner.source import ContentPhase, GameInstall
-from eu5miner.vfs import ContentSource, ReplacePathRule, SourceKind, VirtualFilesystem
+from eu5miner.vfs import (
+    ContentSource,
+    DirectoryWriteActionKind,
+    ReplacePathRule,
+    SourceKind,
+    SubtreeWriteActionKind,
+    VirtualFilesystem,
+)
 
 
 def _write_file(path: Path, text: str) -> None:
@@ -198,3 +205,166 @@ def test_vfs_from_install_loads_replace_rules_from_mod_metadata(tmp_path: Path) 
     assert len(mod_source.replace_rules) == 1
     assert mod_source.replace_rules[0].phase == ContentPhase.IN_GAME
     assert mod_source.replace_rules[0].relative_root == Path("common") / "buildings"
+
+
+def test_vfs_plan_directory_write_reports_existing_visible_files(tmp_path: Path) -> None:
+    vanilla_root = tmp_path / "vanilla"
+    mod_root = tmp_path / "my_mod"
+
+    _write_file(vanilla_root / "in_game" / "common" / "buildings" / "a.txt", "vanilla a")
+    _write_file(vanilla_root / "in_game" / "common" / "buildings" / "b.txt", "vanilla b")
+
+    vfs = VirtualFilesystem(
+        [
+            ContentSource("vanilla", SourceKind.VANILLA, vanilla_root, 0),
+            ContentSource("my_mod", SourceKind.MOD, mod_root, 100),
+        ]
+    )
+
+    plan = vfs.plan_directory_write("my_mod", ContentPhase.IN_GAME, Path("common") / "buildings")
+
+    assert [entry.relative_path for entry in plan.entries] == [
+        Path("common") / "buildings" / "a.txt",
+        Path("common") / "buildings" / "b.txt",
+    ]
+    assert plan.needs_replace_path_for_full_subtree_ownership is True
+    assert len(plan.lower_priority_visible_entries) == 2
+    assert plan.blocked_entries == ()
+
+
+def test_vfs_plan_directory_write_respects_target_replace_path_for_subtree_ownership(
+    tmp_path: Path,
+) -> None:
+    vanilla_root = tmp_path / "vanilla"
+    mod_root = tmp_path / "my_mod"
+
+    _write_file(vanilla_root / "in_game" / "common" / "buildings" / "a.txt", "vanilla a")
+    _write_file(mod_root / "in_game" / "common" / "buildings" / "b.txt", "mod b")
+
+    vfs = VirtualFilesystem(
+        [
+            ContentSource("vanilla", SourceKind.VANILLA, vanilla_root, 0),
+            ContentSource(
+                "my_mod",
+                SourceKind.MOD,
+                mod_root,
+                100,
+                replace_rules=(
+                    ReplacePathRule(
+                        phase=ContentPhase.IN_GAME,
+                        relative_root=Path("common") / "buildings",
+                        raw_path="game/in_game/common/buildings",
+                    ),
+                ),
+            ),
+        ]
+    )
+
+    plan = vfs.plan_directory_write("my_mod", ContentPhase.IN_GAME, Path("common") / "buildings")
+
+    assert plan.target_replace_rule is not None
+    assert plan.needs_replace_path_for_full_subtree_ownership is False
+    assert [entry.relative_path for entry in plan.entries] == [
+        Path("common") / "buildings" / "b.txt"
+    ]
+
+
+def test_vfs_plan_directory_write_reports_blocked_entries_from_higher_priority_files(
+    tmp_path: Path,
+) -> None:
+    vanilla_root = tmp_path / "vanilla"
+    mod_root = tmp_path / "my_mod"
+    late_mod_root = tmp_path / "late_mod"
+
+    _write_file(vanilla_root / "in_game" / "common" / "buildings" / "a.txt", "vanilla a")
+    _write_file(late_mod_root / "in_game" / "common" / "buildings" / "a.txt", "late mod a")
+
+    vfs = VirtualFilesystem(
+        [
+            ContentSource("vanilla", SourceKind.VANILLA, vanilla_root, 0),
+            ContentSource("my_mod", SourceKind.MOD, mod_root, 100),
+            ContentSource("late_mod", SourceKind.MOD, late_mod_root, 110),
+        ]
+    )
+
+    plan = vfs.plan_directory_write("my_mod", ContentPhase.IN_GAME, Path("common") / "buildings")
+
+    assert len(plan.entries) == 1
+    assert len(plan.blocked_entries) == 1
+    assert plan.blocked_entries[0].relative_path == Path("common") / "buildings" / "a.txt"
+    assert plan.blocked_entries[0].write_plan.blockers[0].source.name == "late_mod"
+    assert plan.blocked_entries[0].write_plan.blockers[0].reason == "higher_priority_file"
+
+
+def test_vfs_directory_action_plan_recommends_add_replace_path_for_full_ownership(
+    tmp_path: Path,
+) -> None:
+    vanilla_root = tmp_path / "vanilla"
+    mod_root = tmp_path / "my_mod"
+
+    _write_file(vanilla_root / "in_game" / "common" / "buildings" / "a.txt", "vanilla a")
+
+    vfs = VirtualFilesystem(
+        [
+            ContentSource("vanilla", SourceKind.VANILLA, vanilla_root, 0),
+            ContentSource("my_mod", SourceKind.MOD, mod_root, 100),
+        ]
+    )
+
+    action_plan = vfs.plan_directory_write(
+        "my_mod",
+        ContentPhase.IN_GAME,
+        Path("common") / "buildings",
+    ).to_action_plan()
+
+    assert len(action_plan.subtree_actions) == 1
+    assert action_plan.subtree_actions[0].kind is SubtreeWriteActionKind.ADD_REPLACE_PATH
+    assert len(action_plan.entry_actions) == 1
+    assert action_plan.entry_actions[0].kind is DirectoryWriteActionKind.OVERRIDE
+
+
+def test_vfs_directory_action_plan_marks_existing_target_files_as_keep(tmp_path: Path) -> None:
+    mod_root = tmp_path / "my_mod"
+
+    _write_file(mod_root / "in_game" / "common" / "buildings" / "a.txt", "mod a")
+
+    vfs = VirtualFilesystem([ContentSource("my_mod", SourceKind.MOD, mod_root, 100)])
+
+    action_plan = vfs.plan_directory_write(
+        "my_mod",
+        ContentPhase.IN_GAME,
+        Path("common") / "buildings",
+    ).to_action_plan()
+
+    assert action_plan.subtree_actions == ()
+    assert len(action_plan.entry_actions) == 1
+    assert action_plan.entry_actions[0].kind is DirectoryWriteActionKind.KEEP
+
+
+def test_vfs_directory_action_plan_marks_higher_priority_overlap_as_blocked(
+    tmp_path: Path,
+) -> None:
+    vanilla_root = tmp_path / "vanilla"
+    mod_root = tmp_path / "my_mod"
+    late_mod_root = tmp_path / "late_mod"
+
+    _write_file(vanilla_root / "in_game" / "common" / "buildings" / "a.txt", "vanilla a")
+    _write_file(late_mod_root / "in_game" / "common" / "buildings" / "a.txt", "late mod a")
+
+    vfs = VirtualFilesystem(
+        [
+            ContentSource("vanilla", SourceKind.VANILLA, vanilla_root, 0),
+            ContentSource("my_mod", SourceKind.MOD, mod_root, 100),
+            ContentSource("late_mod", SourceKind.MOD, late_mod_root, 110),
+        ]
+    )
+
+    action_plan = vfs.plan_directory_write(
+        "my_mod",
+        ContentPhase.IN_GAME,
+        Path("common") / "buildings",
+    ).to_action_plan()
+
+    assert len(action_plan.entry_actions) == 1
+    assert action_plan.entry_actions[0].kind is DirectoryWriteActionKind.BLOCKED
+    assert len(action_plan.blocked_entries) == 1

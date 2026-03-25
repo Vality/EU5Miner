@@ -119,7 +119,7 @@ This phase split is important and should remain a first-class concept in the cod
 - `.metadata/metadata.json` matters for mod metadata.
 - Database entry modes such as `INJECT:key` and `REPLACE:key` are important future work.
 - Generated helper docs such as `script_docs` and `dump_data_types` are useful if present but cannot be required; prefer local debug-mode dumps when available because they are version-matched to the install, and use the public `modding-digests` mirror as a fallback reference.
-- `replace_path` is now normalized into phase-aware VFS rules so merged file views can hide lower-priority files inside replaced subtrees, and write planning can detect when a higher-priority file or replace-path owner would block visibility.
+- `replace_path` is now normalized into phase-aware VFS rules so merged file views can hide lower-priority files inside replaced subtrees, exact-file write planning can detect higher-priority file or replace-path blockers, subtree planning can report whether a mod would need its own `replace_path` to take clean ownership of a directory tree, and the current action layer can classify visible subtree entries as keep, override, or blocked.
 - A GUI is planned for convenient data inspection and mod editing; it should sit on top of the same mature library and CLI-facing APIs rather than introducing a separate logic path. The initial phase is read-only browsing; a later phase adds mod data editing capabilities.
 
 ## Current State
@@ -141,7 +141,7 @@ Implemented and green:
 - typed CSV helpers for `adjacencies.csv` and `ports.csv`, including integer coordinate parsing and normalization of the trailing marker column in ports rows
 - location/setup cross-linking helpers that merge `definitions.txt`, `10_countries.txt`, and `21_locations.txt` into a per-location index with hierarchy paths, country ownership/control categories, capital references, and optional location setup bodies
 - typed metadata helpers that normalize shared DLC and local mod `.metadata/metadata.json` content, including optional relationship entries and replace-path/tag accessors
-- VFS replace-path support that loads metadata-driven rules from DLC or mod metadata, hides lower-priority files inside replaced trees, and exposes a precedence-aware write-planning helper for exact target paths
+- VFS replace-path support that loads metadata-driven rules from DLC or mod metadata, hides lower-priority files inside replaced trees, exposes precedence-aware write planning for both exact target paths and subtree-level ownership summaries, and derives concrete subtree recommendations such as keep, override, blocked, and add-replace-path
 
 Recently validated:
 

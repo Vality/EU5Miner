@@ -110,6 +110,117 @@ class WritePlan:
         )
 
 
+class DirectoryWriteActionKind(StrEnum):
+    """Recommended action for one visible file within a subtree plan."""
+
+    KEEP = "keep"
+    OVERRIDE = "override"
+    BLOCKED = "blocked"
+
+
+class SubtreeWriteActionKind(StrEnum):
+    """Recommended action for the subtree as a whole."""
+
+    ADD_REPLACE_PATH = "add_replace_path"
+
+
+@dataclass(frozen=True)
+class DirectoryWriteAction:
+    """Concrete recommendation for one visible file beneath a subtree."""
+
+    relative_path: Path
+    kind: DirectoryWriteActionKind
+    current_visible_file: MergedFile
+    write_plan: WritePlan
+
+
+@dataclass(frozen=True)
+class SubtreeWriteAction:
+    """Concrete recommendation for the subtree itself."""
+
+    kind: SubtreeWriteActionKind
+    relative_root: Path
+    reason: str
+
+
+@dataclass(frozen=True)
+class DirectoryWritePlanEntry:
+    """One visible file within a subtree-level write plan."""
+
+    relative_path: Path
+    current_visible_file: MergedFile
+    write_plan: WritePlan
+
+
+@dataclass(frozen=True)
+class DirectoryWritePlan:
+    """Precedence-aware planning for a subtree rooted at one relative path."""
+
+    target_source: ContentSource
+    phase: ContentPhase
+    relative_root: Path
+    absolute_root: Path
+    entries: tuple[DirectoryWritePlanEntry, ...]
+    target_replace_rule: ReplacePathRule | None
+
+    @property
+    def blocked_entries(self) -> tuple[DirectoryWritePlanEntry, ...]:
+        return tuple(entry for entry in self.entries if not entry.write_plan.is_visible)
+
+    @property
+    def lower_priority_visible_entries(self) -> tuple[DirectoryWritePlanEntry, ...]:
+        return tuple(
+            entry
+            for entry in self.entries
+            if entry.current_visible_file.winner.source.priority < self.target_source.priority
+        )
+
+    @property
+    def needs_replace_path_for_full_subtree_ownership(self) -> bool:
+        return self.target_replace_rule is None and bool(self.lower_priority_visible_entries)
+
+    def to_action_plan(self) -> DirectoryWriteActionPlan:
+        subtree_actions: list[SubtreeWriteAction] = []
+        if self.needs_replace_path_for_full_subtree_ownership:
+            subtree_actions.append(
+                SubtreeWriteAction(
+                    kind=SubtreeWriteActionKind.ADD_REPLACE_PATH,
+                    relative_root=self.relative_root,
+                    reason="Lower-priority visible files remain under this subtree",
+                )
+            )
+
+        entry_actions = tuple(_classify_directory_entry_action(entry) for entry in self.entries)
+        return DirectoryWriteActionPlan(
+            target_source=self.target_source,
+            phase=self.phase,
+            relative_root=self.relative_root,
+            absolute_root=self.absolute_root,
+            subtree_actions=tuple(subtree_actions),
+            entry_actions=entry_actions,
+        )
+
+
+@dataclass(frozen=True)
+class DirectoryWriteActionPlan:
+    """Action-oriented view of a subtree write plan."""
+
+    target_source: ContentSource
+    phase: ContentPhase
+    relative_root: Path
+    absolute_root: Path
+    subtree_actions: tuple[SubtreeWriteAction, ...]
+    entry_actions: tuple[DirectoryWriteAction, ...]
+
+    @property
+    def blocked_entries(self) -> tuple[DirectoryWriteAction, ...]:
+        return tuple(
+            action
+            for action in self.entry_actions
+            if action.kind is DirectoryWriteActionKind.BLOCKED
+        )
+
+
 class VirtualFilesystem:
     """Merged, phase-aware file view across ordered content sources."""
 
@@ -287,6 +398,37 @@ class VirtualFilesystem:
             target_replace_rule=target_replace_rule,
         )
 
+    def plan_directory_write(
+        self,
+        target_source_name: str,
+        phase: ContentPhase,
+        relative_root: str | Path,
+    ) -> DirectoryWritePlan:
+        target_source = self.get_source(target_source_name)
+        if target_source is None:
+            raise ValueError(f"Unknown content source: {target_source_name}")
+
+        normalized_root = Path(relative_root)
+        entries: list[DirectoryWritePlanEntry] = []
+        for merged_file in self.merge_phase(phase, normalized_root):
+            write_plan = self.plan_write(target_source_name, phase, merged_file.relative_path)
+            entries.append(
+                DirectoryWritePlanEntry(
+                    relative_path=merged_file.relative_path,
+                    current_visible_file=merged_file,
+                    write_plan=write_plan,
+                )
+            )
+
+        return DirectoryWritePlan(
+            target_source=target_source,
+            phase=phase,
+            relative_root=normalized_root,
+            absolute_root=target_source.phase_dir(phase) / normalized_root,
+            entries=tuple(entries),
+            target_replace_rule=_first_matching_replace_rule(target_source, phase, normalized_root),
+        )
+
     def _is_hidden_by_later_replace_path(self, source_file: SourceFile) -> bool:
         for source in self._sources:
             if source.priority <= source_file.source.priority:
@@ -367,3 +509,19 @@ def _first_matching_replace_rule(
         if rule.matches(phase, relative_path):
             return rule
     return None
+
+
+def _classify_directory_entry_action(entry: DirectoryWritePlanEntry) -> DirectoryWriteAction:
+    if not entry.write_plan.is_visible:
+        kind = DirectoryWriteActionKind.BLOCKED
+    elif entry.current_visible_file.winner.source.name == entry.write_plan.target_source.name:
+        kind = DirectoryWriteActionKind.KEEP
+    else:
+        kind = DirectoryWriteActionKind.OVERRIDE
+
+    return DirectoryWriteAction(
+        relative_path=entry.relative_path,
+        kind=kind,
+        current_visible_file=entry.current_visible_file,
+        write_plan=entry.write_plan,
+    )
