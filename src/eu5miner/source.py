@@ -149,6 +149,18 @@ class GameInstall:
             / "common"
             / "scripted_relations"
             / "trade_access.txt",
+            "on_action_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "on_action"
+            / "religion_flavor_pulse.txt",
+            "on_action_secondary_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "on_action"
+            / "character_death_pulses.txt",
+            "on_action_hardcoded_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "on_action"
+            / "_hardcoded.txt",
             "script_value_info": self.phase_dir(ContentPhase.IN_GAME)
             / "common"
             / "script_values"
