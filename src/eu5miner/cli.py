@@ -1,15 +1,21 @@
-"""Thin CLI for install inspection, parser diagnostics, and mod update dry-runs."""
+"""Thin CLI for install inspection, parser diagnostics, and mod update workflows."""
 
 from __future__ import annotations
 
 import argparse
 import sys
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from pathlib import Path
 
 from eu5miner.formats.cst import parse_cst_document
 from eu5miner.formats.script_text import ScriptFeatures, analyze_script_text
-from eu5miner.mods import format_mod_update_report, plan_mod_update
+from eu5miner.mods import (
+    AppliedModUpdate,
+    PlannedModUpdate,
+    apply_mod_update,
+    format_mod_update_report,
+    plan_mod_update,
+)
 from eu5miner.source import ContentPhase, GameInstall
 from eu5miner.vfs import VirtualFilesystem
 
@@ -27,6 +33,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         return _run_analyze_script(args)
     if command == "plan-mod-update":
         return _run_plan_mod_update(args)
+    if command == "apply-mod-update":
+        return _run_apply_mod_update(args)
 
     parser.error("A command is required")
     return 2
@@ -132,6 +140,61 @@ def build_parser() -> argparse.ArgumentParser:
         help="Relative file path to emit beneath the chosen phase; repeat for multiple outputs.",
     )
 
+    apply_parser = subparsers.add_parser(
+        "apply-mod-update",
+        help=(
+            "Apply a mod subtree update, materialize files, and report "
+            "notes and warnings."
+        ),
+    )
+    apply_parser.add_argument(
+        "--mod-root",
+        type=Path,
+        required=True,
+        help="Root path for the target mod to update.",
+    )
+    apply_parser.add_argument(
+        "--later-mod-root",
+        action="append",
+        type=Path,
+        default=[],
+        help=(
+            "Additional mod roots loaded after the target mod; "
+            "repeat to model higher-priority mods."
+        ),
+    )
+    apply_parser.add_argument(
+        "--phase",
+        type=_parse_phase,
+        required=True,
+        help="Content phase to update: loading_screen, main_menu, or in_game.",
+    )
+    apply_parser.add_argument(
+        "--subtree",
+        required=True,
+        help="Relative subtree root beneath the chosen phase, for example common/buildings.",
+    )
+    apply_parser.add_argument(
+        "--intended-path",
+        action="append",
+        default=[],
+        help="Relative file path to emit beneath the chosen phase; repeat for multiple outputs.",
+    )
+    apply_parser.add_argument(
+        "--content-file",
+        action="append",
+        default=[],
+        help=(
+            "Map one emitted relative path to a source file using "
+            "relative/path=source-file.txt; repeat for multiple files."
+        ),
+    )
+    apply_parser.add_argument(
+        "--no-overwrite",
+        action="store_true",
+        help="Refuse to overwrite existing files when the content differs.",
+    )
+
     return parser
 
 
@@ -197,25 +260,74 @@ def _run_analyze_script(args: argparse.Namespace) -> int:
 
 
 def _run_plan_mod_update(args: argparse.Namespace) -> int:
+    update = _plan_cli_mod_update(args)
+
+    print(format_mod_update_report(update))
+    _emit_update_diagnostics(update)
+
+    return 0
+
+
+def _run_apply_mod_update(args: argparse.Namespace) -> int:
+    update = _plan_cli_mod_update(args)
+    try:
+        applied_update = apply_mod_update(update, overwrite=not args.no_overwrite)
+    except FileExistsError as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 1
+
+    print(format_mod_update_report(applied_update))
+    _emit_update_diagnostics(applied_update.plan)
+    return 0
+
+
+def _plan_cli_mod_update(args: argparse.Namespace) -> PlannedModUpdate:
     install = GameInstall.discover(args.install_root)
     mod_roots = [args.mod_root, *args.later_mod_root]
     vfs = VirtualFilesystem.from_install(install, mod_roots=mod_roots)
+    content_mapping = _parse_content_file_mappings(getattr(args, "content_file", []))
+    intended_paths = tuple(Path(path) for path in args.intended_path)
+    content_paths = tuple(content_mapping)
 
-    update = plan_mod_update(
+    return plan_mod_update(
         vfs,
         args.mod_root.name,
         args.phase,
         Path(args.subtree),
-        intended_relative_paths=tuple(Path(path) for path in args.intended_path),
+        intended_relative_paths=intended_paths + content_paths,
+        content_by_relative_path=_read_content_mapping(content_mapping),
     )
 
-    print(format_mod_update_report(update))
+
+def _emit_update_diagnostics(update: PlannedModUpdate | AppliedModUpdate) -> None:
     for advisory in update.advisories:
         print(f"note: {advisory.message}", file=sys.stderr)
     for warning in update.warnings:
         print(f"warning: {warning.message}", file=sys.stderr)
 
-    return 0
+
+def _parse_content_file_mappings(values: list[str]) -> dict[Path, Path]:
+    mappings: dict[Path, Path] = {}
+    for value in values:
+        relative_text, separator, source_text = value.partition("=")
+        if not separator or not relative_text or not source_text:
+            raise ValueError(
+                "Content file mappings must use the form "
+                "relative/path=source-file.txt"
+            )
+        mappings[Path(relative_text)] = Path(source_text)
+    return mappings
+
+
+def _read_content_mapping(
+    content_files: dict[Path, Path],
+) -> Mapping[str | Path, str] | None:
+    if not content_files:
+        return None
+    return {
+        relative_path: source_path.read_text(encoding="utf-8", errors="replace")
+        for relative_path, source_path in content_files.items()
+    }
 
 
 def _resolve_target_path(
