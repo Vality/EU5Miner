@@ -21,6 +21,7 @@ from eu5miner.domains import (
     parse_default_map_document,
     parse_employment_system_document,
     parse_event_document,
+    parse_generic_action_document,
     parse_goods_demand_category_document,
     parse_goods_demand_document,
     parse_goods_document,
@@ -87,6 +88,9 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     employment_system_document = parse_employment_system_document(
         "equality = { priority = { value = 1 } }\n"
     )
+    generic_action_document = parse_generic_action_document(
+        "create_market = { type = owncountry select_trigger = { looking_for_a = market } }\n"
+    )
     religion_document = parse_religion_document("faith = { group = example tags = { tag } }\n")
     list_document = parse_scripted_list_document(
         "adult = { base = character conditions = { is_adult = yes } }\n"
@@ -116,6 +120,7 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     assert category_document.names() == ("military",)
     assert culture_document.names() == ("example",)
     assert employment_system_document.names() == ("equality",)
+    assert generic_action_document.names() == ("create_market",)
     assert price_document.names() == ("build_road",)
     assert religion_document.names() == ("faith",)
     assert list_document.names() == ("adult",)
