@@ -24,6 +24,12 @@ class ModUpdateWriteKind(StrEnum):
     CONTENT = "content"
 
 
+class ModUpdateWarningKind(StrEnum):
+    """Warning categories for permissive mod update workflows."""
+
+    BLOCKED_EMISSION = "blocked_emission"
+
+
 @dataclass(frozen=True)
 class BlockedModEmission:
     """One intended file that cannot become visible for the target mod."""
@@ -31,6 +37,16 @@ class BlockedModEmission:
     relative_path: Path
     blocker_source_names: tuple[str, ...]
     blocker_reasons: tuple[str, ...]
+
+
+@dataclass(frozen=True)
+class ModUpdateWarning:
+    """Human-readable warning for callers that want CLI/UX messaging."""
+
+    kind: ModUpdateWarningKind
+    message: str
+    relative_path: Path | None = None
+    blocker_source_names: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -55,6 +71,7 @@ class PlannedModUpdate:
     root: Path
     replace_paths_to_add: tuple[str, ...]
     blocked_emissions: tuple[BlockedModEmission, ...]
+    warnings: tuple[ModUpdateWarning, ...]
     metadata_write: ModUpdateWrite
     content_writes: tuple[ModUpdateWrite, ...]
     _targeted_emission: TargetedModEmission = field(repr=False, compare=False)
@@ -96,6 +113,10 @@ class AppliedModUpdate:
     def blocked_emissions(self) -> tuple[BlockedModEmission, ...]:
         return self.plan.blocked_emissions
 
+    @property
+    def warnings(self) -> tuple[ModUpdateWarning, ...]:
+        return self.plan.warnings
+
 
 def plan_mod_update(
     vfs: VirtualFilesystem,
@@ -112,6 +133,7 @@ def plan_mod_update(
         relative_root,
         intended_relative_paths=intended_relative_paths,
     )
+    blocked_emissions = _collect_blocked_emissions(emission_plan)
     targeted_emission = plan_targeted_mod_emission(
         emission_plan,
         content_by_relative_path=_normalize_content_mapping(content_by_relative_path),
@@ -141,7 +163,8 @@ def plan_mod_update(
         relative_root=emission_plan.relative_root,
         root=targeted_emission.root,
         replace_paths_to_add=_collect_replace_paths(emission_plan),
-        blocked_emissions=_collect_blocked_emissions(emission_plan),
+        blocked_emissions=blocked_emissions,
+        warnings=_build_warnings(blocked_emissions),
         metadata_write=metadata_write,
         content_writes=content_writes,
         _targeted_emission=targeted_emission,
@@ -218,6 +241,27 @@ def _collect_blocked_emissions(emission_plan: ModEmissionPlan) -> tuple[BlockedM
     return tuple(blocked)
 
 
+def _build_warnings(
+    blocked_emissions: tuple[BlockedModEmission, ...],
+) -> tuple[ModUpdateWarning, ...]:
+    warnings: list[ModUpdateWarning] = []
+    for blocked in blocked_emissions:
+        blocker_names = ", ".join(blocked.blocker_source_names)
+        warnings.append(
+            ModUpdateWarning(
+                kind=ModUpdateWarningKind.BLOCKED_EMISSION,
+                message=(
+                    "Intended output "
+                    f"{blocked.relative_path.as_posix()} will be shadowed by "
+                    f"higher-priority sources: {blocker_names}"
+                ),
+                relative_path=blocked.relative_path,
+                blocker_source_names=blocked.blocker_source_names,
+            )
+        )
+    return tuple(warnings)
+
+
 def _format_planned_update_report(update: PlannedModUpdate) -> str:
     lines = [
         f"Planned mod update: {update.target_source_name}",
@@ -238,14 +282,9 @@ def _format_planned_update_report(update: PlannedModUpdate) -> str:
             if write.relative_path is not None and write.emission_kind is not None
         )
 
-    if update.blocked_emissions:
-        lines.append("Blocked emissions:")
-        lines.extend(
-            "- "
-            f"{blocked.relative_path.as_posix()} blocked by "
-            f"{', '.join(blocked.blocker_source_names)}"
-            for blocked in update.blocked_emissions
-        )
+    if update.warnings:
+        lines.append("Warnings:")
+        lines.extend(f"- {warning.message}" for warning in update.warnings)
 
     return "\n".join(lines)
 
@@ -261,13 +300,8 @@ def _format_applied_update_report(update: AppliedModUpdate) -> str:
         for write in update.writes
     )
 
-    if update.blocked_emissions:
-        lines.append("Blocked emissions:")
-        lines.extend(
-            "- "
-            f"{blocked.relative_path.as_posix()} blocked by "
-            f"{', '.join(blocked.blocker_source_names)}"
-            for blocked in update.blocked_emissions
-        )
+    if update.warnings:
+        lines.append("Warnings:")
+        lines.extend(f"- {warning.message}" for warning in update.warnings)
 
     return "\n".join(lines)

@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from eu5miner import apply_mod_update, format_mod_update_report, plan_mod_update
-from eu5miner.mods import ModUpdateWriteKind
+from eu5miner.mods import ModUpdateWarningKind, ModUpdateWriteKind
 from eu5miner.source import ContentPhase
 from eu5miner.vfs import ContentSource, SourceKind, VirtualFilesystem
 
@@ -35,6 +35,7 @@ def test_plan_mod_update_wraps_metadata_and_content_writes(tmp_path: Path) -> No
     assert update.content_writes[0].content == "building = {}\n"
     assert update.replace_paths_to_add == ()
     assert update.blocked_emissions == ()
+    assert update.warnings == ()
 
 
 def test_plan_mod_update_surfaces_replace_path_recommendations(tmp_path: Path) -> None:
@@ -94,12 +95,17 @@ def test_plan_mod_update_surfaces_blocked_emissions(tmp_path: Path) -> None:
     assert len(update.blocked_emissions) == 1
     assert update.blocked_emissions[0].relative_path == Path("common") / "buildings" / "a.txt"
     assert update.blocked_emissions[0].blocker_source_names == ("late_mod",)
+    assert len(update.warnings) == 1
+    assert update.warnings[0].kind is ModUpdateWarningKind.BLOCKED_EMISSION
+    assert update.warnings[0].relative_path == Path("common") / "buildings" / "a.txt"
+    assert update.warnings[0].blocker_source_names == ("late_mod",)
     assert update.content_writes == ()
 
     report = format_mod_update_report(update)
 
-    assert "Blocked emissions:" in report
-    assert "common/buildings/a.txt blocked by late_mod" in report
+    assert "Warnings:" in report
+    assert "common/buildings/a.txt will be shadowed" in report
+    assert "late_mod" in report
 
 
 def test_apply_mod_update_materializes_files_and_reports_statuses(tmp_path: Path) -> None:
@@ -128,3 +134,36 @@ def test_apply_mod_update_materializes_files_and_reports_statuses(tmp_path: Path
     assert "created:" in report
     assert "metadata.json" in report
     assert "new.txt" in report
+
+
+def test_apply_mod_update_preserves_warnings_for_blocked_outputs(tmp_path: Path) -> None:
+    mod_root = tmp_path / "my_mod"
+    late_mod_root = tmp_path / "late_mod"
+
+    _write_file(late_mod_root / "in_game" / "common" / "buildings" / "a.txt", "late\n")
+
+    vfs = VirtualFilesystem(
+        [
+            ContentSource("my_mod", SourceKind.MOD, mod_root, 100),
+            ContentSource("late_mod", SourceKind.MOD, late_mod_root, 110),
+        ]
+    )
+
+    planned = plan_mod_update(
+        vfs,
+        "my_mod",
+        ContentPhase.IN_GAME,
+        Path("common") / "buildings",
+        intended_relative_paths=(Path("common") / "buildings" / "a.txt",),
+    )
+
+    applied = apply_mod_update(planned)
+
+    assert len(applied.warnings) == 1
+    assert applied.warnings[0].kind is ModUpdateWarningKind.BLOCKED_EMISSION
+    assert applied.content_writes == ()
+
+    report = format_mod_update_report(applied)
+
+    assert "Warnings:" in report
+    assert "common/buildings/a.txt will be shadowed" in report
