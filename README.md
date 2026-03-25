@@ -90,7 +90,10 @@ Implemented domain adapters are re-exported from `eu5miner.domains` so callers d
 
 ```python
 from eu5miner.domains import (
+	build_on_action_catalog_document,
 	build_country_description_category_usage_document,
+	parse_on_action_document,
+	parse_on_action_documentation,
 	parse_country_description_category_document,
 	parse_culture_document,
 	parse_religion_document,
@@ -102,6 +105,14 @@ from eu5miner.domains import (
 	parse_setup_country_document,
 )
 
+on_action_document = parse_on_action_document("on_example = { events = { flavor_test.1 } }\n")
+on_action_docs = parse_on_action_documentation(
+	"On Action Documentation:\n\n"
+	"--------------------\n\n"
+	"on_example:\n"
+	"From Code: Yes\n"
+	"Expected Scope: country\n"
+)
 category_document = parse_country_description_category_document("military = {}\n")
 culture_document = parse_culture_document("example_culture = { culture_groups = { group_a } }\n")
 religion_document = parse_religion_document("example_faith = { group = abrahamic }\n")
@@ -111,6 +122,8 @@ modifier_document = parse_scripted_modifier_document("my_modifier = { modifier =
 script_value_document = parse_script_value_document("minor_stress_gain = 10\n")
 trigger_document = parse_scripted_trigger_document("test_trigger = { always = yes }\n")
 country_document = parse_setup_country_document("FRA = { tier = kingdom }\n")
+
+on_action_catalog = build_on_action_catalog_document([on_action_document], on_action_docs)
 
 category_usage = build_country_description_category_usage_document(
 	category_document,

@@ -11,9 +11,9 @@ from eu5miner import (
     plan_mod_update,
 )
 from eu5miner.domains import (
-    build_on_action_catalog_document,
     build_country_description_category_usage_document,
     build_linked_location_document,
+    build_on_action_catalog_document,
     parse_country_description_category_document,
     parse_culture_document,
     parse_default_map_document,
