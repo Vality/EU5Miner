@@ -173,6 +173,22 @@ class GameInstall:
             / "common"
             / "script_values"
             / "eu4_conversions.txt",
+            "building_type_readme": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "building_types"
+            / "readme.txt",
+            "building_type_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "building_types"
+            / "common_buildings.txt",
+            "building_type_secondary_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "building_types"
+            / "capital_buildings.txt",
+            "building_category_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "building_categories"
+            / "00_default.txt",
             "culture_info": self.phase_dir(ContentPhase.IN_GAME)
             / "common"
             / "cultures"

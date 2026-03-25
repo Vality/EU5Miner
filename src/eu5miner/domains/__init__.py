@@ -1,5 +1,15 @@
 """Curated public exports for implemented domain adapters and helpers."""
 
+from eu5miner.domains.building_categories import (
+	BuildingCategoryDefinition,
+	BuildingCategoryDocument,
+	parse_building_category_document,
+)
+from eu5miner.domains.building_types import (
+	BuildingTypeDefinition,
+	BuildingTypeDocument,
+	parse_building_type_document,
+)
 from eu5miner.domains.country_description_categories import (
 	CountryDescriptionAssignment,
 	CountryDescriptionCategoryDefinition,
@@ -182,6 +192,10 @@ from eu5miner.domains.situations import (
 )
 
 __all__ = [
+	"BuildingCategoryDefinition",
+	"BuildingCategoryDocument",
+	"BuildingTypeDefinition",
+	"BuildingTypeDocument",
     "CountryLocationDefinition",
     "CountryLocationDocument",
     "CountryLocationGroup",
@@ -284,6 +298,8 @@ __all__ = [
     "find_missing_localization_references",
     "iter_phase_localization_sources",
     "materialize_targeted_mod_emission",
+	"parse_building_category_document",
+	"parse_building_type_document",
     "parse_country_location_document",
 	"parse_country_description_category_document",
 	"parse_culture_document",
