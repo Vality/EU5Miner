@@ -79,6 +79,35 @@ class TargetedModEmission:
     blocked_emissions: tuple[PlannedFileEmission, ...]
 
 
+class MaterializedWriteStatus(StrEnum):
+    """Outcome of writing one planned file to disk."""
+
+    CREATED = "created"
+    UPDATED = "updated"
+    UNCHANGED = "unchanged"
+
+
+@dataclass(frozen=True)
+class MaterializedFileWrite:
+    """Result of materializing one file from a targeted emission."""
+
+    path: Path
+    status: MaterializedWriteStatus
+    relative_path: Path | None = None
+    emission_kind: EmissionEntryActionKind | None = None
+
+
+@dataclass(frozen=True)
+class MaterializedModEmission:
+    """Result of materializing directories and files for a targeted emission."""
+
+    root: Path
+    created_directories: tuple[Path, ...]
+    metadata_write: MaterializedFileWrite
+    content_writes: tuple[MaterializedFileWrite, ...]
+    blocked_emissions: tuple[PlannedFileEmission, ...]
+
+
 def plan_mod_skeleton(emission_plan: ModEmissionPlan) -> ModSkeletonPlan:
     directories: set[Path] = {emission_plan.target_source.root, emission_plan.metadata_path.parent}
     files: list[ModSkeletonFile] = [
@@ -160,6 +189,32 @@ def plan_targeted_mod_emission(
     )
 
 
+def materialize_targeted_mod_emission(
+    targeted_emission: TargetedModEmission,
+    *,
+    overwrite: bool = True,
+) -> MaterializedModEmission:
+    created_directories: list[Path] = []
+    for directory in targeted_emission.directories:
+        if not directory.exists():
+            directory.mkdir(parents=True, exist_ok=True)
+            created_directories.append(directory)
+
+    metadata_write = _materialize_file_write(targeted_emission.metadata_write, overwrite=overwrite)
+    content_writes = tuple(
+        _materialize_file_write(file_write, overwrite=overwrite)
+        for file_write in targeted_emission.content_writes
+    )
+
+    return MaterializedModEmission(
+        root=targeted_emission.root,
+        created_directories=tuple(created_directories),
+        metadata_write=metadata_write,
+        content_writes=content_writes,
+        blocked_emissions=targeted_emission.blocked_emissions,
+    )
+
+
 def _ancestor_dirs_within_root(path: Path, root: Path) -> tuple[Path, ...]:
     directories: list[Path] = []
     current = path
@@ -193,3 +248,30 @@ def _build_metadata_json_text(emission_plan: ModEmissionPlan) -> str:
         metadata["replace_path"] = replace_paths
 
     return json.dumps(metadata, indent=2, sort_keys=False) + "\n"
+
+
+def _materialize_file_write(
+    file_write: PlannedFileWrite,
+    *,
+    overwrite: bool,
+) -> MaterializedFileWrite:
+    path = file_write.path
+    if path.exists():
+        existing_text = path.read_text(encoding="utf-8", errors="replace")
+        if existing_text == file_write.content:
+            status = MaterializedWriteStatus.UNCHANGED
+        else:
+            if not overwrite:
+                raise FileExistsError(f"Refusing to overwrite existing file: {path}")
+            path.write_text(file_write.content, encoding="utf-8")
+            status = MaterializedWriteStatus.UPDATED
+    else:
+        path.write_text(file_write.content, encoding="utf-8")
+        status = MaterializedWriteStatus.CREATED
+
+    return MaterializedFileWrite(
+        path=path,
+        status=status,
+        relative_path=file_write.relative_path,
+        emission_kind=file_write.emission_kind,
+    )
