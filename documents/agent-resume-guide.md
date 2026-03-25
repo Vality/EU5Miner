@@ -157,6 +157,8 @@ Implemented and green:
 - price adapter for top-level price definitions with normalized core numeric resource-cost fields plus preserved semantic bodies for rarer price keys
 - goods-demand-category adapter for top-level demand category definitions with normalized display mode
 - goods-demand adapter for top-level demand definitions covering both simple scalar recipes and scripted per-good demand blocks such as `pop_demand`
+- production-method adapter for top-level named input/output recipes with normalized goods inputs, `produced`, `output`, `category`, `no_upkeep`, and optional `potential` and `allow` trigger blocks
+- employment-system adapter for top-level named definitions with normalized `country_modifier`, `priority`, and `ai_will_do` script blocks
 - VFS replace-path support that loads metadata-driven rules from DLC or mod metadata, hides lower-priority files inside replaced trees, exposes precedence-aware write planning for exact target paths, subtree-level ownership summaries, intended emitted files, and mod-scoped metadata updates, derives concrete recommendations such as create, keep, override, blocked, and add-replace-path, supports a first mod skeleton planner that turns a mod emission plan into required directories, metadata.json handling, intended content files, and separated blocked outputs, includes targeted emission helpers that render metadata.json content and per-file write payloads for intended non-blocked outputs, includes filesystem materialization helpers that apply those explicit planned writes to disk, exposes a public `eu5miner.mods` facade with stable plan/apply/report entrypoints, and now includes CLI plan/apply commands that exercise the same workflow with explicit advisories, warnings, overwrite handling, and recursive content-root inputs
 
 Recently validated:
@@ -177,10 +179,11 @@ Recently validated:
 - shipped `common/on_action/*.txt` files are flat top-level hook definitions with a stable mix of `trigger`, `effect`, chained `on_actions`, plain `events`, and weighted `random_events`; the locally generated dump at `OneDrive/Documents/Paradox Interactive/Europa Universalis V/docs/on_actions.log` provides a reliable optional source for expected-scope metadata and confirms which hooks are code-defined versus fully scripted
 - shipped `common/building_categories/00_default.txt` is a minimal list of named empty category objects, while shipped `common/building_types/*.txt` files are flat top-level building definitions with a large but stable core of scalar fields and script blocks; the readme in `common/building_types/readme.txt` is enough to anchor the first typed adapter, and the `dump_data_types` output only confirms generic engine types like `Building` and `BuildingType` rather than exposing parser-critical field schema
 - shipped `common/goods/*.txt` and `common/prices/*.txt` have straightforward top-level keyed object models anchored well by their readmes, while `common/goods_demand_category/00_default.txt` is minimal and `common/goods_demand/*.txt` uses two stable shapes: simple scalar demand recipes and scripted per-good blocks under definitions like `pop_demand`; this still does not justify a required `dump_data_types` dependency, because the dump confirms engine type names but not the field-level syntax that the shipped files already expose directly
+- shipped `common/production_methods/unsorted_building_inputs.txt` is a straightforward top-level recipe family matching its readme, and `common/employment_systems/00_default.txt` is a small top-level named-object family with three stable script blocks; neither family currently needs dump-backed schema help to parse cleanly
 
 ## Next Planned Work
 
-The economy and production layer now has both buildings and market primitives in place. The next recommended domain target is `production methods and employment systems`, followed by the rest of the economy and production systems.
+The economy and production layer now includes both market primitives and core production rules. The next recommended domain target is `markets and related economic helpers`, followed by the rest of the economy and production systems.
 
 The broader validation sweep is intentionally deferred for later and should stay optional rather than becoming part of the default fast development loop.
 

@@ -30,6 +30,11 @@ from eu5miner.domains.disasters import (
 	DisasterDocument,
 	parse_disaster_document,
 )
+from eu5miner.domains.employment_systems import (
+	EmploymentSystemDefinition,
+	EmploymentSystemDocument,
+	parse_employment_system_document,
+)
 from eu5miner.domains.events import (
 	EventDefinition,
 	EventDocument,
@@ -167,6 +172,12 @@ from eu5miner.domains.prices import (
 	PriceDocument,
 	parse_price_document,
 )
+from eu5miner.domains.production_methods import (
+	ProductionMethodDefinition,
+	ProductionMethodDocument,
+	ProductionMethodInput,
+	parse_production_method_document,
+)
 from eu5miner.domains.religions import (
 	ReligionDefinition,
 	ReligionDocument,
@@ -237,6 +248,8 @@ __all__ = [
     "DefaultMapReferencedFiles",
     "DisasterDefinition",
     "DisasterDocument",
+	"EmploymentSystemDefinition",
+	"EmploymentSystemDocument",
     "EffectLocalizationDefinition",
     "EffectLocalizationDocument",
     "EventDefinition",
@@ -297,6 +310,9 @@ __all__ = [
     "PlannedFileWrite",
 	"PriceDefinition",
 	"PriceDocument",
+	"ProductionMethodDefinition",
+	"ProductionMethodDocument",
+	"ProductionMethodInput",
 	"ReligionDefinition",
 	"ReligionDocument",
 	"ReligionOpinion",
@@ -340,6 +356,7 @@ __all__ = [
     "parse_customizable_localization_document",
     "parse_default_map_document",
     "parse_disaster_document",
+	"parse_employment_system_document",
     "parse_effect_localization_document",
     "parse_event_document",
 	"parse_goods_demand_category_document",
@@ -356,6 +373,7 @@ __all__ = [
 	"parse_on_action_document",
 	"parse_on_action_documentation",
     "parse_price_document",
+    "parse_production_method_document",
 	"parse_religion_document",
     "parse_scripted_effect_document",
 	"parse_scripted_list_document",

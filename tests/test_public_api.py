@@ -19,6 +19,7 @@ from eu5miner.domains import (
     parse_country_description_category_document,
     parse_culture_document,
     parse_default_map_document,
+    parse_employment_system_document,
     parse_event_document,
     parse_goods_demand_category_document,
     parse_goods_demand_document,
@@ -27,6 +28,7 @@ from eu5miner.domains import (
     parse_on_action_document,
     parse_on_action_documentation,
     parse_price_document,
+    parse_production_method_document,
     parse_religion_document,
     parse_script_value_document,
     parse_scripted_list_document,
@@ -77,8 +79,14 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     goods_demand_document = parse_goods_demand_document(
         "sample_demand = { iron = 0.5 category = special_demands }\n"
     )
+    production_method_document = parse_production_method_document(
+        "maintenance = { tools = 0.1 category = building_maintenance }\n"
+    )
     category_document = parse_country_description_category_document("military = {}\n")
     culture_document = parse_culture_document("example = { culture_groups = { alpha } }\n")
+    employment_system_document = parse_employment_system_document(
+        "equality = { priority = { value = 1 } }\n"
+    )
     religion_document = parse_religion_document("faith = { group = example tags = { tag } }\n")
     list_document = parse_scripted_list_document(
         "adult = { base = character conditions = { is_adult = yes } }\n"
@@ -104,8 +112,10 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     assert goods_document.names() == ("iron",)
     assert goods_demand_category_document.names() == ("building_construction",)
     assert goods_demand_document.names() == ("sample_demand",)
+    assert production_method_document.names() == ("maintenance",)
     assert category_document.names() == ("military",)
     assert culture_document.names() == ("example",)
+    assert employment_system_document.names() == ("equality",)
     assert price_document.names() == ("build_road",)
     assert religion_document.names() == ("faith",)
     assert list_document.names() == ("adult",)

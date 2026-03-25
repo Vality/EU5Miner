@@ -60,6 +60,7 @@ The VFS now also has an initial metadata-aware replace-path layer: source metada
 - on_actions and related hook definitions
 - building types and building categories
 - goods, prices, and goods demand
+- production methods and employment systems
 - setup countries
 - cultures and culture groups
 - religions and religion groups
@@ -79,7 +80,7 @@ The VFS now also has an initial metadata-aware replace-path layer: source metada
 
 Next planned target:
 
-- continue economy and production systems with production methods and employment systems
+- continue economy and production systems with markets and related economic helpers
 
 The optional broader validation sweep remains deferred until later; do not fold it into normal fast iteration work.
 
@@ -123,6 +124,10 @@ Important representative files:
 - `game/in_game/common/goods_demand/building_construction_costs.txt`
 - `game/in_game/common/goods_demand/pop_demands.txt`
 - `game/in_game/common/goods_demand/from_events.txt`
+- `game/in_game/common/production_methods/__readme.txt`
+- `game/in_game/common/production_methods/unsorted_building_inputs.txt`
+- `game/in_game/common/employment_systems/readme.txt`
+- `game/in_game/common/employment_systems/00_default.txt`
 - `game/in_game/common/script_values/best_capital_for_colony.txt`
 - `game/in_game/common/script_values/eu4_conversions.txt`
 - `game/in_game/common/cultures/00_cultures.info`
