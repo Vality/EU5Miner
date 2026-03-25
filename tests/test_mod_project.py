@@ -2,8 +2,12 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
+
 from eu5miner.domains.mod_project import (
+    MaterializedWriteStatus,
     ModSkeletonFileKind,
+    materialize_targeted_mod_emission,
     plan_mod_skeleton,
     plan_targeted_mod_emission,
 )
@@ -250,3 +254,105 @@ def test_plan_targeted_mod_emission_keeps_blocked_outputs_out_of_content_writes(
 
     assert targeted.content_writes == ()
     assert len(targeted.blocked_emissions) == 1
+
+
+def test_materialize_targeted_mod_emission_creates_directories_and_files(
+    tmp_path: Path,
+) -> None:
+    mod_root = tmp_path / "my_mod"
+
+    vfs = VirtualFilesystem([ContentSource("my_mod", SourceKind.MOD, mod_root, 100)])
+    emission_plan = vfs.plan_mod_directory_emission(
+        "my_mod",
+        ContentPhase.IN_GAME,
+        Path("common") / "buildings",
+        intended_relative_paths=(Path("common") / "buildings" / "new.txt",),
+    )
+    targeted = plan_targeted_mod_emission(
+        emission_plan,
+        content_by_relative_path={Path("common") / "buildings" / "new.txt": "building = {}\n"},
+    )
+
+    materialized = materialize_targeted_mod_emission(targeted)
+
+    assert mod_root / ".metadata" in materialized.created_directories
+    assert materialized.metadata_write.status is MaterializedWriteStatus.CREATED
+    assert materialized.metadata_write.path.read_text(encoding="utf-8") == "{}\n"
+    assert len(materialized.content_writes) == 1
+    assert materialized.content_writes[0].status is MaterializedWriteStatus.CREATED
+    assert materialized.content_writes[0].path.read_text(encoding="utf-8") == "building = {}\n"
+
+
+def test_materialize_targeted_mod_emission_marks_identical_existing_files_unchanged(
+    tmp_path: Path,
+) -> None:
+    mod_root = tmp_path / "my_mod"
+
+    _write_file(mod_root / ".metadata" / "metadata.json", "{}\n")
+    _write_file(mod_root / "in_game" / "common" / "buildings" / "new.txt", "building = {}\n")
+
+    vfs = VirtualFilesystem([ContentSource("my_mod", SourceKind.MOD, mod_root, 100)])
+    emission_plan = vfs.plan_mod_directory_emission(
+        "my_mod",
+        ContentPhase.IN_GAME,
+        Path("common") / "buildings",
+        intended_relative_paths=(Path("common") / "buildings" / "new.txt",),
+    )
+    targeted = plan_targeted_mod_emission(
+        emission_plan,
+        content_by_relative_path={Path("common") / "buildings" / "new.txt": "building = {}\n"},
+    )
+
+    materialized = materialize_targeted_mod_emission(targeted, overwrite=False)
+
+    assert materialized.metadata_write.status is MaterializedWriteStatus.UNCHANGED
+    assert materialized.content_writes[0].status is MaterializedWriteStatus.UNCHANGED
+
+
+def test_materialize_targeted_mod_emission_rejects_overwrite_when_disabled(
+    tmp_path: Path,
+) -> None:
+    mod_root = tmp_path / "my_mod"
+
+    _write_file(mod_root / ".metadata" / "metadata.json", "{}\n")
+    _write_file(mod_root / "in_game" / "common" / "buildings" / "new.txt", "old\n")
+
+    vfs = VirtualFilesystem([ContentSource("my_mod", SourceKind.MOD, mod_root, 100)])
+    emission_plan = vfs.plan_mod_directory_emission(
+        "my_mod",
+        ContentPhase.IN_GAME,
+        Path("common") / "buildings",
+        intended_relative_paths=(Path("common") / "buildings" / "new.txt",),
+    )
+    targeted = plan_targeted_mod_emission(
+        emission_plan,
+        content_by_relative_path={Path("common") / "buildings" / "new.txt": "building = {}\n"},
+    )
+
+    with pytest.raises(FileExistsError, match="Refusing to overwrite"):
+        materialize_targeted_mod_emission(targeted, overwrite=False)
+
+
+def test_materialize_targeted_mod_emission_updates_existing_file_when_enabled(
+    tmp_path: Path,
+) -> None:
+    mod_root = tmp_path / "my_mod"
+
+    _write_file(mod_root / "in_game" / "common" / "buildings" / "new.txt", "old\n")
+
+    vfs = VirtualFilesystem([ContentSource("my_mod", SourceKind.MOD, mod_root, 100)])
+    emission_plan = vfs.plan_mod_directory_emission(
+        "my_mod",
+        ContentPhase.IN_GAME,
+        Path("common") / "buildings",
+        intended_relative_paths=(Path("common") / "buildings" / "new.txt",),
+    )
+    targeted = plan_targeted_mod_emission(
+        emission_plan,
+        content_by_relative_path={Path("common") / "buildings" / "new.txt": "building = {}\n"},
+    )
+
+    materialized = materialize_targeted_mod_emission(targeted, overwrite=True)
+
+    assert materialized.content_writes[0].status is MaterializedWriteStatus.UPDATED
+    assert materialized.content_writes[0].path.read_text(encoding="utf-8") == "building = {}\n"

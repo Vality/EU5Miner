@@ -226,9 +226,10 @@ Implemented:
 - replace_paths and precedence-aware write planning
 - initial mod skeleton planning
 - targeted emission helpers
+- filesystem materialization helpers
 
 Next recommended target:
 
-- filesystem materialization helpers
+- library integration pass
 
 This gives broad value quickly while staying aligned with the current parser architecture.
