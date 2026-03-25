@@ -211,6 +211,28 @@ def test_vfs_from_install_loads_replace_rules_from_mod_metadata(tmp_path: Path) 
     assert mod_source.replace_rules[0].relative_root == Path("common") / "buildings"
 
 
+def test_vfs_from_install_preserves_provided_mod_order(tmp_path: Path) -> None:
+    install_root = tmp_path / "install"
+    game_dir = install_root / "game"
+    dlc_dir = game_dir / "dlc"
+    mod_dir = game_dir / "mod"
+    first_mod_root = tmp_path / "first_mod"
+    later_mod_root = tmp_path / "later_mod"
+
+    for phase_name in ("loading_screen", "main_menu", "in_game"):
+        (game_dir / phase_name).mkdir(parents=True, exist_ok=True)
+    dlc_dir.mkdir(parents=True, exist_ok=True)
+    mod_dir.mkdir(parents=True, exist_ok=True)
+
+    install = GameInstall(root=install_root, game_dir=game_dir, dlc_dir=dlc_dir, mod_dir=mod_dir)
+
+    vfs = VirtualFilesystem.from_install(install, mod_roots=[first_mod_root, later_mod_root])
+
+    mod_sources = [source.name for source in vfs.sources if source.kind is SourceKind.MOD]
+
+    assert mod_sources == ["first_mod", "later_mod"]
+
+
 def test_vfs_plan_directory_write_reports_existing_visible_files(tmp_path: Path) -> None:
     vanilla_root = tmp_path / "vanilla"
     mod_root = tmp_path / "my_mod"

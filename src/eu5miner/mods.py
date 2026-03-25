@@ -30,6 +30,12 @@ class ModUpdateWarningKind(StrEnum):
     BLOCKED_EMISSION = "blocked_emission"
 
 
+class ModUpdateAdvisoryKind(StrEnum):
+    """Lower-severity advisory categories for important planned actions."""
+
+    ADD_REPLACE_PATH = "add_replace_path"
+
+
 @dataclass(frozen=True)
 class BlockedModEmission:
     """One intended file that cannot become visible for the target mod."""
@@ -47,6 +53,15 @@ class ModUpdateWarning:
     message: str
     relative_path: Path | None = None
     blocker_source_names: tuple[str, ...] = ()
+
+
+@dataclass(frozen=True)
+class ModUpdateAdvisory:
+    """Human-readable advisory for non-failure but important planned actions."""
+
+    kind: ModUpdateAdvisoryKind
+    message: str
+    raw_path: str | None = None
 
 
 @dataclass(frozen=True)
@@ -72,6 +87,7 @@ class PlannedModUpdate:
     replace_paths_to_add: tuple[str, ...]
     blocked_emissions: tuple[BlockedModEmission, ...]
     warnings: tuple[ModUpdateWarning, ...]
+    advisories: tuple[ModUpdateAdvisory, ...]
     metadata_write: ModUpdateWrite
     content_writes: tuple[ModUpdateWrite, ...]
     _targeted_emission: TargetedModEmission = field(repr=False, compare=False)
@@ -83,6 +99,10 @@ class PlannedModUpdate:
     @property
     def has_blockers(self) -> bool:
         return bool(self.blocked_emissions)
+
+    @property
+    def intended_content_write_count(self) -> int:
+        return len(self.content_writes) + len(self.blocked_emissions)
 
 
 @dataclass(frozen=True)
@@ -117,6 +137,22 @@ class AppliedModUpdate:
     def warnings(self) -> tuple[ModUpdateWarning, ...]:
         return self.plan.warnings
 
+    @property
+    def advisories(self) -> tuple[ModUpdateAdvisory, ...]:
+        return self.plan.advisories
+
+    @property
+    def created_write_count(self) -> int:
+        return sum(1 for write in self.writes if write.status is MaterializedWriteStatus.CREATED)
+
+    @property
+    def updated_write_count(self) -> int:
+        return sum(1 for write in self.writes if write.status is MaterializedWriteStatus.UPDATED)
+
+    @property
+    def unchanged_write_count(self) -> int:
+        return sum(1 for write in self.writes if write.status is MaterializedWriteStatus.UNCHANGED)
+
 
 def plan_mod_update(
     vfs: VirtualFilesystem,
@@ -133,6 +169,7 @@ def plan_mod_update(
         relative_root,
         intended_relative_paths=intended_relative_paths,
     )
+    replace_paths_to_add = _collect_replace_paths(emission_plan)
     blocked_emissions = _collect_blocked_emissions(emission_plan)
     targeted_emission = plan_targeted_mod_emission(
         emission_plan,
@@ -162,9 +199,10 @@ def plan_mod_update(
         phase=emission_plan.phase,
         relative_root=emission_plan.relative_root,
         root=targeted_emission.root,
-        replace_paths_to_add=_collect_replace_paths(emission_plan),
+        replace_paths_to_add=replace_paths_to_add,
         blocked_emissions=blocked_emissions,
         warnings=_build_warnings(blocked_emissions),
+        advisories=_build_advisories(replace_paths_to_add),
         metadata_write=metadata_write,
         content_writes=content_writes,
         _targeted_emission=targeted_emission,
@@ -262,12 +300,37 @@ def _build_warnings(
     return tuple(warnings)
 
 
+def _build_advisories(
+    replace_paths_to_add: tuple[str, ...],
+) -> tuple[ModUpdateAdvisory, ...]:
+    advisories: list[ModUpdateAdvisory] = []
+    for raw_path in replace_paths_to_add:
+        advisories.append(
+            ModUpdateAdvisory(
+                kind=ModUpdateAdvisoryKind.ADD_REPLACE_PATH,
+                message=(
+                    "Planning metadata update to add replace_path entry: "
+                    f"{raw_path}"
+                ),
+                raw_path=raw_path,
+            )
+        )
+    return tuple(advisories)
+
+
 def _format_planned_update_report(update: PlannedModUpdate) -> str:
     lines = [
         f"Planned mod update: {update.target_source_name}",
         f"Phase: {update.phase.value}",
         f"Subtree: {update.relative_root.as_posix()}",
-        f"Writes: {len(update.writes)}",
+        "Summary:",
+        f"- intended content outputs: {update.intended_content_write_count}",
+        f"- materialized writes: {len(update.writes)}",
+        "- metadata writes: 1",
+        f"- replace_path additions: {len(update.replace_paths_to_add)}",
+        f"- blocked intended outputs: {len(update.blocked_emissions)}",
+        f"- warnings: {len(update.warnings)}",
+        f"- advisories: {len(update.advisories)}",
     ]
 
     if update.replace_paths_to_add:
@@ -282,6 +345,10 @@ def _format_planned_update_report(update: PlannedModUpdate) -> str:
             if write.relative_path is not None and write.emission_kind is not None
         )
 
+    if update.advisories:
+        lines.append("Advisories:")
+        lines.extend(f"- {advisory.message}" for advisory in update.advisories)
+
     if update.warnings:
         lines.append("Warnings:")
         lines.extend(f"- {warning.message}" for warning in update.warnings)
@@ -292,13 +359,24 @@ def _format_planned_update_report(update: PlannedModUpdate) -> str:
 def _format_applied_update_report(update: AppliedModUpdate) -> str:
     lines = [
         f"Applied mod update: {update.plan.target_source_name}",
-        f"Created directories: {len(update.created_directories)}",
+        "Summary:",
+        f"- created directories: {len(update.created_directories)}",
+        f"- created writes: {update.created_write_count}",
+        f"- updated writes: {update.updated_write_count}",
+        f"- unchanged writes: {update.unchanged_write_count}",
+        f"- blocked intended outputs: {len(update.blocked_emissions)}",
+        f"- warnings: {len(update.warnings)}",
+        f"- advisories: {len(update.advisories)}",
         "Write results:",
     ]
     lines.extend(
         f"- {write.status.value}: {write.path.as_posix()}"
         for write in update.writes
     )
+
+    if update.advisories:
+        lines.append("Advisories:")
+        lines.extend(f"- {advisory.message}" for advisory in update.advisories)
 
     if update.warnings:
         lines.append("Warnings:")
