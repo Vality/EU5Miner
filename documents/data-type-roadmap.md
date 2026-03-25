@@ -225,9 +225,10 @@ Implemented:
 - mod metadata and relationships
 - replace_paths and precedence-aware write planning
 - initial mod skeleton planning
+- targeted emission helpers
 
 Next recommended target:
 
-- targeted emission helpers
+- filesystem materialization helpers
 
 This gives broad value quickly while staying aligned with the current parser architecture.
