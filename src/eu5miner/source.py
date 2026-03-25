@@ -189,6 +189,46 @@ class GameInstall:
             / "common"
             / "building_categories"
             / "00_default.txt",
+            "goods_readme": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "goods"
+            / "readme.txt",
+            "goods_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "goods"
+            / "00_raw_materials.txt",
+            "goods_secondary_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "goods"
+            / "03_food.txt",
+            "price_readme": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "prices"
+            / "readme.txt",
+            "price_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "prices"
+            / "00_hardcoded.txt",
+            "price_secondary_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "prices"
+            / "01_buildings.txt",
+            "goods_demand_category_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "goods_demand_category"
+            / "00_default.txt",
+            "goods_demand_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "goods_demand"
+            / "building_construction_costs.txt",
+            "goods_demand_secondary_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "goods_demand"
+            / "pop_demands.txt",
+            "goods_demand_tertiary_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "goods_demand"
+            / "from_events.txt",
             "culture_info": self.phase_dir(ContentPhase.IN_GAME)
             / "common"
             / "cultures"
