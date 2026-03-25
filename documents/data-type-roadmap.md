@@ -221,6 +221,7 @@ Implemented:
 - goods, prices, and goods demand
 - production methods and employment systems
 - generic actions, with first validation anchored on market and employment-system action files
+- attribute columns, first validated against default, market, and goods column groups
 - setup countries
 - cultures and culture groups
 - religions and religion groups
@@ -247,6 +248,6 @@ Implemented:
 
 Next recommended target:
 
-- continue economy and production systems with additional market-adjacent helpers such as attribute columns
+- continue broader economy helpers after attribute columns where useful
 
 This gives broad value quickly while staying aligned with the current parser architecture.

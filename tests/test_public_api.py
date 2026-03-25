@@ -14,6 +14,7 @@ from eu5miner.domains import (
     build_country_description_category_usage_document,
     build_linked_location_document,
     build_on_action_catalog_document,
+    parse_attribute_column_document,
     parse_building_category_document,
     parse_building_type_document,
     parse_country_description_category_document,
@@ -68,6 +69,9 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     building_category_document = parse_building_category_document(
         "trade_category = {}\n"
     )
+    attribute_column_document = parse_attribute_column_document(
+        "market = { name = { widget = default_text_column } }\n"
+    )
     building_type_document = parse_building_type_document(
         "granary = { category = infrastructure_category pop_type = peasants }\n"
     )
@@ -112,6 +116,7 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     assert on_action_document.names() == ("on_example",)
     assert on_action_documentation.names() == ("on_example",)
     assert building_category_document.names() == ("trade_category",)
+    assert attribute_column_document.names() == ("market",)
     assert building_type_document.names() == ("granary",)
     assert goods_document.names() == ("iron",)
     assert goods_demand_category_document.names() == ("building_construction",)
