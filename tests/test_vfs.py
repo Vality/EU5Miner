@@ -2,11 +2,14 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
+
 from eu5miner.source import ContentPhase, GameInstall
 from eu5miner.vfs import (
     ContentSource,
     DirectoryWriteActionKind,
     EmissionEntryActionKind,
+    ModMetadataUpdateActionKind,
     ReplacePathRule,
     SourceKind,
     SubtreeWriteActionKind,
@@ -444,3 +447,83 @@ def test_vfs_directory_emission_plan_marks_intended_file_as_blocked_when_late_mo
     assert emission_plan.emissions[0].kind is EmissionEntryActionKind.BLOCKED
     assert emission_plan.emissions[0].intended is True
     assert len(emission_plan.blocked_entries) == 1
+
+
+def test_vfs_plan_mod_directory_emission_adds_replace_path_metadata_update(
+    tmp_path: Path,
+) -> None:
+    vanilla_root = tmp_path / "vanilla"
+    mod_root = tmp_path / "my_mod"
+
+    _write_file(vanilla_root / "in_game" / "common" / "buildings" / "a.txt", "vanilla a")
+
+    vfs = VirtualFilesystem(
+        [
+            ContentSource("vanilla", SourceKind.VANILLA, vanilla_root, 0),
+            ContentSource("my_mod", SourceKind.MOD, mod_root, 100),
+        ]
+    )
+
+    plan = vfs.plan_mod_directory_emission(
+        "my_mod",
+        ContentPhase.IN_GAME,
+        Path("common") / "buildings",
+        intended_relative_paths=(Path("common") / "buildings" / "a.txt",),
+    )
+
+    assert plan.metadata_path == mod_root / ".metadata" / "metadata.json"
+    assert len(plan.metadata_update_actions) == 1
+    assert plan.metadata_update_actions[0].kind is ModMetadataUpdateActionKind.ADD_REPLACE_PATH
+    assert plan.metadata_update_actions[0].raw_path == "game/in_game/common/buildings"
+    assert len(plan.directory_plan.emissions) == 1
+    assert plan.directory_plan.emissions[0].kind is EmissionEntryActionKind.OVERRIDE
+
+
+def test_vfs_plan_mod_directory_emission_skips_replace_path_update_when_present(
+    tmp_path: Path,
+) -> None:
+    vanilla_root = tmp_path / "vanilla"
+    mod_root = tmp_path / "my_mod"
+
+    _write_file(vanilla_root / "in_game" / "common" / "buildings" / "a.txt", "vanilla a")
+    _write_file(mod_root / "in_game" / "common" / "buildings" / "b.txt", "mod b")
+
+    vfs = VirtualFilesystem(
+        [
+            ContentSource("vanilla", SourceKind.VANILLA, vanilla_root, 0),
+            ContentSource(
+                "my_mod",
+                SourceKind.MOD,
+                mod_root,
+                100,
+                replace_rules=(
+                    ReplacePathRule(
+                        phase=ContentPhase.IN_GAME,
+                        relative_root=Path("common") / "buildings",
+                        raw_path="game/in_game/common/buildings",
+                    ),
+                ),
+            ),
+        ]
+    )
+
+    plan = vfs.plan_mod_directory_emission(
+        "my_mod",
+        ContentPhase.IN_GAME,
+        Path("common") / "buildings",
+    )
+
+    assert plan.metadata_update_actions == ()
+
+
+def test_vfs_plan_mod_directory_emission_rejects_non_mod_target(tmp_path: Path) -> None:
+    vanilla_root = tmp_path / "vanilla"
+
+    vfs = VirtualFilesystem([ContentSource("vanilla", SourceKind.VANILLA, vanilla_root, 0)])
+
+    with pytest.raises(ValueError, match="mod content source"):
+        vfs.plan_mod_directory_emission(
+            "vanilla",
+            ContentPhase.IN_GAME,
+            Path("common") / "buildings",
+        )
