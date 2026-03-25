@@ -29,6 +29,30 @@ They validate:
 - CSV parsing
 - metadata parsing
 
+### CLI workflow tests
+
+These tests should primarily call `eu5miner.cli.main(...)` directly with synthetic temp-path installs and mods.
+
+They validate:
+
+- command exit codes
+- stdout report shape
+- stderr diagnostics for `note:` advisories, `warning:` conflicts, and `error:` failures
+- non-destructive dry-run planning
+- filesystem side effects for apply commands
+- overwrite refusal paths and malformed argument/mapping errors
+
+The CLI test suite should prefer synthetic installs for mod-writing workflows so tests can freely create and overwrite files without touching a real EU5 install.
+
+Real-install CLI coverage should stay narrow and read-only, focused on smoke-testing commands like install inspection, merged file listing, and representative-file analysis.
+
+For mutating CLI commands, prefer a layered strategy:
+
+- parser/helper unit tests for argument normalization and mapping expansion
+- command-level tests via `main(...)` and `capsys`
+- temp-path end-to-end tests that assert the actual written files and metadata
+- only add subprocess-level console-script tests later if packaging behavior itself becomes important
+
 ### Future golden tests
 
 As the CST and writer arrive, the suite should add:

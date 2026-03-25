@@ -81,6 +81,38 @@ def test_plan_mod_update_cli_reports_dry_run_summary(tmp_path: Path, capsys) -> 
     assert captured.err == ""
 
 
+def test_plan_mod_update_cli_accepts_content_root(tmp_path: Path, capsys) -> None:
+    install_root = _make_test_install(tmp_path / "install")
+    mod_root = tmp_path / "my_mod"
+    content_root = tmp_path / "content_root"
+
+    content_file = content_root / "common" / "buildings" / "a.txt"
+    content_file.parent.mkdir(parents=True, exist_ok=True)
+    content_file.write_text("planned\n", encoding="utf-8")
+
+    exit_code = main(
+        [
+            "--install-root",
+            str(install_root),
+            "plan-mod-update",
+            "--mod-root",
+            str(mod_root),
+            "--phase",
+            "in_game",
+            "--subtree",
+            "common/buildings",
+            "--content-root",
+            str(content_root),
+        ]
+    )
+
+    captured = capsys.readouterr()
+
+    assert exit_code == 0
+    assert "intended content outputs: 1" in captured.out
+    assert "create: common/buildings/a.txt" in captured.out
+
+
 def test_plan_mod_update_cli_emits_replace_path_notes(tmp_path: Path, capsys) -> None:
     install_root = _make_test_install(tmp_path / "install")
     mod_root = tmp_path / "my_mod"
@@ -183,6 +215,92 @@ def test_apply_mod_update_cli_materializes_content_and_emits_notes(
     assert "created writes: 2" in captured.out
     assert "Advisories:" in captured.out
     assert "note: Planning metadata update to add replace_path entry:" in captured.err
+
+
+def test_apply_mod_update_cli_accepts_content_root(tmp_path: Path, capsys) -> None:
+    install_root = _make_test_install(tmp_path / "install")
+    mod_root = tmp_path / "my_mod"
+    content_root = tmp_path / "content_root"
+    content_file = content_root / "common" / "buildings" / "a.txt"
+
+    content_file.parent.mkdir(parents=True, exist_ok=True)
+    content_file.write_text("from root\n", encoding="utf-8")
+
+    exit_code = main(
+        [
+            "--install-root",
+            str(install_root),
+            "apply-mod-update",
+            "--mod-root",
+            str(mod_root),
+            "--phase",
+            "in_game",
+            "--subtree",
+            "common/buildings",
+            "--content-root",
+            str(content_root),
+        ]
+    )
+
+    captured = capsys.readouterr()
+    written_file = mod_root / "in_game" / "common" / "buildings" / "a.txt"
+
+    assert exit_code == 0
+    assert written_file.read_text(encoding="utf-8") == "from root\n"
+    assert "Applied mod update: my_mod" in captured.out
+
+
+def test_apply_mod_update_cli_reports_bad_content_mapping(tmp_path: Path, capsys) -> None:
+    install_root = _make_test_install(tmp_path / "install")
+    mod_root = tmp_path / "my_mod"
+
+    exit_code = main(
+        [
+            "--install-root",
+            str(install_root),
+            "apply-mod-update",
+            "--mod-root",
+            str(mod_root),
+            "--phase",
+            "in_game",
+            "--subtree",
+            "common/buildings",
+            "--content-file",
+            "not-a-valid-mapping",
+        ]
+    )
+
+    captured = capsys.readouterr()
+
+    assert exit_code == 2
+    assert "error: Content file mappings must use the form" in captured.err
+
+
+def test_apply_mod_update_cli_requires_some_content_or_intent(tmp_path: Path, capsys) -> None:
+    install_root = _make_test_install(tmp_path / "install")
+    mod_root = tmp_path / "my_mod"
+
+    exit_code = main(
+        [
+            "--install-root",
+            str(install_root),
+            "apply-mod-update",
+            "--mod-root",
+            str(mod_root),
+            "--phase",
+            "in_game",
+            "--subtree",
+            "common/buildings",
+        ]
+    )
+
+    captured = capsys.readouterr()
+
+    assert exit_code == 2
+    assert (
+        "error: At least one --intended-path, --content-file, or --content-root "
+        "entry is required"
+    ) in captured.err
 
 
 def test_apply_mod_update_cli_respects_no_overwrite(tmp_path: Path, capsys) -> None:
