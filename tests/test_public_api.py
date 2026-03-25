@@ -11,6 +11,7 @@ from eu5miner import (
     plan_mod_update,
 )
 from eu5miner.domains import (
+    build_on_action_catalog_document,
     build_country_description_category_usage_document,
     build_linked_location_document,
     parse_country_description_category_document,
@@ -18,6 +19,8 @@ from eu5miner.domains import (
     parse_default_map_document,
     parse_event_document,
     parse_mod_metadata_document,
+    parse_on_action_document,
+    parse_on_action_documentation,
     parse_religion_document,
     parse_script_value_document,
     parse_scripted_list_document,
@@ -45,6 +48,14 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     setup_document = parse_setup_country_document("FRA = { tier = kingdom }\n")
     event_document = parse_event_document("namespace = test\n\ntest.1 = { title = test }\n")
     metadata_document = parse_mod_metadata_document('{"name": "Test Mod"}')
+    on_action_document = parse_on_action_document("on_example = { events = { test.1 } }\n")
+    on_action_documentation = parse_on_action_documentation(
+        "On Action Documentation:\n\n"
+        "--------------------\n\n"
+        "on_example:\n"
+        "From Code: Yes\n"
+        "Expected Scope: country\n"
+    )
     category_document = parse_country_description_category_document("military = {}\n")
     culture_document = parse_culture_document("example = { culture_groups = { alpha } }\n")
     religion_document = parse_religion_document("faith = { group = example tags = { tag } }\n")
@@ -64,6 +75,8 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     assert setup_document.definitions[0].tag == "FRA"
     assert event_document.namespace == "test"
     assert metadata_document.name == "Test Mod"
+    assert on_action_document.names() == ("on_example",)
+    assert on_action_documentation.names() == ("on_example",)
     assert category_document.names() == ("military",)
     assert culture_document.names() == ("example",)
     assert religion_document.names() == ("faith",)
@@ -84,5 +97,6 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     assert definitions_entry is not None
     assert isinstance(definitions_entry.value, SemanticScalar)
     assert definitions_entry.value.text == '"definitions.txt"'
+    assert callable(build_on_action_catalog_document)
     assert callable(build_country_description_category_usage_document)
     assert callable(build_linked_location_document)
