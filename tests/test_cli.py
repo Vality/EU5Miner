@@ -145,6 +145,80 @@ def test_plan_mod_update_cli_emits_shadowing_warnings(tmp_path: Path, capsys) ->
     assert "warning: Intended output common/buildings/a.txt will be shadowed" in captured.err
 
 
+def test_apply_mod_update_cli_materializes_content_and_emits_notes(
+    tmp_path: Path,
+    capsys,
+) -> None:
+    install_root = _make_test_install(tmp_path / "install")
+    mod_root = tmp_path / "my_mod"
+    vanilla_file = install_root / "game" / "in_game" / "common" / "buildings" / "a.txt"
+    content_file = tmp_path / "payload.txt"
+
+    vanilla_file.parent.mkdir(parents=True, exist_ok=True)
+    vanilla_file.write_text("vanilla\n", encoding="utf-8")
+    content_file.write_text("modded\n", encoding="utf-8")
+
+    exit_code = main(
+        [
+            "--install-root",
+            str(install_root),
+            "apply-mod-update",
+            "--mod-root",
+            str(mod_root),
+            "--phase",
+            "in_game",
+            "--subtree",
+            "common/buildings",
+            "--content-file",
+            f"common/buildings/a.txt={content_file}",
+        ]
+    )
+
+    captured = capsys.readouterr()
+    written_file = mod_root / "in_game" / "common" / "buildings" / "a.txt"
+
+    assert exit_code == 0
+    assert written_file.read_text(encoding="utf-8") == "modded\n"
+    assert "Applied mod update: my_mod" in captured.out
+    assert "created writes: 2" in captured.out
+    assert "Advisories:" in captured.out
+    assert "note: Planning metadata update to add replace_path entry:" in captured.err
+
+
+def test_apply_mod_update_cli_respects_no_overwrite(tmp_path: Path, capsys) -> None:
+    install_root = _make_test_install(tmp_path / "install")
+    mod_root = tmp_path / "my_mod"
+    content_file = tmp_path / "payload.txt"
+    target_file = mod_root / "in_game" / "common" / "buildings" / "a.txt"
+
+    target_file.parent.mkdir(parents=True, exist_ok=True)
+    target_file.write_text("old\n", encoding="utf-8")
+    content_file.write_text("new\n", encoding="utf-8")
+
+    exit_code = main(
+        [
+            "--install-root",
+            str(install_root),
+            "apply-mod-update",
+            "--mod-root",
+            str(mod_root),
+            "--phase",
+            "in_game",
+            "--subtree",
+            "common/buildings",
+            "--content-file",
+            f"common/buildings/a.txt={content_file}",
+            "--no-overwrite",
+        ]
+    )
+
+    captured = capsys.readouterr()
+
+    assert exit_code == 1
+    assert "error: Refusing to overwrite existing file:" in captured.err
+    assert target_file.read_text(encoding="utf-8") == "old\n"
+
+
 def _make_test_install(install_root: Path) -> Path:
     game_dir = install_root / "game"
     for phase_name in ("loading_screen", "main_menu", "in_game"):
