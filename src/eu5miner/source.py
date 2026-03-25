@@ -125,6 +125,10 @@ class GameInstall:
             / "common"
             / "scripted_effects"
             / "country_effects.txt",
+            "scripted_modifier_info": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "scripted_modifiers"
+            / "scripted_modifiers.info",
             "script_value_info": self.phase_dir(ContentPhase.IN_GAME)
             / "common"
             / "script_values"

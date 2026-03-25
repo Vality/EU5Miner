@@ -94,6 +94,7 @@ from eu5miner.domains import (
 	parse_country_description_category_document,
 	parse_culture_document,
 	parse_religion_document,
+	parse_scripted_modifier_document,
 	parse_script_value_document,
 	parse_scripted_trigger_document,
 	parse_setup_country_document,
@@ -102,6 +103,7 @@ from eu5miner.domains import (
 category_document = parse_country_description_category_document("military = {}\n")
 culture_document = parse_culture_document("example_culture = { culture_groups = { group_a } }\n")
 religion_document = parse_religion_document("example_faith = { group = abrahamic }\n")
+modifier_document = parse_scripted_modifier_document("my_modifier = { modifier = { add = 1 } }\n")
 script_value_document = parse_script_value_document("minor_stress_gain = 10\n")
 trigger_document = parse_scripted_trigger_document("test_trigger = { always = yes }\n")
 country_document = parse_setup_country_document("FRA = { tier = kingdom }\n")
