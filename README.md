@@ -55,7 +55,47 @@ The project now ships a thin CLI:
 eu5miner inspect-install
 eu5miner list-files --phase in_game --subpath gui --limit 10
 eu5miner analyze-script --representative scripted_trigger
+eu5miner plan-mod-update --install-root C:\EU5 --mod-root C:\mods\my_mod --phase in_game --subtree common/buildings --content-root C:\work\content
+eu5miner apply-mod-update --install-root C:\EU5 --mod-root C:\mods\my_mod --phase in_game --subtree common/buildings --content-root C:\work\content
 ```
+
+The mod workflow commands print a structured report to stdout, `note:` advisories for planned metadata actions such as `replace_path` additions, and `warning:` diagnostics for intended outputs that will still be shadowed by later sources.
+
+## Library
+
+The root package exposes install discovery, VFS primitives, and the public mod workflow facade:
+
+```python
+from pathlib import Path
+
+from eu5miner import ContentPhase, GameInstall, VirtualFilesystem, plan_mod_update
+
+install = GameInstall.discover(r"C:\Program Files (x86)\Steam\steamapps\common\Europa Universalis V")
+vfs = VirtualFilesystem.from_install(install)
+
+merged = vfs.get_merged_file(ContentPhase.IN_GAME, Path("gui") / "agenda_view.gui")
+assert merged is not None
+
+update = plan_mod_update(
+	vfs,
+	"my_mod",
+	ContentPhase.IN_GAME,
+	Path("common") / "buildings",
+	intended_relative_paths=(Path("common") / "buildings" / "a.txt",),
+	content_by_relative_path={Path("common") / "buildings" / "a.txt": "building = {}\n"},
+)
+```
+
+Implemented domain adapters are re-exported from `eu5miner.domains` so callers do not need to import individual domain modules directly:
+
+```python
+from eu5miner.domains import parse_scripted_trigger_document, parse_setup_country_document
+
+trigger_document = parse_scripted_trigger_document("test_trigger = { always = yes }\n")
+country_document = parse_setup_country_document("FRA = { tier = kingdom }\n")
+```
+
+For mod editing workflows, `eu5miner.mods` remains the stable higher-level seam, while the CLI stays a thin wrapper over the same plan/apply/report operations.
 
 ## Testing
 

@@ -125,10 +125,16 @@ Order:
 1. mod metadata and relationships
 2. replace_paths and precedence-aware write planning
 3. mod skeleton creation and targeted emission helpers
+4. filesystem materialization helpers
+5. public mod workflow facade and CLI workflows
 
 ### 10. Library Integration Pass
 
 After the major module-level adapters exist, do a single public API integration pass instead of stabilizing each domain in isolation.
+
+Status:
+
+- in progress
 
 Order:
 
@@ -197,12 +203,9 @@ Order:
 
 The immediate sequence should be:
 
-1. scripted triggers
-2. scripted effects
-3. setup countries
-4. events
-5. missions
-6. situations
+1. finish the active library integration pass around exports, naming, and CLI/README examples
+2. resume unfinished reusable scripted logic starting with script values
+3. continue identity and setup coverage with cultures and religions
 
 ## Current Status
 
@@ -228,9 +231,11 @@ Implemented:
 - targeted emission helpers
 - filesystem materialization helpers
 - public mod update facade
+- dry-run and reporting helpers for the public mod workflow
+- CLI mod workflow commands for plan/apply, advisories, warnings, and explicit file or content-root inputs
 
 Next recommended target:
 
-- dry-run and reporting helpers for the public mod workflow
+- finish the library integration pass, then resume foundational domain coverage with script values
 
 This gives broad value quickly while staying aligned with the current parser architecture.

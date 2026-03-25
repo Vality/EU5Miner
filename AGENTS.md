@@ -48,7 +48,7 @@ The roadmap also includes a later simple GUI viewer for convenient data inspecti
 
 Generated helper outputs such as `script_docs` and `dump_data_types` are useful optional inputs for schema discovery and later validation or viewer work, but they must stay optional. Prefer local debug-mode dumps when available because they match the installed build; use the public `modding-digests` mirror as a fallback reference.
 
-The VFS now also has an initial metadata-aware replace-path layer: source metadata can contribute normalized `replace_path` rules, merged file views hide lower-priority files inside replaced subtrees, write-planning helpers cover both exact files and subtree summaries, an action-oriented layer can classify visible subtree entries as keep, override, or blocked while recommending when a subtree should add its own `replace_path`, an emission planner can include intended file paths that do not exist yet so callers can distinguish create, override, and blocked outcomes, a mod-oriented wrapper can group those file emissions with metadata updates such as adding `replace_path` entries, the first mod skeleton planner can derive required directories, metadata.json handling, and intended content-file paths from that mod emission plan, targeted emission helpers can render deterministic metadata.json and content-file write payloads from those plans, filesystem materialization helpers can create the planned directories and write those explicit metadata/content payloads with controlled overwrite behavior, and a public `eu5miner.mods` facade now wraps that stack into stable plan/apply/report workflow helpers.
+The VFS now also has an initial metadata-aware replace-path layer: source metadata can contribute normalized `replace_path` rules, merged file views hide lower-priority files inside replaced subtrees, write-planning helpers cover both exact files and subtree summaries, an action-oriented layer can classify visible subtree entries as keep, override, or blocked while recommending when a subtree should add its own `replace_path`, an emission planner can include intended file paths that do not exist yet so callers can distinguish create, override, and blocked outcomes, a mod-oriented wrapper can group those file emissions with metadata updates such as adding `replace_path` entries, the first mod skeleton planner can derive required directories, metadata.json handling, and intended content-file paths from that mod emission plan, targeted emission helpers can render deterministic metadata.json and content-file write payloads from those plans, filesystem materialization helpers can create the planned directories and write those explicit metadata/content payloads with controlled overwrite behavior, a public `eu5miner.mods` facade now wraps that stack into stable plan/apply/report workflow helpers, and the CLI now exposes thin mod workflow commands for dry-run planning and application with advisories, warnings, and explicit content inputs.
 
 ## Implemented Domains
 
@@ -70,7 +70,7 @@ The VFS now also has an initial metadata-aware replace-path layer: source metada
 
 Next planned target:
 
-- dry-run and reporting helpers for the public mod workflow
+- finish the active library integration pass, then resume foundational domain coverage with script values
 
 The optional broader validation sweep remains deferred until later; do not fold it into normal fast iteration work.
 

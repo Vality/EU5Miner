@@ -53,6 +53,20 @@ For mutating CLI commands, prefer a layered strategy:
 - temp-path end-to-end tests that assert the actual written files and metadata
 - only add subprocess-level console-script tests later if packaging behavior itself becomes important
 
+### Reusable integration surfaces
+
+The test suite should maintain one or more reusable synthetic integration surfaces that model a small but realistic install and mod stack.
+
+These surfaces should be stable fixtures rather than ad hoc per-test setup when validating higher-level workflows.
+
+They validate:
+
+- coordination between VFS precedence, mod planning, materialization, and CLI wrappers
+- replace_path advisories versus shadowing warnings on a consistent source stack
+- repeated high-level workflows against the same known install/mod relationships as the tool surface grows
+
+The goal is not to freeze large committed fixture mods unless they become clearly valuable. A synthetic but reusable fixture layer is sufficient as long as it stays consistent and readable.
+
 ### Future golden tests
 
 As the CST and writer arrive, the suite should add:
