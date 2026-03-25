@@ -203,7 +203,7 @@ Order:
 
 The immediate sequence should be:
 
-1. continue the economy and production systems phase with goods, prices, and goods demand
+1. continue the economy and production systems phase with production methods and employment systems
 2. continue broader economy helpers after that where needed
 3. keep optional dump-backed validation helpers incremental rather than making them a hard dependency
 
@@ -218,6 +218,7 @@ Implemented:
 - scripted lists and scripted relations
 - on_actions and related hook definitions
 - building types and building categories
+- goods, prices, and goods demand
 - setup countries
 - cultures and culture groups
 - religions and religion groups
@@ -244,6 +245,6 @@ Implemented:
 
 Next recommended target:
 
-- continue economy and production systems with goods, prices, and goods demand
+- continue economy and production systems with production methods and employment systems
 
 This gives broad value quickly while staying aligned with the current parser architecture.
