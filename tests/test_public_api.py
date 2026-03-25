@@ -14,6 +14,8 @@ from eu5miner.domains import (
     build_country_description_category_usage_document,
     build_linked_location_document,
     build_on_action_catalog_document,
+    parse_building_category_document,
+    parse_building_type_document,
     parse_country_description_category_document,
     parse_culture_document,
     parse_default_map_document,
@@ -56,6 +58,12 @@ def test_domains_package_exports_curated_entrypoints() -> None:
         "From Code: Yes\n"
         "Expected Scope: country\n"
     )
+    building_category_document = parse_building_category_document(
+        "trade_category = {}\n"
+    )
+    building_type_document = parse_building_type_document(
+        "granary = { category = infrastructure_category pop_type = peasants }\n"
+    )
     category_document = parse_country_description_category_document("military = {}\n")
     culture_document = parse_culture_document("example = { culture_groups = { alpha } }\n")
     religion_document = parse_religion_document("faith = { group = example tags = { tag } }\n")
@@ -77,6 +85,8 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     assert metadata_document.name == "Test Mod"
     assert on_action_document.names() == ("on_example",)
     assert on_action_documentation.names() == ("on_example",)
+    assert building_category_document.names() == ("trade_category",)
+    assert building_type_document.names() == ("granary",)
     assert category_document.names() == ("military",)
     assert culture_document.names() == ("example",)
     assert religion_document.names() == ("faith",)
