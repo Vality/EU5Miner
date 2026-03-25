@@ -90,6 +90,8 @@ Implemented domain adapters are re-exported from `eu5miner.domains` so callers d
 
 ```python
 from eu5miner.domains import (
+	build_country_description_category_usage_document,
+	parse_country_description_category_document,
 	parse_culture_document,
 	parse_religion_document,
 	parse_script_value_document,
@@ -97,11 +99,17 @@ from eu5miner.domains import (
 	parse_setup_country_document,
 )
 
+category_document = parse_country_description_category_document("military = {}\n")
 culture_document = parse_culture_document("example_culture = { culture_groups = { group_a } }\n")
 religion_document = parse_religion_document("example_faith = { group = abrahamic }\n")
 script_value_document = parse_script_value_document("minor_stress_gain = 10\n")
 trigger_document = parse_scripted_trigger_document("test_trigger = { always = yes }\n")
 country_document = parse_setup_country_document("FRA = { tier = kingdom }\n")
+
+category_usage = build_country_description_category_usage_document(
+	category_document,
+	country_document,
+)
 ```
 
 For mod editing workflows, `eu5miner.mods` remains the stable higher-level seam, while the CLI stays a thin wrapper over the same plan/apply/report operations.

@@ -58,6 +58,7 @@ The VFS now also has an initial metadata-aware replace-path layer: source metada
 - setup countries
 - cultures and culture groups
 - religions and religion groups
+- country description categories and related setup helpers
 - events
 - missions
 - situations
@@ -73,7 +74,7 @@ The VFS now also has an initial metadata-aware replace-path layer: source metada
 
 Next planned target:
 
-- continue identity/setup coverage with country description categories and related helpers
+- resume unfinished reusable scripted logic with scripted modifiers
 
 The optional broader validation sweep remains deferred until later; do not fold it into normal fast iteration work.
 
@@ -100,6 +101,8 @@ Important representative files:
 - `game/in_game/common/cultures/british.txt`
 - `game/in_game/common/religions/christian.txt`
 - `game/in_game/common/religions/buddhist.txt`
+- `game/in_game/common/country_description_categories/readme.txt`
+- `game/in_game/common/country_description_categories/categories.txt`
 - `game/in_game/setup/countries/00_readme.info`
 - `game/in_game/setup/countries/france.txt`
 - `game/in_game/gui/agenda_view.gui`
