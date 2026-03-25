@@ -92,6 +92,8 @@ Implemented domain adapters are re-exported from `eu5miner.domains` so callers d
 from eu5miner.domains import (
 	build_on_action_catalog_document,
 	build_country_description_category_usage_document,
+	parse_building_category_document,
+	parse_building_type_document,
 	parse_on_action_document,
 	parse_on_action_documentation,
 	parse_country_description_category_document,
@@ -112,6 +114,10 @@ on_action_docs = parse_on_action_documentation(
 	"on_example:\n"
 	"From Code: Yes\n"
 	"Expected Scope: country\n"
+)
+building_category_document = parse_building_category_document("trade_category = {}\n")
+building_type_document = parse_building_type_document(
+	"granary = { category = infrastructure_category pop_type = peasants }\n"
 )
 category_document = parse_country_description_category_document("military = {}\n")
 culture_document = parse_culture_document("example_culture = { culture_groups = { group_a } }\n")
