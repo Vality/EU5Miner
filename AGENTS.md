@@ -46,6 +46,10 @@ Do not push EU5-specific behavior down into the CST or semantic layers unless th
 
 The roadmap also includes a later simple GUI viewer for convenient data inspection in addition to the CLI, but it should be built on top of stable library APIs rather than driving parser or domain design early.
 
+Generated helper outputs such as `script_docs` and `dump_data_types` are useful optional inputs for schema discovery and later validation or viewer work, but they must stay optional. Prefer local debug-mode dumps when available because they match the installed build; use the public `modding-digests` mirror as a fallback reference.
+
+The VFS now also has an initial metadata-aware replace-path layer: source metadata can contribute normalized `replace_path` rules, merged file views hide lower-priority files inside replaced subtrees, and a small write-planning helper reports when a proposed write would be blocked by a higher-priority file or replace-path owner.
+
 ## Implemented Domains
 
 - scripted triggers
@@ -62,10 +66,11 @@ The roadmap also includes a later simple GUI viewer for convenient data inspecti
 - map text files such as `default.map`
 - map CSV helpers such as adjacencies and ports
 - location/setup cross-linking helpers
+- mod metadata and relationships
 
 Next planned target:
 
-- mod metadata and relationships
+- replace_paths and precedence-aware write planning
 
 The optional broader validation sweep remains deferred until later; do not fold it into normal fast iteration work.
 

@@ -114,6 +114,12 @@ Order:
 
 ### 9. Mod Project and Packaging
 
+Notes:
+
+- Generated helper outputs such as `script_docs` and `dump_data_types` are in scope as optional schema and validation inputs for this phase and later UI work, but the library must not depend on them to function.
+- Prefer locally generated dumps when available because they match the exact installed build under analysis.
+- The public `Europa-Universalis-5-Modding-Co-op/modding-digests` mirror is a useful fallback and research source when local debug-mode dumps are unavailable.
+
 Order:
 
 1. mod metadata and relationships
@@ -182,9 +188,10 @@ Implemented:
 - map text files such as `default.map`
 - map CSV helpers such as adjacencies and ports
 - location/setup cross-linking helpers
+- mod metadata and relationships
 
 Next recommended target:
 
-- mod metadata and relationships
+- replace_paths and precedence-aware write planning
 
 This gives broad value quickly while staying aligned with the current parser architecture.

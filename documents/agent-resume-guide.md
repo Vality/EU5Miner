@@ -118,7 +118,8 @@ This phase split is important and should remain a first-class concept in the cod
 - Mods mirror the game structure under `game/`.
 - `.metadata/metadata.json` matters for mod metadata.
 - Database entry modes such as `INJECT:key` and `REPLACE:key` are important future work.
-- Generated helper docs such as `script_docs` and `dump_data_types` are useful if present but cannot be required.
+- Generated helper docs such as `script_docs` and `dump_data_types` are useful if present but cannot be required; prefer local debug-mode dumps when available because they are version-matched to the install, and use the public `modding-digests` mirror as a fallback reference.
+- `replace_path` is now normalized into phase-aware VFS rules so merged file views can hide lower-priority files inside replaced subtrees, and write planning can detect when a higher-priority file or replace-path owner would block visibility.
 - A later simple GUI viewer is planned for convenient read-only data inspection, but it should sit on top of the same mature library and CLI-facing APIs rather than introducing a separate logic path.
 
 ## Current State
@@ -139,6 +140,8 @@ Implemented and green:
 - default.map adapter covering referenced file paths, scalar settings like `equator_y` and `wrap_x`, sound-toll mappings, and large named-location blocks such as volcanoes, earthquakes, sea zones, lakes, impassable mountains, and non-ownable corridors
 - typed CSV helpers for `adjacencies.csv` and `ports.csv`, including integer coordinate parsing and normalization of the trailing marker column in ports rows
 - location/setup cross-linking helpers that merge `definitions.txt`, `10_countries.txt`, and `21_locations.txt` into a per-location index with hierarchy paths, country ownership/control categories, capital references, and optional location setup bodies
+- typed metadata helpers that normalize shared DLC and local mod `.metadata/metadata.json` content, including optional relationship entries and replace-path/tag accessors
+- VFS replace-path support that loads metadata-driven rules from DLC or mod metadata, hides lower-priority files inside replaced trees, and exposes a precedence-aware write-planning helper for exact target paths
 
 Recently validated:
 
@@ -153,7 +156,7 @@ Recently validated:
 
 ## Next Planned Work
 
-The next recommended domain target is `mod metadata and relationships`.
+The next recommended domain target is `replace_paths and precedence-aware write planning`.
 
 The broader validation sweep is intentionally deferred for later and should stay optional rather than becoming part of the default fast development loop.
 
