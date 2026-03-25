@@ -57,6 +57,7 @@ The VFS now also has an initial metadata-aware replace-path layer: source metada
 - script values
 - scripted modifiers
 - scripted lists and scripted relations
+- on_actions and related hook definitions
 - setup countries
 - cultures and culture groups
 - religions and religion groups
@@ -76,7 +77,7 @@ The VFS now also has an initial metadata-aware replace-path layer: source metada
 
 Next planned target:
 
-- continue reusable scripted logic with on_actions and related hook definitions
+- continue economy and production systems with building types and building categories
 
 The optional broader validation sweep remains deferred until later; do not fold it into normal fast iteration work.
 
@@ -103,6 +104,9 @@ Important representative files:
 - `game/in_game/common/scripted_relations/readme.txt`
 - `game/in_game/common/scripted_relations/alliance.txt`
 - `game/in_game/common/scripted_relations/trade_access.txt`
+- `game/in_game/common/on_action/religion_flavor_pulse.txt`
+- `game/in_game/common/on_action/character_death_pulses.txt`
+- `game/in_game/common/on_action/_hardcoded.txt`
 - `game/in_game/common/script_values/best_capital_for_colony.txt`
 - `game/in_game/common/script_values/eu4_conversions.txt`
 - `game/in_game/common/cultures/00_cultures.info`

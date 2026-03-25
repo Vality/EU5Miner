@@ -203,9 +203,9 @@ Order:
 
 The immediate sequence should be:
 
-1. finish the active library integration pass around exports, naming, and CLI/README examples
-2. continue the remaining unfinished reusable scripted logic families with on_actions and related hook definitions
-3. continue broader setup/helper coverage after that where needed
+1. begin the economy and production systems phase with building types and building categories
+2. continue broader economy helpers after that where needed
+3. keep optional dump-backed validation helpers incremental rather than making them a hard dependency
 
 ## Current Status
 
@@ -216,6 +216,7 @@ Implemented:
 - script values
 - scripted modifiers
 - scripted lists and scripted relations
+- on_actions and related hook definitions
 - setup countries
 - cultures and culture groups
 - religions and religion groups
@@ -242,6 +243,6 @@ Implemented:
 
 Next recommended target:
 
-- continue reusable scripted logic with on_actions and related hook definitions
+- continue economy and production systems with building types and building categories
 
 This gives broad value quickly while staying aligned with the current parser architecture.

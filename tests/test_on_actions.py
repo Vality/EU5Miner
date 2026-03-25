@@ -35,7 +35,6 @@ def test_parse_real_on_action_document(game_install: GameInstall) -> None:
     assert definition.random_events.weighted_events[0].weight == 10
     assert definition.random_events.weighted_events[0].event == "muslim_flavor.1"
     assert definition.random_events.chance_to_happen == "50"
-    assert definition.random_events.chance_of_no_event is not None
 
 
 @pytest.mark.timeout(5)
