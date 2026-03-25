@@ -20,7 +20,9 @@ from eu5miner.domains import (
     parse_mod_metadata_document,
     parse_religion_document,
     parse_script_value_document,
+    parse_scripted_list_document,
     parse_scripted_modifier_document,
+    parse_scripted_relation_document,
     parse_scripted_trigger_document,
     parse_setup_country_document,
 )
@@ -46,8 +48,14 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     category_document = parse_country_description_category_document("military = {}\n")
     culture_document = parse_culture_document("example = { culture_groups = { alpha } }\n")
     religion_document = parse_religion_document("faith = { group = example tags = { tag } }\n")
+    list_document = parse_scripted_list_document(
+        "adult = { base = character conditions = { is_adult = yes } }\n"
+    )
     modifier_document = parse_scripted_modifier_document(
         "my_modifier = { modifier = { add = 1 } }\n"
+    )
+    relation_document = parse_scripted_relation_document(
+        "my_relation = { type = diplomacy relation_type = mutual }\n"
     )
     script_value_document = parse_script_value_document("my_value = { value = 5 }\n")
     default_map_document = parse_default_map_document("definitions = \"definitions.txt\"\n")
@@ -59,7 +67,9 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     assert category_document.names() == ("military",)
     assert culture_document.names() == ("example",)
     assert religion_document.names() == ("faith",)
+    assert list_document.names() == ("adult",)
     assert modifier_document.names() == ("my_modifier",)
+    assert relation_document.names() == ("my_relation",)
     assert script_value_document.names() == ("my_value",)
     assert default_map_document.referenced_files.as_dict() == {
         "provinces": None,

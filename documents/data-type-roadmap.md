@@ -204,7 +204,7 @@ Order:
 The immediate sequence should be:
 
 1. finish the active library integration pass around exports, naming, and CLI/README examples
-2. continue the remaining unfinished reusable scripted logic families with scripted lists and scripted relations
+2. continue the remaining unfinished reusable scripted logic families with on_actions and related hook definitions
 3. continue broader setup/helper coverage after that where needed
 
 ## Current Status
@@ -215,6 +215,7 @@ Implemented:
 - scripted effects
 - script values
 - scripted modifiers
+- scripted lists and scripted relations
 - setup countries
 - cultures and culture groups
 - religions and religion groups
@@ -241,6 +242,6 @@ Implemented:
 
 Next recommended target:
 
-- continue reusable scripted logic with scripted lists and scripted relations
+- continue reusable scripted logic with on_actions and related hook definitions
 
 This gives broad value quickly while staying aligned with the current parser architecture.

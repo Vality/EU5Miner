@@ -136,10 +136,20 @@ from eu5miner.domains.scripted_effects import (
 	ScriptedEffectDocument,
 	parse_scripted_effect_document,
 )
+from eu5miner.domains.scripted_lists import (
+	ScriptedListDefinition,
+	ScriptedListDocument,
+	parse_scripted_list_document,
+)
 from eu5miner.domains.scripted_modifiers import (
 	ScriptedModifierDefinition,
 	ScriptedModifierDocument,
 	parse_scripted_modifier_document,
+)
+from eu5miner.domains.scripted_relations import (
+	ScriptedRelationDefinition,
+	ScriptedRelationDocument,
+	parse_scripted_relation_document,
 )
 from eu5miner.domains.scripted_triggers import (
 	ScriptedTriggerDefinition,
@@ -224,6 +234,10 @@ __all__ = [
     "ScriptedEffectDocument",
 	"ScriptedModifierDefinition",
 	"ScriptedModifierDocument",
+	"ScriptedListDefinition",
+	"ScriptedListDocument",
+	"ScriptedRelationDefinition",
+	"ScriptedRelationDocument",
 	"ScriptValueDefinition",
 	"ScriptValueDocument",
     "ScriptedTriggerDefinition",
@@ -264,7 +278,9 @@ __all__ = [
     "parse_mod_metadata_document",
 	"parse_religion_document",
     "parse_scripted_effect_document",
+	"parse_scripted_list_document",
 	"parse_scripted_modifier_document",
+	"parse_scripted_relation_document",
 	"parse_script_value_document",
     "parse_scripted_trigger_document",
     "parse_setup_country_document",
