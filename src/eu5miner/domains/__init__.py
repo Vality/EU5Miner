@@ -1,5 +1,20 @@
 """Curated public exports for implemented domain adapters and helpers."""
 
+from eu5miner.domains.country_description_categories import (
+	CountryDescriptionAssignment,
+	CountryDescriptionCategoryDefinition,
+	CountryDescriptionCategoryDocument,
+	CountryDescriptionCategoryUsage,
+	CountryDescriptionCategoryUsageDocument,
+	build_country_description_category_usage_document,
+	parse_country_description_category_document,
+)
+from eu5miner.domains.cultures import (
+	CultureDefinition,
+	CultureDocument,
+	CultureOpinion,
+	parse_culture_document,
+)
 from eu5miner.domains.disasters import (
 	DisasterDefinition,
 	DisasterDocument,
@@ -105,6 +120,12 @@ from eu5miner.domains.mod_project import (
 	plan_mod_skeleton,
 	plan_targeted_mod_emission,
 )
+from eu5miner.domains.religions import (
+	ReligionDefinition,
+	ReligionDocument,
+	ReligionOpinion,
+	parse_religion_document,
+)
 from eu5miner.domains.script_values import (
 	ScriptValueDefinition,
 	ScriptValueDocument,
@@ -135,6 +156,14 @@ __all__ = [
     "CountryLocationDefinition",
     "CountryLocationDocument",
     "CountryLocationGroup",
+	"CountryDescriptionAssignment",
+	"CountryDescriptionCategoryDefinition",
+	"CountryDescriptionCategoryDocument",
+	"CountryDescriptionCategoryUsage",
+	"CountryDescriptionCategoryUsageDocument",
+	"CultureDefinition",
+	"CultureDocument",
+	"CultureOpinion",
     "CustomizableLocalizationDefinition",
     "CustomizableLocalizationDocument",
     "CustomizableLocalizationText",
@@ -183,6 +212,9 @@ __all__ = [
     "ModSkeletonPlan",
     "PhaseLocalizationSource",
     "PlannedFileWrite",
+	"ReligionDefinition",
+	"ReligionDocument",
+	"ReligionOpinion",
     "ScriptedEffectDefinition",
     "ScriptedEffectDocument",
 	"ScriptValueDefinition",
@@ -197,6 +229,7 @@ __all__ = [
     "TargetedModEmission",
     "TriggerLocalizationDefinition",
     "TriggerLocalizationDocument",
+	"build_country_description_category_usage_document",
     "build_linked_location_document",
     "build_localization_bundle",
     "build_phase_localization_bundle",
@@ -207,6 +240,8 @@ __all__ = [
     "iter_phase_localization_sources",
     "materialize_targeted_mod_emission",
     "parse_country_location_document",
+	"parse_country_description_category_document",
+	"parse_culture_document",
     "parse_customizable_localization_document",
     "parse_default_map_document",
     "parse_disaster_document",
@@ -220,6 +255,7 @@ __all__ = [
     "parse_map_ports_document",
     "parse_mission_document",
     "parse_mod_metadata_document",
+	"parse_religion_document",
     "parse_scripted_effect_document",
 	"parse_script_value_document",
     "parse_scripted_trigger_document",

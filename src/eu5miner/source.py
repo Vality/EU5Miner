@@ -137,6 +137,30 @@ class GameInstall:
             / "common"
             / "script_values"
             / "eu4_conversions.txt",
+            "culture_info": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "cultures"
+            / "00_cultures.info",
+            "culture_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "cultures"
+            / "british.txt",
+            "religion_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "religions"
+            / "christian.txt",
+            "religion_secondary_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "religions"
+            / "buddhist.txt",
+            "country_description_category_readme": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "country_description_categories"
+            / "readme.txt",
+            "country_description_category_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "country_description_categories"
+            / "categories.txt",
             "setup_country_readme": self.phase_dir(ContentPhase.IN_GAME)
             / "setup"
             / "countries"

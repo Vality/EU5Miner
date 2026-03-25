@@ -90,11 +90,15 @@ Implemented domain adapters are re-exported from `eu5miner.domains` so callers d
 
 ```python
 from eu5miner.domains import (
+	parse_culture_document,
+	parse_religion_document,
 	parse_script_value_document,
 	parse_scripted_trigger_document,
 	parse_setup_country_document,
 )
 
+culture_document = parse_culture_document("example_culture = { culture_groups = { group_a } }\n")
+religion_document = parse_religion_document("example_faith = { group = abrahamic }\n")
 script_value_document = parse_script_value_document("minor_stress_gain = 10\n")
 trigger_document = parse_scripted_trigger_document("test_trigger = { always = yes }\n")
 country_document = parse_setup_country_document("FRA = { tier = kingdom }\n")
