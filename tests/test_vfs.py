@@ -6,6 +6,7 @@ from eu5miner.source import ContentPhase, GameInstall
 from eu5miner.vfs import (
     ContentSource,
     DirectoryWriteActionKind,
+    EmissionEntryActionKind,
     ReplacePathRule,
     SourceKind,
     SubtreeWriteActionKind,
@@ -368,3 +369,78 @@ def test_vfs_directory_action_plan_marks_higher_priority_overlap_as_blocked(
     assert len(action_plan.entry_actions) == 1
     assert action_plan.entry_actions[0].kind is DirectoryWriteActionKind.BLOCKED
     assert len(action_plan.blocked_entries) == 1
+
+
+def test_vfs_directory_emission_plan_marks_new_intended_file_as_create(tmp_path: Path) -> None:
+    mod_root = tmp_path / "my_mod"
+
+    vfs = VirtualFilesystem([ContentSource("my_mod", SourceKind.MOD, mod_root, 100)])
+
+    emission_plan = vfs.plan_directory_emission(
+        "my_mod",
+        ContentPhase.IN_GAME,
+        Path("common") / "buildings",
+        intended_relative_paths=(Path("common") / "buildings" / "new.txt",),
+    )
+
+    assert len(emission_plan.emissions) == 1
+    assert emission_plan.emissions[0].kind is EmissionEntryActionKind.CREATE
+    assert emission_plan.emissions[0].intended is True
+    assert emission_plan.create_entries == (emission_plan.emissions[0],)
+
+
+def test_vfs_directory_emission_plan_marks_intended_existing_file_as_override(
+    tmp_path: Path,
+) -> None:
+    vanilla_root = tmp_path / "vanilla"
+    mod_root = tmp_path / "my_mod"
+
+    _write_file(vanilla_root / "in_game" / "common" / "buildings" / "a.txt", "vanilla a")
+
+    vfs = VirtualFilesystem(
+        [
+            ContentSource("vanilla", SourceKind.VANILLA, vanilla_root, 0),
+            ContentSource("my_mod", SourceKind.MOD, mod_root, 100),
+        ]
+    )
+
+    emission_plan = vfs.plan_directory_emission(
+        "my_mod",
+        ContentPhase.IN_GAME,
+        Path("common") / "buildings",
+        intended_relative_paths=(Path("common") / "buildings" / "a.txt",),
+    )
+
+    assert len(emission_plan.emissions) == 1
+    assert emission_plan.emissions[0].kind is EmissionEntryActionKind.OVERRIDE
+    assert emission_plan.emissions[0].intended is True
+    assert len(emission_plan.subtree_actions) == 1
+    assert emission_plan.subtree_actions[0].kind is SubtreeWriteActionKind.ADD_REPLACE_PATH
+
+
+def test_vfs_directory_emission_plan_marks_intended_file_as_blocked_when_late_mod_wins(
+    tmp_path: Path,
+) -> None:
+    mod_root = tmp_path / "my_mod"
+    late_mod_root = tmp_path / "late_mod"
+
+    _write_file(late_mod_root / "in_game" / "common" / "buildings" / "a.txt", "late mod a")
+
+    vfs = VirtualFilesystem(
+        [
+            ContentSource("my_mod", SourceKind.MOD, mod_root, 100),
+            ContentSource("late_mod", SourceKind.MOD, late_mod_root, 110),
+        ]
+    )
+
+    emission_plan = vfs.plan_directory_emission(
+        "my_mod",
+        ContentPhase.IN_GAME,
+        Path("common") / "buildings",
+        intended_relative_paths=(Path("common") / "buildings" / "a.txt",),
+    )
+
+    assert len(emission_plan.emissions) == 1
+    assert emission_plan.emissions[0].kind is EmissionEntryActionKind.BLOCKED
+    assert emission_plan.emissions[0].intended is True
+    assert len(emission_plan.blocked_entries) == 1

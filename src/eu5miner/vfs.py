@@ -124,6 +124,15 @@ class SubtreeWriteActionKind(StrEnum):
     ADD_REPLACE_PATH = "add_replace_path"
 
 
+class EmissionEntryActionKind(StrEnum):
+    """Recommended action for one emitted file path."""
+
+    KEEP = "keep"
+    OVERRIDE = "override"
+    BLOCKED = "blocked"
+    CREATE = "create"
+
+
 @dataclass(frozen=True)
 class DirectoryWriteAction:
     """Concrete recommendation for one visible file beneath a subtree."""
@@ -218,6 +227,45 @@ class DirectoryWriteActionPlan:
             action
             for action in self.entry_actions
             if action.kind is DirectoryWriteActionKind.BLOCKED
+        )
+
+
+@dataclass(frozen=True)
+class PlannedFileEmission:
+    """Concrete emission recommendation for one file path."""
+
+    relative_path: Path
+    kind: EmissionEntryActionKind
+    intended: bool
+    current_visible_file: MergedFile | None
+    write_plan: WritePlan
+
+
+@dataclass(frozen=True)
+class DirectoryEmissionPlan:
+    """Emission-oriented view that includes intended new file paths."""
+
+    target_source: ContentSource
+    phase: ContentPhase
+    relative_root: Path
+    absolute_root: Path
+    subtree_actions: tuple[SubtreeWriteAction, ...]
+    emissions: tuple[PlannedFileEmission, ...]
+
+    @property
+    def blocked_entries(self) -> tuple[PlannedFileEmission, ...]:
+        return tuple(
+            emission
+            for emission in self.emissions
+            if emission.kind is EmissionEntryActionKind.BLOCKED
+        )
+
+    @property
+    def create_entries(self) -> tuple[PlannedFileEmission, ...]:
+        return tuple(
+            emission
+            for emission in self.emissions
+            if emission.kind is EmissionEntryActionKind.CREATE
         )
 
 
@@ -429,6 +477,54 @@ class VirtualFilesystem:
             target_replace_rule=_first_matching_replace_rule(target_source, phase, normalized_root),
         )
 
+    def plan_directory_emission(
+        self,
+        target_source_name: str,
+        phase: ContentPhase,
+        relative_root: str | Path,
+        intended_relative_paths: tuple[str | Path, ...] = (),
+    ) -> DirectoryEmissionPlan:
+        directory_plan = self.plan_directory_write(target_source_name, phase, relative_root)
+        action_plan = directory_plan.to_action_plan()
+        target_source = directory_plan.target_source
+
+        emission_paths: set[Path] = {action.relative_path for action in action_plan.entry_actions}
+        normalized_intended_paths: set[Path] = set()
+        for intended_path in intended_relative_paths:
+            normalized_path = Path(intended_path)
+            if not _path_is_within_root(normalized_path, directory_plan.relative_root):
+                raise ValueError(
+                    "Intended path "
+                    f"{normalized_path} is outside subtree "
+                    f"{directory_plan.relative_root}"
+                )
+            emission_paths.add(normalized_path)
+            normalized_intended_paths.add(normalized_path)
+
+        emissions: list[PlannedFileEmission] = []
+        for relative_path in sorted(emission_paths):
+            write_plan = self.plan_write(target_source_name, phase, relative_path)
+            current_visible_file = write_plan.current_visible_file
+            intended = relative_path in normalized_intended_paths
+            emissions.append(
+                PlannedFileEmission(
+                    relative_path=relative_path,
+                    kind=_classify_emission_kind(write_plan, intended),
+                    intended=intended,
+                    current_visible_file=current_visible_file,
+                    write_plan=write_plan,
+                )
+            )
+
+        return DirectoryEmissionPlan(
+            target_source=target_source,
+            phase=phase,
+            relative_root=directory_plan.relative_root,
+            absolute_root=directory_plan.absolute_root,
+            subtree_actions=action_plan.subtree_actions,
+            emissions=tuple(emissions),
+        )
+
     def _is_hidden_by_later_replace_path(self, source_file: SourceFile) -> bool:
         for source in self._sources:
             if source.priority <= source_file.source.priority:
@@ -525,3 +621,17 @@ def _classify_directory_entry_action(entry: DirectoryWritePlanEntry) -> Director
         current_visible_file=entry.current_visible_file,
         write_plan=entry.write_plan,
     )
+
+
+def _classify_emission_kind(write_plan: WritePlan, intended: bool) -> EmissionEntryActionKind:
+    if not write_plan.is_visible:
+        return EmissionEntryActionKind.BLOCKED
+    if write_plan.current_visible_file is None:
+        return EmissionEntryActionKind.CREATE if intended else EmissionEntryActionKind.KEEP
+    if write_plan.current_visible_file.winner.source.name == write_plan.target_source.name:
+        return EmissionEntryActionKind.KEEP
+    return EmissionEntryActionKind.OVERRIDE
+
+
+def _path_is_within_root(path: Path, root: Path) -> bool:
+    return path == root or root in path.parents
