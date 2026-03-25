@@ -129,6 +129,26 @@ class GameInstall:
             / "common"
             / "scripted_modifiers"
             / "scripted_modifiers.info",
+            "scripted_list_info": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "scripted_lists"
+            / "scripted_lists.info",
+            "scripted_list_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "scripted_lists"
+            / "country_lists.txt",
+            "scripted_relation_readme": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "scripted_relations"
+            / "readme.txt",
+            "scripted_relation_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "scripted_relations"
+            / "alliance.txt",
+            "scripted_relation_secondary_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "scripted_relations"
+            / "trade_access.txt",
             "script_value_info": self.phase_dir(ContentPhase.IN_GAME)
             / "common"
             / "script_values"
