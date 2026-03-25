@@ -26,7 +26,7 @@ The core install model should expose:
 
 This layer should eventually generalize to workshop mods, local mods, and overlay resolution.
 
-The virtual filesystem layer now also needs to carry metadata-derived precedence rules such as `replace_path`, because source ordering alone is not enough to model subtree replacement correctly. That same precedence model should drive future write planning so edit targets can be evaluated against higher-priority exact-file and replace-path blockers.
+The virtual filesystem layer now also needs to carry metadata-derived precedence rules such as `replace_path`, because source ordering alone is not enough to model subtree replacement correctly. That same precedence model should drive write planning at both exact-file and subtree levels so edit targets can be evaluated against higher-priority exact-file and replace-path blockers, so callers can tell when full subtree ownership would require a new `replace_path`, and so higher-level tools can derive concrete recommendations such as keep, override, blocked, or add-replace-path.
 
 ## Extensibility Principles
 
