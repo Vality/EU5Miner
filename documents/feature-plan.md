@@ -60,11 +60,13 @@ Provide a minimal command-line layer that exposes stable inspection workflows wi
 - `inspect-install` style command for showing the discovered install and phase roots.
 - `list-files` style command for phase-aware file listing from the merged VFS.
 - `analyze-script` style command for running the initial parser diagnostics.
+- mod workflow commands that stay thin wrappers around the public plan/apply facade.
 
 ### Testing
 
 - Command smoke tests on synthetic inputs.
 - Real-install smoke test for install inspection when EU5 is available.
+- Temp-path end-to-end tests for mod workflow commands, including stdout summaries, stderr diagnostics, and real written files.
 
 ## Execution Notes
 

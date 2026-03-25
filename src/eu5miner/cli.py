@@ -135,9 +135,18 @@ def build_parser() -> argparse.ArgumentParser:
     plan_parser.add_argument(
         "--intended-path",
         action="append",
-        required=True,
         default=[],
         help="Relative file path to emit beneath the chosen phase; repeat for multiple outputs.",
+    )
+    plan_parser.add_argument(
+        "--content-root",
+        action="append",
+        type=Path,
+        default=[],
+        help=(
+            "Recursively include all files under a content root using their "
+            "paths relative to that root."
+        ),
     )
 
     apply_parser = subparsers.add_parser(
@@ -187,6 +196,16 @@ def build_parser() -> argparse.ArgumentParser:
         help=(
             "Map one emitted relative path to a source file using "
             "relative/path=source-file.txt; repeat for multiple files."
+        ),
+    )
+    apply_parser.add_argument(
+        "--content-root",
+        action="append",
+        type=Path,
+        default=[],
+        help=(
+            "Recursively include all files under a content root using their "
+            "paths relative to that root."
         ),
     )
     apply_parser.add_argument(
@@ -260,7 +279,11 @@ def _run_analyze_script(args: argparse.Namespace) -> int:
 
 
 def _run_plan_mod_update(args: argparse.Namespace) -> int:
-    update = _plan_cli_mod_update(args)
+    try:
+        update = _plan_cli_mod_update(args)
+    except (FileNotFoundError, KeyError, ValueError) as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 2
 
     print(format_mod_update_report(update))
     _emit_update_diagnostics(update)
@@ -269,7 +292,11 @@ def _run_plan_mod_update(args: argparse.Namespace) -> int:
 
 
 def _run_apply_mod_update(args: argparse.Namespace) -> int:
-    update = _plan_cli_mod_update(args)
+    try:
+        update = _plan_cli_mod_update(args)
+    except (FileNotFoundError, KeyError, ValueError) as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 2
     try:
         applied_update = apply_mod_update(update, overwrite=not args.no_overwrite)
     except FileExistsError as exc:
@@ -286,8 +313,14 @@ def _plan_cli_mod_update(args: argparse.Namespace) -> PlannedModUpdate:
     mod_roots = [args.mod_root, *args.later_mod_root]
     vfs = VirtualFilesystem.from_install(install, mod_roots=mod_roots)
     content_mapping = _parse_content_file_mappings(getattr(args, "content_file", []))
+    content_mapping.update(_collect_content_root_files(args.content_root))
     intended_paths = tuple(Path(path) for path in args.intended_path)
     content_paths = tuple(content_mapping)
+
+    if not intended_paths and not content_paths:
+        raise ValueError(
+            "At least one --intended-path, --content-file, or --content-root entry is required"
+        )
 
     return plan_mod_update(
         vfs,
@@ -319,11 +352,28 @@ def _parse_content_file_mappings(values: list[str]) -> dict[Path, Path]:
     return mappings
 
 
+def _collect_content_root_files(content_roots: list[Path]) -> dict[Path, Path]:
+    mappings: dict[Path, Path] = {}
+    for root in content_roots:
+        if not root.exists():
+            raise FileNotFoundError(f"Content root does not exist: {root}")
+        if not root.is_dir():
+            raise ValueError(f"Content root is not a directory: {root}")
+        for source_path in sorted(path for path in root.rglob("*") if path.is_file()):
+            relative_path = source_path.relative_to(root)
+            mappings[relative_path] = source_path
+    return mappings
+
+
 def _read_content_mapping(
     content_files: dict[Path, Path],
 ) -> Mapping[str | Path, str] | None:
     if not content_files:
         return None
+    missing_sources = [path for path in content_files.values() if not path.exists()]
+    if missing_sources:
+        missing_text = ", ".join(str(path) for path in missing_sources)
+        raise FileNotFoundError(f"Content source file is missing: {missing_text}")
     return {
         relative_path: source_path.read_text(encoding="utf-8", errors="replace")
         for relative_path, source_path in content_files.items()
