@@ -227,9 +227,10 @@ Implemented:
 - initial mod skeleton planning
 - targeted emission helpers
 - filesystem materialization helpers
+- public mod update facade
 
 Next recommended target:
 
-- library integration pass
+- dry-run and reporting helpers for the public mod workflow
 
 This gives broad value quickly while staying aligned with the current parser architecture.
