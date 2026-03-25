@@ -20,9 +20,13 @@ from eu5miner.domains import (
     parse_culture_document,
     parse_default_map_document,
     parse_event_document,
+    parse_goods_demand_category_document,
+    parse_goods_demand_document,
+    parse_goods_document,
     parse_mod_metadata_document,
     parse_on_action_document,
     parse_on_action_documentation,
+    parse_price_document,
     parse_religion_document,
     parse_script_value_document,
     parse_scripted_list_document,
@@ -64,6 +68,15 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     building_type_document = parse_building_type_document(
         "granary = { category = infrastructure_category pop_type = peasants }\n"
     )
+    goods_document = parse_goods_document(
+        "iron = { method = mining category = raw_material }\n"
+    )
+    goods_demand_category_document = parse_goods_demand_category_document(
+        "building_construction = { display = integer }\n"
+    )
+    goods_demand_document = parse_goods_demand_document(
+        "sample_demand = { iron = 0.5 category = special_demands }\n"
+    )
     category_document = parse_country_description_category_document("military = {}\n")
     culture_document = parse_culture_document("example = { culture_groups = { alpha } }\n")
     religion_document = parse_religion_document("faith = { group = example tags = { tag } }\n")
@@ -76,6 +89,7 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     relation_document = parse_scripted_relation_document(
         "my_relation = { type = diplomacy relation_type = mutual }\n"
     )
+    price_document = parse_price_document("build_road = { gold = 10 }\n")
     script_value_document = parse_script_value_document("my_value = { value = 5 }\n")
     default_map_document = parse_default_map_document("definitions = \"definitions.txt\"\n")
 
@@ -87,8 +101,12 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     assert on_action_documentation.names() == ("on_example",)
     assert building_category_document.names() == ("trade_category",)
     assert building_type_document.names() == ("granary",)
+    assert goods_document.names() == ("iron",)
+    assert goods_demand_category_document.names() == ("building_construction",)
+    assert goods_demand_document.names() == ("sample_demand",)
     assert category_document.names() == ("military",)
     assert culture_document.names() == ("example",)
+    assert price_document.names() == ("build_road",)
     assert religion_document.names() == ("faith",)
     assert list_document.names() == ("adult",)
     assert modifier_document.names() == ("my_modifier",)

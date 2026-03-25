@@ -44,6 +44,24 @@ from eu5miner.domains.frontend_content import (
 	iter_phase_localization_sources,
 	parse_main_menu_scenarios_document,
 )
+from eu5miner.domains.goods import (
+	GoodsAmount,
+	GoodsDefinition,
+	GoodsDocument,
+	parse_goods_document,
+)
+from eu5miner.domains.goods_demand_categories import (
+	GoodsDemandCategoryDefinition,
+	GoodsDemandCategoryDocument,
+	parse_goods_demand_category_document,
+)
+from eu5miner.domains.goods_demands import (
+	GoodsDemandAmount,
+	GoodsDemandDefinition,
+	GoodsDemandDocument,
+	ScriptedGoodsDemand,
+	parse_goods_demand_document,
+)
 from eu5miner.domains.gui import (
 	GuiConstant,
 	GuiDocument,
@@ -144,6 +162,11 @@ from eu5miner.domains.on_actions import (
 	parse_on_action_document,
 	parse_on_action_documentation,
 )
+from eu5miner.domains.prices import (
+	PriceDefinition,
+	PriceDocument,
+	parse_price_document,
+)
 from eu5miner.domains.religions import (
 	ReligionDefinition,
 	ReligionDocument,
@@ -219,6 +242,14 @@ __all__ = [
     "EventDefinition",
     "EventDocument",
     "EventOption",
+	"GoodsAmount",
+	"GoodsDefinition",
+	"GoodsDemandAmount",
+	"GoodsDemandCategoryDefinition",
+	"GoodsDemandCategoryDocument",
+	"GoodsDemandDefinition",
+	"GoodsDemandDocument",
+	"GoodsDocument",
     "GuiConstant",
     "GuiDocument",
     "GuiRootDefinition",
@@ -264,9 +295,12 @@ __all__ = [
 	"OnActionReference",
     "PhaseLocalizationSource",
     "PlannedFileWrite",
+	"PriceDefinition",
+	"PriceDocument",
 	"ReligionDefinition",
 	"ReligionDocument",
 	"ReligionOpinion",
+	"ScriptedGoodsDemand",
     "ScriptedEffectDefinition",
     "ScriptedEffectDocument",
 	"ScriptedModifierDefinition",
@@ -308,6 +342,9 @@ __all__ = [
     "parse_disaster_document",
     "parse_effect_localization_document",
     "parse_event_document",
+	"parse_goods_demand_category_document",
+	"parse_goods_demand_document",
+	"parse_goods_document",
     "parse_gui_document",
     "parse_location_hierarchy_document",
     "parse_location_setup_document",
@@ -318,6 +355,7 @@ __all__ = [
     "parse_mod_metadata_document",
 	"parse_on_action_document",
 	"parse_on_action_documentation",
+    "parse_price_document",
 	"parse_religion_document",
     "parse_scripted_effect_document",
 	"parse_scripted_list_document",
