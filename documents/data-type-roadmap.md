@@ -204,8 +204,8 @@ Order:
 The immediate sequence should be:
 
 1. finish the active library integration pass around exports, naming, and CLI/README examples
-2. continue identity and setup coverage with country description categories and related setup helpers
-3. resume the remaining unfinished reusable scripted logic families starting with scripted modifiers
+2. resume the remaining unfinished reusable scripted logic families starting with scripted modifiers
+3. continue broader setup/helper coverage after that where needed
 
 ## Current Status
 
@@ -217,6 +217,7 @@ Implemented:
 - setup countries
 - cultures and culture groups
 - religions and religion groups
+- country description categories and related setup helpers
 - events
 - missions
 - situations
@@ -239,6 +240,6 @@ Implemented:
 
 Next recommended target:
 
-- continue identity/setup coverage with country description categories and related setup helpers
+- resume unfinished reusable scripted logic with scripted modifiers
 
 This gives broad value quickly while staying aligned with the current parser architecture.

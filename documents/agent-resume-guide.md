@@ -146,6 +146,7 @@ Implemented and green:
 - scripted value adapter for top-level named scalar constants and object formulas, with helper accessors for scalar text versus formula bodies and macro-parameter discovery for formula-based values
 - culture adapter for top-level culture definitions with normalized language/color/tags/culture-groups fields, noun/adjective key lists, use-patronym flags, and typed culture-opinion mappings
 - religion adapter for top-level religion definitions with normalized group/color/language/enable fields, typed boolean feature flags, modifier bodies, list-like tags and factions, and typed religion-opinion mappings
+- country-description-category adapter for empty category definitions plus a setup-country usage index that resolves each country tag's `description_category` to a defined or missing category and groups countries by category name
 - VFS replace-path support that loads metadata-driven rules from DLC or mod metadata, hides lower-priority files inside replaced trees, exposes precedence-aware write planning for exact target paths, subtree-level ownership summaries, intended emitted files, and mod-scoped metadata updates, derives concrete recommendations such as create, keep, override, blocked, and add-replace-path, supports a first mod skeleton planner that turns a mod emission plan into required directories, metadata.json handling, intended content files, and separated blocked outputs, includes targeted emission helpers that render metadata.json content and per-file write payloads for intended non-blocked outputs, includes filesystem materialization helpers that apply those explicit planned writes to disk, exposes a public `eu5miner.mods` facade with stable plan/apply/report entrypoints, and now includes CLI plan/apply commands that exercise the same workflow with explicit advisories, warnings, overwrite handling, and recursive content-root inputs
 
 Recently validated:
@@ -160,10 +161,11 @@ Recently validated:
 - `10_countries.txt` is the primary source for country-to-location ownership/control sets and capital locations, while `21_locations.txt` carries location-scoped setup objects and `definitions.txt` supplies the hierarchy path for each location name
 - BOM-prefixed Clausewitz script files now parse consistently through the CST and semantic layers, which matters for shipped scalar-heavy files such as `common/script_values/eu4_conversions.txt`
 - shipped culture files are flat sets of top-level culture objects with stable list-like blocks such as `tags`, `culture_groups`, `noun_keys`, `adjective_keys`, and `opinions`, while shipped religion files are flat top-level religion objects with scalar identity fields plus list-like `tags`, `custom_tags`, `unique_names`, `factions`, and `opinions`
+- shipped `common/country_description_categories/categories.txt` is intentionally minimal, but it pairs directly with `setup/countries/*.txt` through each country's `description_category` field, so the useful abstraction is a cross-linked usage view rather than just a raw parser
 
 ## Next Planned Work
 
-The library integration pass is complete enough to move back into domain coverage. The next recommended domain target is `country description categories and related setup helpers`, followed by the remaining unfinished foundational scripted families such as `scripted modifiers`.
+The library integration pass is complete enough to move back into domain coverage. The next recommended domain target is `scripted modifiers`, followed by the rest of the unfinished foundational scripted families.
 
 The broader validation sweep is intentionally deferred for later and should stay optional rather than becoming part of the default fast development loop.
 
