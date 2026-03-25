@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from eu5miner.domains._parse_helpers import parse_int_or_none
 from eu5miner.formats.map_csv import parse_semicolon_csv
 
 
@@ -83,10 +84,10 @@ def parse_map_adjacencies_document(text: str) -> MapAdjacencyDocument:
                 to_location=row["To"],
                 adjacency_type=row["Type"],
                 through=_none_if_empty(row.get("Through")),
-                start_x=_parse_int_or_none(row.get("start_x")),
-                start_y=_parse_int_or_none(row.get("start_y")),
-                stop_x=_parse_int_or_none(row.get("stop_x")),
-                stop_y=_parse_int_or_none(row.get("stop_y")),
+                start_x=_parse_optional_int(row.get("start_x")),
+                start_y=_parse_optional_int(row.get("start_y")),
+                stop_x=_parse_optional_int(row.get("stop_x")),
+                stop_y=_parse_optional_int(row.get("stop_y")),
                 comment=_none_if_empty(row.get("Comment")),
                 row=row,
             )
@@ -102,8 +103,8 @@ def parse_map_ports_document(text: str) -> MapPortDocument:
             MapPortDefinition(
                 land_province=row["LandProvince"],
                 sea_zone=row["SeaZone"],
-                x=_parse_int_or_none(row.get("x")),
-                y=_parse_int_or_none(row.get("y")),
+                x=_parse_optional_int(row.get("x")),
+                y=_parse_optional_int(row.get("y")),
                 marker=_none_if_empty(row.get("")),
                 row=row,
             )
@@ -112,10 +113,10 @@ def parse_map_ports_document(text: str) -> MapPortDocument:
     )
 
 
-def _parse_int_or_none(value: str | None) -> int | None:
-    if value is None or value == "":
+def _parse_optional_int(value: str | None) -> int | None:
+    if value in (None, ""):
         return None
-    return int(value)
+    return parse_int_or_none(value)
 
 
 def _none_if_empty(value: str | None) -> str | None:

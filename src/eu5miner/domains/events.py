@@ -4,6 +4,11 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from eu5miner.domains._parse_helpers import (
+    entry_object,
+    entry_scalar_text,
+    parse_bool_or_none,
+)
 from eu5miner.formats.semantic import (
     SemanticDocument,
     SemanticEntry,
@@ -90,7 +95,7 @@ class EventDocument:
 def parse_event_document(text: str) -> EventDocument:
     semantic_document = parse_semantic_document(text)
     namespace = semantic_document.first_entry("namespace")
-    namespace_text = _scalar_value(namespace)
+    namespace_text = entry_scalar_text(namespace)
     definitions: list[EventDefinition] = []
 
     for entry in semantic_document.entries:
@@ -129,21 +134,21 @@ def _parse_event_definition(
         event_number=event_number,
         body=entry.value,
         event_type=entry.value.get_scalar("type"),
-        title=_scalar_value(title_entry),
-        title_object=_object_value(title_entry),
-        desc=_scalar_value(desc_entry),
-        desc_object=_object_value(desc_entry),
-        historical_info=_scalar_value(historical_info_entry),
-        historical_info_object=_object_value(historical_info_entry),
+        title=entry_scalar_text(title_entry),
+        title_object=entry_object(title_entry),
+        desc=entry_scalar_text(desc_entry),
+        desc_object=entry_object(desc_entry),
+        historical_info=entry_scalar_text(historical_info_entry),
+        historical_info_object=entry_object(historical_info_entry),
         image=entry.value.get_scalar("image"),
         category=entry.value.get_scalar("category"),
         outcome=entry.value.get_scalar("outcome"),
-        major=_parse_bool_or_none(entry.value.get_scalar("major")),
-        hidden=_parse_bool_or_none(entry.value.get_scalar("hidden")),
-        fire_only_once=_parse_bool_or_none(entry.value.get_scalar("fire_only_once")),
-        interface_lock=_parse_bool_or_none(entry.value.get_scalar("interface_lock")),
-        orphan=_parse_bool_or_none(entry.value.get_scalar("orphan")),
-        hide_portraits=_parse_bool_or_none(entry.value.get_scalar("hide_portraits")),
+        major=parse_bool_or_none(entry.value.get_scalar("major")),
+        hidden=parse_bool_or_none(entry.value.get_scalar("hidden")),
+        fire_only_once=parse_bool_or_none(entry.value.get_scalar("fire_only_once")),
+        interface_lock=parse_bool_or_none(entry.value.get_scalar("interface_lock")),
+        orphan=parse_bool_or_none(entry.value.get_scalar("orphan")),
+        hide_portraits=parse_bool_or_none(entry.value.get_scalar("hide_portraits")),
         trigger=entry.value.get_object("trigger"),
         major_trigger=entry.value.get_object("major_trigger"),
         immediate=entry.value.get_object("immediate"),
@@ -167,42 +172,18 @@ def _parse_event_option(entry: SemanticEntry) -> EventOption:
         hidden_trigger=entry.value.get_object("hidden_trigger"),
         ai_chance=entry.value.get_object("ai_chance"),
         ai_will_select=entry.value.get_object("ai_will_select"),
-        historical_option=_parse_bool_or_none(entry.value.get_scalar("historical_option")),
-        fallback=_parse_bool_or_none(entry.value.get_scalar("fallback")),
-        exclusive=_parse_bool_or_none(entry.value.get_scalar("exclusive")),
-        original_recipient_only=_parse_bool_or_none(
+        historical_option=parse_bool_or_none(entry.value.get_scalar("historical_option")),
+        fallback=parse_bool_or_none(entry.value.get_scalar("fallback")),
+        exclusive=parse_bool_or_none(entry.value.get_scalar("exclusive")),
+        original_recipient_only=parse_bool_or_none(
             entry.value.get_scalar("original_recipient_only")
         ),
-        moral_option=_parse_bool_or_none(entry.value.get_scalar("moral_option")),
-        evil_option=_parse_bool_or_none(entry.value.get_scalar("evil_option")),
-        high_risk_option=_parse_bool_or_none(entry.value.get_scalar("high_risk_option")),
-        high_reward_option=_parse_bool_or_none(entry.value.get_scalar("high_reward_option")),
+        moral_option=parse_bool_or_none(entry.value.get_scalar("moral_option")),
+        evil_option=parse_bool_or_none(entry.value.get_scalar("evil_option")),
+        high_risk_option=parse_bool_or_none(entry.value.get_scalar("high_risk_option")),
+        high_reward_option=parse_bool_or_none(entry.value.get_scalar("high_reward_option")),
         entry=entry,
     )
-
-
-def _scalar_value(entry: SemanticEntry | None) -> str | None:
-    if entry is None or entry.value is None:
-        return None
-    if hasattr(entry.value, "text"):
-        return entry.value.text
-    return None
-
-
-def _object_value(entry: SemanticEntry | None) -> SemanticObject | None:
-    if entry is None or not isinstance(entry.value, SemanticObject):
-        return None
-    return entry.value
-
-
-def _parse_bool_or_none(value: str | None) -> bool | None:
-    if value is None:
-        return None
-    if value == "yes":
-        return True
-    if value == "no":
-        return False
-    return None
 
 
 def _split_event_id(event_id: str) -> tuple[str | None, str | None]:

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from eu5miner.domains._parse_helpers import parse_bool_or_none
 from eu5miner.formats.semantic import (
     SemanticDocument,
     SemanticEntry,
@@ -92,7 +93,7 @@ def parse_goods_demand_document(text: str) -> GoodsDemandDocument:
                 name=entry.key,
                 body=body,
                 category=body.get_scalar("category"),
-                hidden=_parse_bool_or_none(body.get_scalar("hidden")),
+                hidden=parse_bool_or_none(body.get_scalar("hidden")),
                 scalar_demands=tuple(scalar_demands),
                 scripted_demands=tuple(scripted_demands),
                 entry=entry,
@@ -103,11 +104,3 @@ def parse_goods_demand_document(text: str) -> GoodsDemandDocument:
         definitions=tuple(definitions),
         semantic_document=semantic_document,
     )
-
-
-def _parse_bool_or_none(value: str | None) -> bool | None:
-    if value == "yes":
-        return True
-    if value == "no":
-        return False
-    return None

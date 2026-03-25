@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from eu5miner.domains._parse_helpers import entry_object, entry_scalar_text, parse_bool_or_none
 from eu5miner.formats import semantic
 
 
@@ -73,14 +74,15 @@ def _parse_situation_definition(entry: semantic.SemanticEntry) -> SituationDefin
     end_trigger_flags = tuple(
         child.key
         for child in entry.value.entries
-        if child.key.endswith("_end_trigger") and _parse_bool_or_none(_scalar_value(child)) is True
+        if child.key.endswith("_end_trigger")
+        and parse_bool_or_none(entry_scalar_text(child)) is True
     )
 
     return SituationDefinition(
         name=entry.key,
         body=entry.value,
-        monthly_spawn_chance=_scalar_value(monthly_spawn_entry),
-        monthly_spawn_chance_object=_object_value(monthly_spawn_entry),
+        monthly_spawn_chance=entry_scalar_text(monthly_spawn_entry),
+        monthly_spawn_chance_object=entry_object(monthly_spawn_entry),
         international_organization_type=entry.value.get_scalar("international_organization_type"),
         resolution=entry.value.get_scalar("resolution"),
         voters=entry.value.get_scalar("voters"),
@@ -95,31 +97,7 @@ def _parse_situation_definition(entry: semantic.SemanticEntry) -> SituationDefin
         tooltip=entry.value.get_object("tooltip"),
         map_color=entry.value.get_object("map_color"),
         secondary_map_color=entry.value.get_object("secondary_map_color"),
-        is_data_map=_parse_bool_or_none(entry.value.get_scalar("is_data_map")),
+        is_data_map=parse_bool_or_none(entry.value.get_scalar("is_data_map")),
         end_trigger_flags=end_trigger_flags,
         entry=entry,
     )
-
-
-def _scalar_value(entry: semantic.SemanticEntry | None) -> str | None:
-    if entry is None or entry.value is None:
-        return None
-    if hasattr(entry.value, "text"):
-        return entry.value.text
-    return None
-
-
-def _object_value(entry: semantic.SemanticEntry | None) -> semantic.SemanticObject | None:
-    if entry is None or not isinstance(entry.value, semantic.SemanticObject):
-        return None
-    return entry.value
-
-
-def _parse_bool_or_none(value: str | None) -> bool | None:
-    if value is None:
-        return None
-    if value == "yes":
-        return True
-    if value == "no":
-        return False
-    return None

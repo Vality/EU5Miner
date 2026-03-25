@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from eu5miner.domains._macros import collect_parameters_from_object
+from eu5miner.domains._parse_helpers import parse_bool_or_none
 from eu5miner.formats.semantic import (
     SemanticDocument,
     SemanticEntry,
@@ -105,12 +106,12 @@ def parse_building_type_document(text: str) -> BuildingTypeDocument:
                 build_time=body.get_scalar("build_time"),
                 employment_size=body.get_scalar("employment_size"),
                 output=body.get_scalar("output"),
-                is_foreign=_parse_bool_or_none(body.get_scalar("is_foreign")),
+                is_foreign=parse_bool_or_none(body.get_scalar("is_foreign")),
                 in_empty=body.get_scalar("in_empty"),
-                stronger_power_projection=_parse_bool_or_none(
+                stronger_power_projection=parse_bool_or_none(
                     body.get_scalar("stronger_power_projection")
                 ),
-                need_good_relation=_parse_bool_or_none(
+                need_good_relation=parse_bool_or_none(
                     body.get_scalar("need_good_relation")
                 ),
                 conversion_religion=body.get_scalar("conversion_religion"),
@@ -121,21 +122,21 @@ def parse_building_type_document(text: str) -> BuildingTypeDocument:
                 max_levels=body.get_scalar("max_levels"),
                 construction_demand=body.get_scalar("construction_demand"),
                 increase_per_level_cost=body.get_scalar("increase_per_level_cost"),
-                forbidden_for_estates=_parse_bool_or_none(
+                forbidden_for_estates=parse_bool_or_none(
                     body.get_scalar("forbidden_for_estates")
                 ),
-                expensive=_parse_bool_or_none(body.get_scalar("expensive")),
-                is_indestructible=_parse_bool_or_none(
+                expensive=parse_bool_or_none(body.get_scalar("expensive")),
+                is_indestructible=parse_bool_or_none(
                     body.get_scalar("is_indestructible")
                 ),
-                always_add_demands=_parse_bool_or_none(
+                always_add_demands=parse_bool_or_none(
                     body.get_scalar("always_add_demands")
                 ),
-                ai_ignore_available_worker_flag=_parse_bool_or_none(
+                ai_ignore_available_worker_flag=parse_bool_or_none(
                     body.get_scalar("AI_ignore_available_worker_flag")
                 ),
-                important_for_ai=_parse_bool_or_none(body.get_scalar("important_for_AI")),
-                important_for_ui=_parse_bool_or_none(body.get_scalar("important_for_UI")),
+                important_for_ai=parse_bool_or_none(body.get_scalar("important_for_AI")),
+                important_for_ui=parse_bool_or_none(body.get_scalar("important_for_UI")),
                 allow=body.get_object("allow"),
                 location_potential=body.get_object("location_potential"),
                 country_potential=body.get_object("country_potential"),
@@ -164,16 +165,6 @@ def parse_building_type_document(text: str) -> BuildingTypeDocument:
         definitions=tuple(definitions),
         semantic_document=semantic_document,
     )
-
-
-def _parse_bool_or_none(value: str | None) -> bool | None:
-    if value == "yes":
-        return True
-    if value == "no":
-        return False
-    return None
-
-
 def _parse_possible_production_methods(
     body: SemanticObject,
 ) -> tuple[tuple[str, ...], ...]:

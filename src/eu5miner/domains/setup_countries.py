@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from eu5miner.domains._parse_helpers import body_value_text, parse_int_or_none
 from eu5miner.formats.semantic import (
     SemanticDocument,
     SemanticEntry,
@@ -60,12 +61,12 @@ def parse_setup_country_document(text: str) -> SetupCountryDocument:
             SetupCountryDefinition(
                 tag=entry.key,
                 body=entry.value,
-                color=_get_value_text(entry.value, "color"),
-                color2=_get_value_text(entry.value, "color2"),
+                color=body_value_text(entry.value, "color"),
+                color2=body_value_text(entry.value, "color2"),
                 culture_definition=entry.value.get_scalar("culture_definition"),
                 religion_definition=entry.value.get_scalar("religion_definition"),
                 description_category=entry.value.get_scalar("description_category"),
-                difficulty=_parse_int_or_none(difficulty_text),
+                difficulty=parse_int_or_none(difficulty_text),
                 entry=entry,
             )
         )
@@ -74,20 +75,3 @@ def parse_setup_country_document(text: str) -> SetupCountryDocument:
         definitions=tuple(definitions),
         semantic_document=semantic_document,
     )
-
-
-def _parse_int_or_none(value: str | None) -> int | None:
-    if value is None:
-        return None
-    return int(value)
-
-
-def _get_value_text(body: SemanticObject, key: str) -> str | None:
-    entry = body.first_entry(key)
-    if entry is None or entry.value is None:
-        return None
-    if hasattr(entry.value, "text"):
-        return entry.value.text
-    if isinstance(entry.value, SemanticObject):
-        return entry.value.prefix or None
-    return None
