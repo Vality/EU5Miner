@@ -15,6 +15,7 @@ from eu5miner.domains import (
     parse_default_map_document,
     parse_event_document,
     parse_mod_metadata_document,
+    parse_script_value_document,
     parse_scripted_trigger_document,
     parse_setup_country_document,
 )
@@ -37,12 +38,14 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     setup_document = parse_setup_country_document("FRA = { tier = kingdom }\n")
     event_document = parse_event_document("namespace = test\n\ntest.1 = { title = test }\n")
     metadata_document = parse_mod_metadata_document('{"name": "Test Mod"}')
+    script_value_document = parse_script_value_document("my_value = { value = 5 }\n")
     default_map_document = parse_default_map_document("definitions = \"definitions.txt\"\n")
 
     assert trigger_document.names() == ("test_trigger",)
     assert setup_document.definitions[0].tag == "FRA"
     assert event_document.namespace == "test"
     assert metadata_document.name == "Test Mod"
+    assert script_value_document.names() == ("my_value",)
     assert default_map_document.referenced_files.as_dict() == {
         "provinces": None,
         "rivers": None,

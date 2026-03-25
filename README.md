@@ -89,8 +89,13 @@ update = plan_mod_update(
 Implemented domain adapters are re-exported from `eu5miner.domains` so callers do not need to import individual domain modules directly:
 
 ```python
-from eu5miner.domains import parse_scripted_trigger_document, parse_setup_country_document
+from eu5miner.domains import (
+	parse_script_value_document,
+	parse_scripted_trigger_document,
+	parse_setup_country_document,
+)
 
+script_value_document = parse_script_value_document("minor_stress_gain = 10\n")
 trigger_document = parse_scripted_trigger_document("test_trigger = { always = yes }\n")
 country_document = parse_setup_country_document("FRA = { tier = kingdom }\n")
 ```

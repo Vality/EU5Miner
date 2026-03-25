@@ -54,6 +54,7 @@ The VFS now also has an initial metadata-aware replace-path layer: source metada
 
 - scripted triggers
 - scripted effects
+- script values
 - setup countries
 - events
 - missions
@@ -70,7 +71,7 @@ The VFS now also has an initial metadata-aware replace-path layer: source metada
 
 Next planned target:
 
-- finish the active library integration pass, then resume foundational domain coverage with script values
+- continue foundational identity coverage with cultures and culture groups
 
 The optional broader validation sweep remains deferred until later; do not fold it into normal fast iteration work.
 
@@ -91,6 +92,8 @@ Important representative files:
 - `game/in_game/events/readme.txt`
 - `game/in_game/common/scripted_triggers/country_triggers.txt`
 - `game/in_game/common/scripted_effects/country_effects.txt`
+- `game/in_game/common/script_values/best_capital_for_colony.txt`
+- `game/in_game/common/script_values/eu4_conversions.txt`
 - `game/in_game/setup/countries/00_readme.info`
 - `game/in_game/setup/countries/france.txt`
 - `game/in_game/gui/agenda_view.gui`

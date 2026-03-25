@@ -98,6 +98,9 @@ class CstDocument:
 
 
 def parse_cst_document(text: str) -> CstDocument:
+    if text.startswith("\ufeff"):
+        text = text.removeprefix("\ufeff")
+
     tokens = tuple(tokenize_script_text(text))
     parser = _CstParser(text, tokens)
     entries = tuple(parser.parse_entries(stop_at_close_brace=False))

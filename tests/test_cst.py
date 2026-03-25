@@ -78,3 +78,41 @@ def test_grouping_supports_scalar_assignments() -> None:
     assert entry.operator is not None
     assert isinstance(entry.value, ScalarNode)
     assert entry.value.text == "70"
+
+
+def test_grouping_splits_consecutive_scalar_assignments_by_line() -> None:
+    document = parse_cst_document(
+        "first_value = 1\n"
+        "second_value = 2\n"
+        "third_value = 3\n"
+    )
+
+    assert [entry.head_text for entry in document.entries] == [
+        "first_value",
+        "second_value",
+        "third_value",
+    ]
+    values = [
+        entry.value.text if isinstance(entry.value, ScalarNode) else None
+        for entry in document.entries
+    ]
+
+    assert values == [
+        "1",
+        "2",
+        "3",
+    ]
+
+
+def test_grouping_splits_bom_prefixed_consecutive_scalar_assignments() -> None:
+    document = parse_cst_document(
+        "\ufefffirst_value = 1\n"
+        "second_value = 2\n"
+        "third_value = 3\n"
+    )
+
+    assert [entry.head_text for entry in document.entries] == [
+        "first_value",
+        "second_value",
+        "third_value",
+    ]

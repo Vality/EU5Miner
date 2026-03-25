@@ -125,6 +125,18 @@ class GameInstall:
             / "common"
             / "scripted_effects"
             / "country_effects.txt",
+            "script_value_info": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "script_values"
+            / "_script_values.info",
+            "script_value_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "script_values"
+            / "best_capital_for_colony.txt",
+            "script_value_scalar_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "script_values"
+            / "eu4_conversions.txt",
             "setup_country_readme": self.phase_dir(ContentPhase.IN_GAME)
             / "setup"
             / "countries"

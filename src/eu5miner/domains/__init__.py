@@ -105,6 +105,11 @@ from eu5miner.domains.mod_project import (
 	plan_mod_skeleton,
 	plan_targeted_mod_emission,
 )
+from eu5miner.domains.script_values import (
+	ScriptValueDefinition,
+	ScriptValueDocument,
+	parse_script_value_document,
+)
 from eu5miner.domains.scripted_effects import (
 	ScriptedEffectDefinition,
 	ScriptedEffectDocument,
@@ -180,6 +185,8 @@ __all__ = [
     "PlannedFileWrite",
     "ScriptedEffectDefinition",
     "ScriptedEffectDocument",
+	"ScriptValueDefinition",
+	"ScriptValueDocument",
     "ScriptedTriggerDefinition",
     "ScriptedTriggerDocument",
     "SetupCountryDefinition",
@@ -214,6 +221,7 @@ __all__ = [
     "parse_mission_document",
     "parse_mod_metadata_document",
     "parse_scripted_effect_document",
+	"parse_script_value_document",
     "parse_scripted_trigger_document",
     "parse_setup_country_document",
     "parse_situation_document",

@@ -204,8 +204,8 @@ Order:
 The immediate sequence should be:
 
 1. finish the active library integration pass around exports, naming, and CLI/README examples
-2. resume unfinished reusable scripted logic starting with script values
-3. continue identity and setup coverage with cultures and religions
+2. continue identity and setup coverage with cultures and religions
+3. resume the remaining unfinished reusable scripted logic families after script values
 
 ## Current Status
 
@@ -213,6 +213,7 @@ Implemented:
 
 - scripted triggers
 - scripted effects
+- script values
 - setup countries
 - events
 - missions
@@ -236,6 +237,6 @@ Implemented:
 
 Next recommended target:
 
-- finish the library integration pass, then resume foundational domain coverage with script values
+- continue foundational identity coverage with cultures and religion groups
 
 This gives broad value quickly while staying aligned with the current parser architecture.
