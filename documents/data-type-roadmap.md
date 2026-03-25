@@ -223,9 +223,11 @@ Implemented:
 - map CSV helpers such as adjacencies and ports
 - location/setup cross-linking helpers
 - mod metadata and relationships
+- replace_paths and precedence-aware write planning
+- initial mod skeleton planning
 
 Next recommended target:
 
-- replace_paths and precedence-aware write planning
+- targeted emission helpers
 
 This gives broad value quickly while staying aligned with the current parser architecture.
