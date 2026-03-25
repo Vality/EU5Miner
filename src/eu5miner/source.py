@@ -257,6 +257,22 @@ class GameInstall:
             / "common"
             / "generic_actions"
             / "employment_system.txt",
+            "attribute_column_readme": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "attribute_columns"
+            / "readme.txt",
+            "attribute_column_default_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "attribute_columns"
+            / "00_defaults.txt",
+            "attribute_column_market_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "attribute_columns"
+            / "19_market.txt",
+            "attribute_column_secondary_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "attribute_columns"
+            / "31_goods.txt",
             "culture_info": self.phase_dir(ContentPhase.IN_GAME)
             / "common"
             / "cultures"
