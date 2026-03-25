@@ -56,6 +56,8 @@ The VFS now also has an initial metadata-aware replace-path layer: source metada
 - scripted effects
 - script values
 - setup countries
+- cultures and culture groups
+- religions and religion groups
 - events
 - missions
 - situations
@@ -71,7 +73,7 @@ The VFS now also has an initial metadata-aware replace-path layer: source metada
 
 Next planned target:
 
-- continue foundational identity coverage with cultures and culture groups
+- continue identity/setup coverage with country description categories and related helpers
 
 The optional broader validation sweep remains deferred until later; do not fold it into normal fast iteration work.
 
@@ -94,6 +96,10 @@ Important representative files:
 - `game/in_game/common/scripted_effects/country_effects.txt`
 - `game/in_game/common/script_values/best_capital_for_colony.txt`
 - `game/in_game/common/script_values/eu4_conversions.txt`
+- `game/in_game/common/cultures/00_cultures.info`
+- `game/in_game/common/cultures/british.txt`
+- `game/in_game/common/religions/christian.txt`
+- `game/in_game/common/religions/buddhist.txt`
 - `game/in_game/setup/countries/00_readme.info`
 - `game/in_game/setup/countries/france.txt`
 - `game/in_game/gui/agenda_view.gui`
