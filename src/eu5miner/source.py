@@ -229,6 +229,22 @@ class GameInstall:
             / "common"
             / "goods_demand"
             / "from_events.txt",
+            "production_method_readme": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "production_methods"
+            / "__readme.txt",
+            "production_method_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "production_methods"
+            / "unsorted_building_inputs.txt",
+            "employment_system_readme": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "employment_systems"
+            / "readme.txt",
+            "employment_system_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "employment_systems"
+            / "00_default.txt",
             "culture_info": self.phase_dir(ContentPhase.IN_GAME)
             / "common"
             / "cultures"
