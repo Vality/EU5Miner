@@ -245,6 +245,18 @@ class GameInstall:
             / "common"
             / "employment_systems"
             / "00_default.txt",
+            "generic_action_readme": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "generic_actions"
+            / "readme.txt",
+            "generic_action_market_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "generic_actions"
+            / "markets.txt",
+            "generic_action_secondary_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "generic_actions"
+            / "employment_system.txt",
             "culture_info": self.phase_dir(ContentPhase.IN_GAME)
             / "common"
             / "cultures"

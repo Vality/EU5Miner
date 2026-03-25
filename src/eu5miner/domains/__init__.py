@@ -41,6 +41,13 @@ from eu5miner.domains.events import (
 	EventOption,
 	parse_event_document,
 )
+from eu5miner.domains.generic_actions import (
+	GenericActionColumn,
+	GenericActionDefinition,
+	GenericActionDocument,
+	GenericActionSelectTrigger,
+	parse_generic_action_document,
+)
 from eu5miner.domains.frontend_content import (
 	MainMenuScenarioDefinition,
 	MainMenuScenarioDocument,
@@ -255,6 +262,10 @@ __all__ = [
     "EventDefinition",
     "EventDocument",
     "EventOption",
+	"GenericActionColumn",
+	"GenericActionDefinition",
+	"GenericActionDocument",
+	"GenericActionSelectTrigger",
 	"GoodsAmount",
 	"GoodsDefinition",
 	"GoodsDemandAmount",
@@ -359,6 +370,7 @@ __all__ = [
 	"parse_employment_system_document",
     "parse_effect_localization_document",
     "parse_event_document",
+	"parse_generic_action_document",
 	"parse_goods_demand_category_document",
 	"parse_goods_demand_document",
 	"parse_goods_document",
