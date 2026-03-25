@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from eu5miner import apply_mod_update, format_mod_update_report, plan_mod_update
-from eu5miner.mods import ModUpdateWarningKind, ModUpdateWriteKind
+from eu5miner.mods import ModUpdateAdvisoryKind, ModUpdateWarningKind, ModUpdateWriteKind
 from eu5miner.source import ContentPhase
 from eu5miner.vfs import ContentSource, SourceKind, VirtualFilesystem
 
@@ -36,6 +36,7 @@ def test_plan_mod_update_wraps_metadata_and_content_writes(tmp_path: Path) -> No
     assert update.replace_paths_to_add == ()
     assert update.blocked_emissions == ()
     assert update.warnings == ()
+    assert update.advisories == ()
 
 
 def test_plan_mod_update_surfaces_replace_path_recommendations(tmp_path: Path) -> None:
@@ -61,12 +62,23 @@ def test_plan_mod_update_surfaces_replace_path_recommendations(tmp_path: Path) -
     )
 
     assert update.replace_paths_to_add == ("game/in_game/common/buildings",)
+    assert len(update.advisories) == 1
+    assert update.advisories[0].kind is ModUpdateAdvisoryKind.ADD_REPLACE_PATH
+    assert update.advisories[0].raw_path == "game/in_game/common/buildings"
     assert update.content_writes[0].relative_path == Path("common") / "buildings" / "a.txt"
     assert update.content_writes[0].content == "modded\n"
 
     report = format_mod_update_report(update)
 
+    assert "Summary:" in report
+    assert "intended content outputs: 1" in report
+    assert "materialized writes: 2" in report
+    assert "replace_path additions: 1" in report
+    assert "blocked intended outputs: 0" in report
+    assert "advisories: 1" in report
     assert "Metadata replace_path additions:" in report
+    assert "Advisories:" in report
+    assert "Planning metadata update to add replace_path entry:" in report
     assert "game/in_game/common/buildings" in report
     assert "override: common/buildings/a.txt" in report
 
@@ -103,6 +115,12 @@ def test_plan_mod_update_surfaces_blocked_emissions(tmp_path: Path) -> None:
 
     report = format_mod_update_report(update)
 
+    assert "Summary:" in report
+    assert "intended content outputs: 1" in report
+    assert "materialized writes: 1" in report
+    assert "blocked intended outputs: 1" in report
+    assert "warnings: 1" in report
+    assert "advisories: 0" in report
     assert "Warnings:" in report
     assert "common/buildings/a.txt will be shadowed" in report
     assert "late_mod" in report
@@ -131,6 +149,12 @@ def test_apply_mod_update_materializes_files_and_reports_statuses(tmp_path: Path
     report = format_mod_update_report(applied)
 
     assert "Applied mod update: my_mod" in report
+    assert "Summary:" in report
+    assert "created directories:" in report
+    assert "created writes: 2" in report
+    assert "updated writes: 0" in report
+    assert "unchanged writes: 0" in report
+    assert "advisories: 0" in report
     assert "created:" in report
     assert "metadata.json" in report
     assert "new.txt" in report
@@ -165,5 +189,8 @@ def test_apply_mod_update_preserves_warnings_for_blocked_outputs(tmp_path: Path)
 
     report = format_mod_update_report(applied)
 
+    assert "Summary:" in report
+    assert "blocked intended outputs: 1" in report
+    assert "warnings: 1" in report
     assert "Warnings:" in report
     assert "common/buildings/a.txt will be shadowed" in report

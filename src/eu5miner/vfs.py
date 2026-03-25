@@ -339,7 +339,7 @@ class VirtualFilesystem:
                 dlc_priority += 1
 
         mod_priority = 100
-        for mod_root in sorted(mod_roots or []):
+        for mod_root in mod_roots or []:
             sources.append(
                 ContentSource(
                     name=mod_root.name,

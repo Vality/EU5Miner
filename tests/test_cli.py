@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 from eu5miner.cli import main
 from eu5miner.source import GameInstall
 
@@ -49,3 +51,104 @@ def test_analyze_script_cli_smoke(game_install: GameInstall, capsys) -> None:
     assert exit_code == 0
     assert "balanced_braces: True" in captured.out
     assert "token_count:" in captured.out
+
+
+def test_plan_mod_update_cli_reports_dry_run_summary(tmp_path: Path, capsys) -> None:
+    install_root = _make_test_install(tmp_path / "install")
+    mod_root = tmp_path / "my_mod"
+
+    exit_code = main(
+        [
+            "--install-root",
+            str(install_root),
+            "plan-mod-update",
+            "--mod-root",
+            str(mod_root),
+            "--phase",
+            "in_game",
+            "--subtree",
+            "common/buildings",
+            "--intended-path",
+            "common/buildings/new.txt",
+        ]
+    )
+
+    captured = capsys.readouterr()
+    assert exit_code == 0
+    assert "Planned mod update: my_mod" in captured.out
+    assert "Summary:" in captured.out
+    assert "intended content outputs: 1" in captured.out
+    assert captured.err == ""
+
+
+def test_plan_mod_update_cli_emits_replace_path_notes(tmp_path: Path, capsys) -> None:
+    install_root = _make_test_install(tmp_path / "install")
+    mod_root = tmp_path / "my_mod"
+    vanilla_file = install_root / "game" / "in_game" / "common" / "buildings" / "a.txt"
+    vanilla_file.parent.mkdir(parents=True, exist_ok=True)
+    vanilla_file.write_text("vanilla\n", encoding="utf-8")
+
+    exit_code = main(
+        [
+            "--install-root",
+            str(install_root),
+            "plan-mod-update",
+            "--mod-root",
+            str(mod_root),
+            "--phase",
+            "in_game",
+            "--subtree",
+            "common/buildings",
+            "--intended-path",
+            "common/buildings/a.txt",
+        ]
+    )
+
+    captured = capsys.readouterr()
+    assert exit_code == 0
+    assert "Advisories:" in captured.out
+    assert "replace_path additions: 1" in captured.out
+    assert "note: Planning metadata update to add replace_path entry:" in captured.err
+
+
+def test_plan_mod_update_cli_emits_shadowing_warnings(tmp_path: Path, capsys) -> None:
+    install_root = _make_test_install(tmp_path / "install")
+    mod_root = tmp_path / "my_mod"
+    later_mod_root = tmp_path / "zzz_late_mod"
+
+    later_file = later_mod_root / "in_game" / "common" / "buildings" / "a.txt"
+    later_file.parent.mkdir(parents=True, exist_ok=True)
+    later_file.write_text("late\n", encoding="utf-8")
+
+    exit_code = main(
+        [
+            "--install-root",
+            str(install_root),
+            "plan-mod-update",
+            "--mod-root",
+            str(mod_root),
+            "--later-mod-root",
+            str(later_mod_root),
+            "--phase",
+            "in_game",
+            "--subtree",
+            "common/buildings",
+            "--intended-path",
+            "common/buildings/a.txt",
+        ]
+    )
+
+    captured = capsys.readouterr()
+    assert exit_code == 0
+    assert "Warnings:" in captured.out
+    assert "blocked intended outputs: 1" in captured.out
+    assert "warning: Intended output common/buildings/a.txt will be shadowed" in captured.err
+
+
+def _make_test_install(install_root: Path) -> Path:
+    game_dir = install_root / "game"
+    for phase_name in ("loading_screen", "main_menu", "in_game"):
+        (game_dir / phase_name).mkdir(parents=True, exist_ok=True)
+    (game_dir / "dlc").mkdir(parents=True, exist_ok=True)
+    (game_dir / "mod").mkdir(parents=True, exist_ok=True)
+    return install_root

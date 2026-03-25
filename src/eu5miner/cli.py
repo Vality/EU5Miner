@@ -1,13 +1,15 @@
-"""Thin CLI for install inspection and parser diagnostics."""
+"""Thin CLI for install inspection, parser diagnostics, and mod update dry-runs."""
 
 from __future__ import annotations
 
 import argparse
+import sys
 from collections.abc import Sequence
 from pathlib import Path
 
 from eu5miner.formats.cst import parse_cst_document
 from eu5miner.formats.script_text import ScriptFeatures, analyze_script_text
+from eu5miner.mods import format_mod_update_report, plan_mod_update
 from eu5miner.source import ContentPhase, GameInstall
 from eu5miner.vfs import VirtualFilesystem
 
@@ -23,6 +25,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         return _run_list_files(args)
     if command == "analyze-script":
         return _run_analyze_script(args)
+    if command == "plan-mod-update":
+        return _run_plan_mod_update(args)
 
     parser.error("A command is required")
     return 2
@@ -86,6 +90,48 @@ def build_parser() -> argparse.ArgumentParser:
         help="Representative file key from the discovered install.",
     )
 
+    plan_parser = subparsers.add_parser(
+        "plan-mod-update",
+        help=(
+            "Dry-run a mod subtree update and report planned writes, "
+            "metadata actions, and warnings."
+        ),
+    )
+    plan_parser.add_argument(
+        "--mod-root",
+        type=Path,
+        required=True,
+        help="Root path for the target mod to plan.",
+    )
+    plan_parser.add_argument(
+        "--later-mod-root",
+        action="append",
+        type=Path,
+        default=[],
+        help=(
+            "Additional mod roots loaded after the target mod; "
+            "repeat to model higher-priority mods."
+        ),
+    )
+    plan_parser.add_argument(
+        "--phase",
+        type=_parse_phase,
+        required=True,
+        help="Content phase to plan: loading_screen, main_menu, or in_game.",
+    )
+    plan_parser.add_argument(
+        "--subtree",
+        required=True,
+        help="Relative subtree root beneath the chosen phase, for example common/buildings.",
+    )
+    plan_parser.add_argument(
+        "--intended-path",
+        action="append",
+        required=True,
+        default=[],
+        help="Relative file path to emit beneath the chosen phase; repeat for multiple outputs.",
+    )
+
     return parser
 
 
@@ -147,6 +193,28 @@ def _run_analyze_script(args: argparse.Namespace) -> int:
     print(f"non_trivia_token_count: {len(document.non_trivia_tokens())}")
     print(f"top_level_entry_count: {len(document.entries)}")
     print(f"cst_brace_balanced: {document.is_brace_balanced}")
+    return 0
+
+
+def _run_plan_mod_update(args: argparse.Namespace) -> int:
+    install = GameInstall.discover(args.install_root)
+    mod_roots = [args.mod_root, *args.later_mod_root]
+    vfs = VirtualFilesystem.from_install(install, mod_roots=mod_roots)
+
+    update = plan_mod_update(
+        vfs,
+        args.mod_root.name,
+        args.phase,
+        Path(args.subtree),
+        intended_relative_paths=tuple(Path(path) for path in args.intended_path),
+    )
+
+    print(format_mod_update_report(update))
+    for advisory in update.advisories:
+        print(f"note: {advisory.message}", file=sys.stderr)
+    for warning in update.warnings:
+        print(f"warning: {warning.message}", file=sys.stderr)
+
     return 0
 
 
