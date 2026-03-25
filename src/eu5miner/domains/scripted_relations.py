@@ -4,6 +4,11 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from eu5miner.domains._parse_helpers import (
+    body_value_text,
+    parse_bool_or_none,
+    parse_int_or_none,
+)
 from eu5miner.formats.semantic import (
     SemanticDocument,
     SemanticEntry,
@@ -141,62 +146,62 @@ def parse_scripted_relation_document(text: str) -> ScriptedRelationDocument:
                 monthly_ongoing_price_second_country=body.get_scalar(
                     "monthly_ongoing_price_second_country"
                 ),
-                trade_to_first=_get_value_text(body, "trade_to_first"),
-                trade_to_second=_get_value_text(body, "trade_to_second"),
-                gold_to_first=_get_value_text(body, "gold_to_first"),
-                gold_to_second=_get_value_text(body, "gold_to_second"),
-                favors_to_first=_get_value_text(body, "favors_to_first"),
-                favors_to_second=_get_value_text(body, "favors_to_second"),
-                institution_spread_to_first=_get_value_text(
+                trade_to_first=body_value_text(body, "trade_to_first"),
+                trade_to_second=body_value_text(body, "trade_to_second"),
+                gold_to_first=body_value_text(body, "gold_to_first"),
+                gold_to_second=body_value_text(body, "gold_to_second"),
+                favors_to_first=body_value_text(body, "favors_to_first"),
+                favors_to_second=body_value_text(body, "favors_to_second"),
+                institution_spread_to_first=body_value_text(
                     body, "institution_spread_to_first"
                 ),
-                institution_spread_to_second=_get_value_text(
+                institution_spread_to_second=body_value_text(
                     body, "institution_spread_to_second"
                 ),
-                annullment_favours_required=_parse_int_or_none(
+                annullment_favours_required=parse_int_or_none(
                     body.get_scalar("annullment_favours_required")
                 ),
                 sound=body.get_scalar("sound"),
-                mutual_color=_get_value_text(body, "mutual_color"),
-                giving_color=_get_value_text(body, "giving_color"),
-                receiving_color=_get_value_text(body, "receiving_color"),
+                mutual_color=body_value_text(body, "mutual_color"),
+                giving_color=body_value_text(body, "giving_color"),
+                receiving_color=body_value_text(body, "receiving_color"),
                 texture_file=body.get_scalar("texture_file"),
                 concept=body.get_scalar("concept"),
-                block_when_at_war=_parse_bool_or_none(body.get_scalar("block_when_at_war")),
-                break_on_war=_parse_bool_or_none(body.get_scalar("break_on_war")),
-                break_on_becoming_subject=_parse_bool_or_none(
+                block_when_at_war=parse_bool_or_none(body.get_scalar("block_when_at_war")),
+                break_on_war=parse_bool_or_none(body.get_scalar("break_on_war")),
+                break_on_becoming_subject=parse_bool_or_none(
                     body.get_scalar("break_on_becoming_subject")
                 ),
-                break_on_not_spying=_parse_bool_or_none(
+                break_on_not_spying=parse_bool_or_none(
                     body.get_scalar("break_on_not_spying")
                 ),
-                annulled_by_peace_treaty=_parse_bool_or_none(
+                annulled_by_peace_treaty=parse_bool_or_none(
                     body.get_scalar("annulled_by_peace_treaty")
                 ),
-                disallow_war=_parse_bool_or_none(body.get_scalar("disallow_war")),
-                embargo=_parse_bool_or_none(body.get_scalar("embargo")),
-                military_access=_parse_bool_or_none(body.get_scalar("military_access")),
-                fleet_basing_rights=_parse_bool_or_none(
+                disallow_war=parse_bool_or_none(body.get_scalar("disallow_war")),
+                embargo=parse_bool_or_none(body.get_scalar("embargo")),
+                military_access=parse_bool_or_none(body.get_scalar("military_access")),
+                fleet_basing_rights=parse_bool_or_none(
                     body.get_scalar("fleet_basing_rights")
                 ),
-                food_access=_parse_bool_or_none(body.get_scalar("food_access")),
-                is_exempt_from_sound_toll=_parse_bool_or_none(
+                food_access=parse_bool_or_none(body.get_scalar("food_access")),
+                is_exempt_from_sound_toll=parse_bool_or_none(
                     body.get_scalar("is_exempt_from_sound_toll")
                 ),
-                is_exempt_from_isolation=_parse_bool_or_none(
+                is_exempt_from_isolation=parse_bool_or_none(
                     body.get_scalar("is_exempt_from_isolation")
                 ),
-                block_building=_parse_bool_or_none(body.get_scalar("block_building")),
-                skip_diplomat_for_cancel=_parse_bool_or_none(
+                block_building=parse_bool_or_none(body.get_scalar("block_building")),
+                skip_diplomat_for_cancel=parse_bool_or_none(
                     body.get_scalar("skip_diplomat_for_cancel")
                 ),
-                lifts_fog_of_war=_parse_bool_or_none(body.get_scalar("lifts_fog_of_war")),
-                lifts_trade_protection=_parse_bool_or_none(
+                lifts_fog_of_war=parse_bool_or_none(body.get_scalar("lifts_fog_of_war")),
+                lifts_trade_protection=parse_bool_or_none(
                     body.get_scalar("lifts_trade_protection")
                 ),
-                show_break_alert=_parse_bool_or_none(body.get_scalar("show_break_alert")),
-                is_ongoing=_parse_bool_or_none(body.get_scalar("is_ongoing")),
-                can_share_maps=_parse_bool_or_none(body.get_scalar("can_share_maps")),
+                show_break_alert=parse_bool_or_none(body.get_scalar("show_break_alert")),
+                is_ongoing=parse_bool_or_none(body.get_scalar("is_ongoing")),
+                can_share_maps=parse_bool_or_none(body.get_scalar("can_share_maps")),
                 category=body.get_object("category"),
                 visible=body.get_object("visible"),
                 offer_visible=body.get_object("offer_visible"),
@@ -236,28 +241,3 @@ def parse_scripted_relation_document(text: str) -> ScriptedRelationDocument:
         definitions=tuple(definitions),
         semantic_document=semantic_document,
     )
-
-
-def _parse_bool_or_none(value: str | None) -> bool | None:
-    if value == "yes":
-        return True
-    if value == "no":
-        return False
-    return None
-
-
-def _parse_int_or_none(value: str | None) -> int | None:
-    if value is None:
-        return None
-    return int(value)
-
-
-def _get_value_text(body: SemanticObject, key: str) -> str | None:
-    entry = body.first_entry(key)
-    if entry is None or entry.value is None:
-        return None
-    if hasattr(entry.value, "text"):
-        return entry.value.text
-    if isinstance(entry.value, SemanticObject):
-        return entry.value.prefix or None
-    return None

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from eu5miner.domains._parse_helpers import entry_object, entry_scalar_text
 from eu5miner.formats import semantic
 
 
@@ -175,8 +176,8 @@ def parse_gui_document(text: str) -> GuiDocument:
 def _parse_constant(entry: semantic.SemanticEntry) -> GuiConstant:
     return GuiConstant(
         name=entry.key,
-        value_text=_scalar_value(entry),
-        value_object=_object_value(entry),
+        value_text=entry_scalar_text(entry),
+        value_object=entry_object(entry),
         entry=entry,
     )
 
@@ -222,17 +223,3 @@ def _keyword_suffix(entry: semantic.SemanticEntry, keyword: str) -> str | None:
 
     suffix = " ".join(token.text for token in head_tokens[1:])
     return suffix or None
-
-
-def _scalar_value(entry: semantic.SemanticEntry | None) -> str | None:
-    if entry is None or entry.value is None:
-        return None
-    if hasattr(entry.value, "text"):
-        return entry.value.text
-    return None
-
-
-def _object_value(entry: semantic.SemanticEntry | None) -> semantic.SemanticObject | None:
-    if entry is None or not isinstance(entry.value, semantic.SemanticObject):
-        return None
-    return entry.value

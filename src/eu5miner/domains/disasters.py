@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from eu5miner.domains._parse_helpers import entry_object, entry_scalar_text, parse_bool_or_none
 from eu5miner.formats import semantic
 
 
@@ -65,15 +66,16 @@ def _parse_disaster_definition(entry: semantic.SemanticEntry) -> DisasterDefinit
     end_trigger_flags = tuple(
         child.key
         for child in entry.value.entries
-        if child.key.endswith("_end_trigger") and _parse_bool_or_none(_scalar_value(child)) is True
+        if child.key.endswith("_end_trigger")
+        and parse_bool_or_none(entry_scalar_text(child)) is True
     )
 
     return DisasterDefinition(
         name=entry.key,
         body=entry.value,
         image=_strip_quotes(entry.value.get_scalar("image")),
-        monthly_spawn_chance=_scalar_value(monthly_spawn_entry),
-        monthly_spawn_chance_object=_object_value(monthly_spawn_entry),
+        monthly_spawn_chance=entry_scalar_text(monthly_spawn_entry),
+        monthly_spawn_chance_object=entry_object(monthly_spawn_entry),
         can_start=entry.value.get_object("can_start"),
         can_end=entry.value.get_object("can_end"),
         modifier=entry.value.get_object("modifier"),
@@ -83,30 +85,6 @@ def _parse_disaster_definition(entry: semantic.SemanticEntry) -> DisasterDefinit
         end_trigger_flags=end_trigger_flags,
         entry=entry,
     )
-
-
-def _scalar_value(entry: semantic.SemanticEntry | None) -> str | None:
-    if entry is None or entry.value is None:
-        return None
-    if hasattr(entry.value, "text"):
-        return entry.value.text
-    return None
-
-
-def _object_value(entry: semantic.SemanticEntry | None) -> semantic.SemanticObject | None:
-    if entry is None or not isinstance(entry.value, semantic.SemanticObject):
-        return None
-    return entry.value
-
-
-def _parse_bool_or_none(value: str | None) -> bool | None:
-    if value is None:
-        return None
-    if value == "yes":
-        return True
-    if value == "no":
-        return False
-    return None
 
 
 def _strip_quotes(value: str | None) -> str | None:

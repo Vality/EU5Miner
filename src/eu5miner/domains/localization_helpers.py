@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from eu5miner.domains._parse_helpers import entry_scalar_text, parse_bool_or_none
 from eu5miner.formats import semantic
 
 
@@ -186,10 +187,10 @@ def _parse_customizable_localization_definition(
         body=entry.value,
         scope_type=_normalized_scalar(entry.value.get_scalar("type")),
         texts=texts,
-        random_valid=_parse_bool_or_none(entry.value.get_scalar("random_valid")),
+        random_valid=parse_bool_or_none(entry.value.get_scalar("random_valid")),
         parent=_normalized_scalar(entry.value.get_scalar("parent")),
         suffix=_normalized_scalar(entry.value.get_scalar("suffix")),
-        fallback=_parse_bool_or_none(entry.value.get_scalar("fallback")),
+        fallback=parse_bool_or_none(entry.value.get_scalar("fallback")),
         entry=entry,
     )
 
@@ -202,7 +203,7 @@ def _parse_customizable_localization_text(
     return CustomizableLocalizationText(
         localization_key=_normalized_scalar(entry.value.get_scalar("localization_key")),
         trigger=entry.value.get_object("trigger"),
-        fallback=_parse_bool_or_none(entry.value.get_scalar("fallback")),
+        fallback=parse_bool_or_none(entry.value.get_scalar("fallback")),
         entry=entry,
     )
 
@@ -238,7 +239,7 @@ def _parse_variants(body: semantic.SemanticObject) -> tuple[LocalizationVariant,
     variants: list[LocalizationVariant] = []
 
     for child in body.entries:
-        localization_key = _scalar_value(child)
+        localization_key = entry_scalar_text(child)
         if localization_key is None:
             continue
         normalized_key = _strip_quotes(localization_key)
@@ -253,16 +254,6 @@ def _parse_variants(body: semantic.SemanticObject) -> tuple[LocalizationVariant,
         )
 
     return tuple(variants)
-
-
-def _scalar_value(entry: semantic.SemanticEntry | None) -> str | None:
-    if entry is None or entry.value is None:
-        return None
-    if hasattr(entry.value, "text"):
-        return entry.value.text
-    return None
-
-
 def _normalized_scalar(value: str | None) -> str | None:
     return _strip_quotes(value)
 
@@ -273,13 +264,3 @@ def _strip_quotes(value: str | None) -> str | None:
     if len(value) >= 2 and value.startswith('"') and value.endswith('"'):
         return value[1:-1]
     return value
-
-
-def _parse_bool_or_none(value: str | None) -> bool | None:
-    if value is None:
-        return None
-    if value in {"yes", "true"}:
-        return True
-    if value in {"no", "false"}:
-        return False
-    return None

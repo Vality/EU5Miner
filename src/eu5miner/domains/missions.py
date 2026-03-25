@@ -4,6 +4,12 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from eu5miner.domains._parse_helpers import (
+    entry_object,
+    entry_scalar_text,
+    parse_bool_or_none,
+    parse_int_or_none,
+)
 from eu5miner.formats import semantic
 
 MISSION_PACK_FIELDS = {
@@ -136,15 +142,15 @@ def _parse_mission_pack(entry: semantic.SemanticEntry) -> MissionPackDefinition:
         body=entry.value,
         header=entry.value.get_scalar("header"),
         icon=entry.value.get_scalar("icon"),
-        repeatable=_parse_bool_or_none(entry.value.get_scalar("repeatable")),
+        repeatable=parse_bool_or_none(entry.value.get_scalar("repeatable")),
         player_playstyle=entry.value.get_scalar("player_playstyle"),
         visible=entry.value.get_object("visible"),
         enabled=entry.value.get_object("enabled"),
         abort=entry.value.get_object("abort"),
-        chance=_scalar_value(chance_entry),
-        chance_object=_object_value(chance_entry),
-        ai_will_do=_scalar_value(ai_will_do_entry),
-        ai_will_do_object=_object_value(ai_will_do_entry),
+        chance=entry_scalar_text(chance_entry),
+        chance_object=entry_object(chance_entry),
+        ai_will_do=entry_scalar_text(ai_will_do_entry),
+        ai_will_do_object=entry_object(ai_will_do_entry),
         select_trigger=entry.value.get_object("select_trigger"),
         on_potential=entry.value.get_object("on_potential"),
         on_start=entry.value.get_object("on_start"),
@@ -166,14 +172,14 @@ def _parse_task(entry: semantic.SemanticEntry) -> MissionTaskDefinition:
         body=entry.value,
         icon=entry.value.get_scalar("icon"),
         requires=_extract_list_names(entry.value.get_object("requires")),
-        final=_parse_bool_or_none(entry.value.get_scalar("final")),
+        final=parse_bool_or_none(entry.value.get_scalar("final")),
         visible=entry.value.get_object("visible"),
         highlight=entry.value.get_object("highlight"),
         enabled=entry.value.get_object("enabled"),
         bypass=entry.value.get_object("bypass"),
-        ai_will_do=_scalar_value(ai_will_do_entry),
-        ai_will_do_object=_object_value(ai_will_do_entry),
-        duration=_parse_int_or_none(entry.value.get_scalar("duration")),
+        ai_will_do=entry_scalar_text(ai_will_do_entry),
+        ai_will_do_object=entry_object(ai_will_do_entry),
+        duration=parse_int_or_none(entry.value.get_scalar("duration")),
         on_monthly=entry.value.get_object("on_monthly"),
         on_start=entry.value.get_object("on_start"),
         on_persistent_start=entry.value.get_object("on_persistent_start"),
@@ -189,33 +195,3 @@ def _extract_list_names(value: semantic.SemanticObject | None) -> tuple[str, ...
     if value is None:
         return ()
     return tuple(entry.key for entry in value.entries)
-
-
-def _scalar_value(entry: semantic.SemanticEntry | None) -> str | None:
-    if entry is None or entry.value is None:
-        return None
-    if hasattr(entry.value, "text"):
-        return entry.value.text
-    return None
-
-
-def _object_value(entry: semantic.SemanticEntry | None) -> semantic.SemanticObject | None:
-    if entry is None or not isinstance(entry.value, semantic.SemanticObject):
-        return None
-    return entry.value
-
-
-def _parse_bool_or_none(value: str | None) -> bool | None:
-    if value is None:
-        return None
-    if value == "yes":
-        return True
-    if value == "no":
-        return False
-    return None
-
-
-def _parse_int_or_none(value: str | None) -> int | None:
-    if value is None:
-        return None
-    return int(value)

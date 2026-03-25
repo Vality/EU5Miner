@@ -8,6 +8,7 @@ from collections.abc import Iterable
 from dataclasses import dataclass
 
 from eu5miner.domains._macros import collect_parameters_from_object
+from eu5miner.domains._parse_helpers import parse_int_or_none
 from eu5miner.formats.semantic import (
     SemanticDocument,
     SemanticEntry,
@@ -246,7 +247,7 @@ def _parse_random_events(block: SemanticObject | None) -> OnActionRandomEvents |
         if not isinstance(entry.value, SemanticScalar):
             continue
 
-        weight = _parse_int_or_none(entry.key)
+        weight = parse_int_or_none(entry.key)
         if weight is None:
             continue
 
@@ -260,10 +261,3 @@ def _parse_random_events(block: SemanticObject | None) -> OnActionRandomEvents |
         chance_of_no_event=block.get_object("chance_of_no_event"),
         body=block,
     )
-
-
-def _parse_int_or_none(value: str) -> int | None:
-    try:
-        return int(value)
-    except ValueError:
-        return None

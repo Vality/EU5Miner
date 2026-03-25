@@ -4,6 +4,14 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from eu5miner.domains._parse_helpers import (
+    body_value_text,
+    entry_scalar_text,
+    object_child_keys,
+    parse_bool_or_none,
+    parse_float_or_none,
+    parse_int_or_none,
+)
 from eu5miner.formats.semantic import (
     SemanticDocument,
     SemanticEntry,
@@ -86,38 +94,38 @@ def parse_religion_document(text: str) -> ReligionDocument:
                 name=entry.key,
                 body=entry.value,
                 group=entry.value.get_scalar("group"),
-                color=_get_value_text(entry.value, "color"),
+                color=body_value_text(entry.value, "color"),
                 language=entry.value.get_scalar("language"),
                 enable=entry.value.get_scalar("enable"),
                 important_country=entry.value.get_scalar("important_country"),
-                tithe=_parse_float_or_none(entry.value.get_scalar("tithe")),
-                religious_aspects=_parse_int_or_none(
+                tithe=parse_float_or_none(entry.value.get_scalar("tithe")),
+                religious_aspects=parse_int_or_none(
                     entry.value.get_scalar("religious_aspects")
                 ),
-                max_sects=_parse_int_or_none(entry.value.get_scalar("max_sects")),
-                ai_wants_convert=_parse_bool_or_none(
+                max_sects=parse_int_or_none(entry.value.get_scalar("max_sects")),
+                ai_wants_convert=parse_bool_or_none(
                     entry.value.get_scalar("ai_wants_convert")
                 ),
-                has_religious_influence=_parse_bool_or_none(
+                has_religious_influence=parse_bool_or_none(
                     entry.value.get_scalar("has_religious_influence")
                 ),
-                has_canonization=_parse_bool_or_none(
+                has_canonization=parse_bool_or_none(
                     entry.value.get_scalar("has_canonization")
                 ),
-                has_religious_head=_parse_bool_or_none(
+                has_religious_head=parse_bool_or_none(
                     entry.value.get_scalar("has_religious_head")
                 ),
-                has_cardinals=_parse_bool_or_none(entry.value.get_scalar("has_cardinals")),
-                needs_reform=_parse_bool_or_none(entry.value.get_scalar("needs_reform")),
-                has_karma=_parse_bool_or_none(entry.value.get_scalar("has_karma")),
-                has_purity=_parse_bool_or_none(entry.value.get_scalar("has_purity")),
-                has_honor=_parse_bool_or_none(entry.value.get_scalar("has_honor")),
+                has_cardinals=parse_bool_or_none(entry.value.get_scalar("has_cardinals")),
+                needs_reform=parse_bool_or_none(entry.value.get_scalar("needs_reform")),
+                has_karma=parse_bool_or_none(entry.value.get_scalar("has_karma")),
+                has_purity=parse_bool_or_none(entry.value.get_scalar("has_purity")),
+                has_honor=parse_bool_or_none(entry.value.get_scalar("has_honor")),
                 definition_modifier=entry.value.get_object("definition_modifier"),
                 opinions=_parse_opinions(entry.value),
-                tags=_get_name_list(entry.value, "tags"),
-                custom_tags=_get_name_list(entry.value, "custom_tags"),
-                unique_names=_get_name_list(entry.value, "unique_names"),
-                factions=_get_name_list(entry.value, "factions"),
+                tags=object_child_keys(entry.value, "tags"),
+                custom_tags=object_child_keys(entry.value, "custom_tags"),
+                unique_names=object_child_keys(entry.value, "unique_names"),
+                factions=object_child_keys(entry.value, "factions"),
                 entry=entry,
             )
         )
@@ -136,54 +144,8 @@ def _parse_opinions(body: SemanticObject) -> tuple[ReligionOpinion, ...]:
     return tuple(
         ReligionOpinion(
             religion=entry.key,
-            stance=_scalar_value(entry),
+            stance=entry_scalar_text(entry),
             entry=entry,
         )
         for entry in opinions.entries
     )
-
-
-def _get_name_list(body: SemanticObject, key: str) -> tuple[str, ...]:
-    value = body.get_object(key)
-    if value is None:
-        return ()
-    return tuple(entry.key for entry in value.entries)
-
-
-def _scalar_value(entry: SemanticEntry | None) -> str | None:
-    if entry is None or entry.value is None:
-        return None
-    if hasattr(entry.value, "text"):
-        return entry.value.text
-    return None
-
-
-def _parse_bool_or_none(value: str | None) -> bool | None:
-    if value == "yes":
-        return True
-    if value == "no":
-        return False
-    return None
-
-
-def _parse_float_or_none(value: str | None) -> float | None:
-    if value is None:
-        return None
-    return float(value)
-
-
-def _parse_int_or_none(value: str | None) -> int | None:
-    if value is None:
-        return None
-    return int(value)
-
-
-def _get_value_text(body: SemanticObject, key: str) -> str | None:
-    entry = body.first_entry(key)
-    if entry is None or entry.value is None:
-        return None
-    if hasattr(entry.value, "text"):
-        return entry.value.text
-    if isinstance(entry.value, SemanticObject):
-        return entry.value.prefix or None
-    return None

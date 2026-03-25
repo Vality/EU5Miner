@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from eu5miner.domains._parse_helpers import parse_bool_or_none
 from eu5miner.formats.semantic import (
     SemanticDocument,
     SemanticEntry,
@@ -87,7 +88,7 @@ def parse_production_method_document(text: str) -> ProductionMethodDocument:
                 category=body.get_scalar("category"),
                 produced=body.get_scalar("produced"),
                 output=body.get_scalar("output"),
-                no_upkeep=_parse_bool_or_none(body.get_scalar("no_upkeep")),
+                no_upkeep=parse_bool_or_none(body.get_scalar("no_upkeep")),
                 potential=body.get_object("potential"),
                 allow=body.get_object("allow"),
                 inputs=tuple(inputs),
@@ -99,11 +100,3 @@ def parse_production_method_document(text: str) -> ProductionMethodDocument:
         definitions=tuple(definitions),
         semantic_document=semantic_document,
     )
-
-
-def _parse_bool_or_none(value: str | None) -> bool | None:
-    if value == "yes":
-        return True
-    if value == "no":
-        return False
-    return None

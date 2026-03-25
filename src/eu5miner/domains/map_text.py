@@ -4,6 +4,12 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from eu5miner.domains._parse_helpers import (
+    document_child_keys,
+    entry_scalar_text,
+    parse_bool_or_none,
+    parse_int_or_none,
+)
 from eu5miner.formats import semantic
 
 
@@ -76,15 +82,15 @@ def parse_default_map_document(text: str) -> DefaultMapDocument:
             ports=_get_scalar(semantic_document, "ports"),
             location_templates=_get_scalar(semantic_document, "location_templates"),
         ),
-        equator_y=_parse_int_or_none(_get_scalar(semantic_document, "equator_y")),
-        wrap_x=_parse_bool_or_none(_get_scalar(semantic_document, "wrap_x")),
+        equator_y=parse_int_or_none(_get_scalar(semantic_document, "equator_y")),
+        wrap_x=parse_bool_or_none(_get_scalar(semantic_document, "wrap_x")),
         sound_tolls=_parse_sound_tolls(semantic_document),
-        volcanoes=_get_name_list(semantic_document, "volcanoes"),
-        earthquakes=_get_name_list(semantic_document, "earthquakes"),
-        sea_zones=_get_name_list(semantic_document, "sea_zones"),
-        lakes=_get_name_list(semantic_document, "lakes"),
-        impassable_mountains=_get_name_list(semantic_document, "impassable_mountains"),
-        non_ownable=_get_name_list(semantic_document, "non_ownable"),
+        volcanoes=document_child_keys(semantic_document, "volcanoes"),
+        earthquakes=document_child_keys(semantic_document, "earthquakes"),
+        sea_zones=document_child_keys(semantic_document, "sea_zones"),
+        lakes=document_child_keys(semantic_document, "lakes"),
+        impassable_mountains=document_child_keys(semantic_document, "impassable_mountains"),
+        non_ownable=document_child_keys(semantic_document, "non_ownable"),
         semantic_document=semantic_document,
     )
 
@@ -110,18 +116,11 @@ def _parse_sound_tolls(
     return tuple(
         SoundTollDefinition(
             name=entry.key,
-            location=_scalar_value(entry),
+            location=entry_scalar_text(entry),
             entry=entry,
         )
         for entry in sound_toll_object.entries
     )
-
-
-def _get_name_list(document: semantic.SemanticDocument, key: str) -> tuple[str, ...]:
-    value = _get_object(document, key)
-    if value is None:
-        return ()
-    return tuple(entry.key for entry in value.entries)
 
 
 def _get_object(document: semantic.SemanticDocument, key: str) -> semantic.SemanticObject | None:
@@ -129,25 +128,3 @@ def _get_object(document: semantic.SemanticDocument, key: str) -> semantic.Seman
     if entry is None or not isinstance(entry.value, semantic.SemanticObject):
         return None
     return entry.value
-
-
-def _scalar_value(entry: semantic.SemanticEntry) -> str | None:
-    if not isinstance(entry.value, semantic.SemanticScalar):
-        return None
-    return entry.value.text
-
-
-def _parse_int_or_none(value: str | None) -> int | None:
-    if value is None:
-        return None
-    return int(value)
-
-
-def _parse_bool_or_none(value: str | None) -> bool | None:
-    if value is None:
-        return None
-    if value == "yes":
-        return True
-    if value == "no":
-        return False
-    return None
