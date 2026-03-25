@@ -94,8 +94,12 @@ from eu5miner.domains import (
 	build_country_description_category_usage_document,
 	parse_building_category_document,
 	parse_building_type_document,
+	parse_goods_demand_category_document,
+	parse_goods_demand_document,
+	parse_goods_document,
 	parse_on_action_document,
 	parse_on_action_documentation,
+	parse_price_document,
 	parse_country_description_category_document,
 	parse_culture_document,
 	parse_religion_document,
@@ -119,6 +123,14 @@ building_category_document = parse_building_category_document("trade_category = 
 building_type_document = parse_building_type_document(
 	"granary = { category = infrastructure_category pop_type = peasants }\n"
 )
+goods_document = parse_goods_document("iron = { method = mining category = raw_material }\n")
+goods_demand_category_document = parse_goods_demand_category_document(
+	"building_construction = { display = integer }\n"
+)
+goods_demand_document = parse_goods_demand_document(
+	"sample_demand = { iron = 0.5 category = special_demands }\n"
+)
+price_document = parse_price_document("build_road = { gold = 10 }\n")
 category_document = parse_country_description_category_document("military = {}\n")
 culture_document = parse_culture_document("example_culture = { culture_groups = { group_a } }\n")
 religion_document = parse_religion_document("example_faith = { group = abrahamic }\n")
