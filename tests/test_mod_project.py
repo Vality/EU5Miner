@@ -2,7 +2,11 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from eu5miner.domains.mod_project import ModSkeletonFileKind, plan_mod_skeleton
+from eu5miner.domains.mod_project import (
+    ModSkeletonFileKind,
+    plan_mod_skeleton,
+    plan_targeted_mod_emission,
+)
 from eu5miner.source import ContentPhase
 from eu5miner.vfs import ContentSource, ReplacePathRule, SourceKind, VirtualFilesystem
 
@@ -125,3 +129,124 @@ def test_plan_mod_skeleton_marks_existing_content_file(tmp_path: Path) -> None:
     assert skeleton.metadata_file.exists is True
     assert len(skeleton.content_files) == 1
     assert skeleton.content_files[0].exists is True
+
+
+def test_plan_targeted_mod_emission_builds_metadata_and_content_writes(
+    tmp_path: Path,
+) -> None:
+    mod_root = tmp_path / "my_mod"
+
+    vfs = VirtualFilesystem([ContentSource("my_mod", SourceKind.MOD, mod_root, 100)])
+    emission_plan = vfs.plan_mod_directory_emission(
+        "my_mod",
+        ContentPhase.IN_GAME,
+        Path("common") / "buildings",
+        intended_relative_paths=(Path("common") / "buildings" / "new.txt",),
+    )
+
+    targeted = plan_targeted_mod_emission(
+        emission_plan,
+        content_by_relative_path={Path("common") / "buildings" / "new.txt": "building = {}\n"},
+    )
+
+    assert targeted.metadata_write.path == mod_root / ".metadata" / "metadata.json"
+    assert targeted.metadata_write.content == "{}\n"
+    assert len(targeted.content_writes) == 1
+    assert targeted.content_writes[0].path == (
+        mod_root / "in_game" / "common" / "buildings" / "new.txt"
+    )
+    assert targeted.content_writes[0].content == "building = {}\n"
+
+
+def test_plan_targeted_mod_emission_adds_replace_path_to_existing_metadata(
+    tmp_path: Path,
+) -> None:
+    vanilla_root = tmp_path / "vanilla"
+    mod_root = tmp_path / "my_mod"
+
+    _write_file(vanilla_root / "in_game" / "common" / "buildings" / "a.txt", "vanilla a")
+    _write_file(mod_root / ".metadata" / "metadata.json", '{"name": "My Mod", "replace_path": []}')
+
+    vfs = VirtualFilesystem(
+        [
+            ContentSource("vanilla", SourceKind.VANILLA, vanilla_root, 0),
+            ContentSource("my_mod", SourceKind.MOD, mod_root, 100),
+        ]
+    )
+    emission_plan = vfs.plan_mod_directory_emission(
+        "my_mod",
+        ContentPhase.IN_GAME,
+        Path("common") / "buildings",
+        intended_relative_paths=(Path("common") / "buildings" / "a.txt",),
+    )
+
+    targeted = plan_targeted_mod_emission(emission_plan)
+
+    assert '"name": "My Mod"' in targeted.metadata_write.content
+    assert '"replace_path": [' in targeted.metadata_write.content
+    assert '"game/in_game/common/buildings"' in targeted.metadata_write.content
+
+
+def test_plan_targeted_mod_emission_deduplicates_existing_replace_path(tmp_path: Path) -> None:
+    mod_root = tmp_path / "my_mod"
+
+    _write_file(
+        mod_root / ".metadata" / "metadata.json",
+        '{"replace_path": ["game/in_game/common/buildings"]}',
+    )
+    _write_file(mod_root / "in_game" / "common" / "buildings" / "owned.txt", "owned")
+
+    vfs = VirtualFilesystem(
+        [
+            ContentSource(
+                "my_mod",
+                SourceKind.MOD,
+                mod_root,
+                100,
+                replace_rules=(
+                    ReplacePathRule(
+                        phase=ContentPhase.IN_GAME,
+                        relative_root=Path("common") / "buildings",
+                        raw_path="game/in_game/common/buildings",
+                    ),
+                ),
+            )
+        ]
+    )
+    emission_plan = vfs.plan_mod_directory_emission(
+        "my_mod",
+        ContentPhase.IN_GAME,
+        Path("common") / "buildings",
+        intended_relative_paths=(Path("common") / "buildings" / "owned.txt",),
+    )
+
+    targeted = plan_targeted_mod_emission(emission_plan)
+
+    assert targeted.metadata_write.content.count('"game/in_game/common/buildings"') == 1
+
+
+def test_plan_targeted_mod_emission_keeps_blocked_outputs_out_of_content_writes(
+    tmp_path: Path,
+) -> None:
+    mod_root = tmp_path / "my_mod"
+    late_mod_root = tmp_path / "late_mod"
+
+    _write_file(late_mod_root / "in_game" / "common" / "buildings" / "a.txt", "late mod a")
+
+    vfs = VirtualFilesystem(
+        [
+            ContentSource("my_mod", SourceKind.MOD, mod_root, 100),
+            ContentSource("late_mod", SourceKind.MOD, late_mod_root, 110),
+        ]
+    )
+    emission_plan = vfs.plan_mod_directory_emission(
+        "my_mod",
+        ContentPhase.IN_GAME,
+        Path("common") / "buildings",
+        intended_relative_paths=(Path("common") / "buildings" / "a.txt",),
+    )
+
+    targeted = plan_targeted_mod_emission(emission_plan)
+
+    assert targeted.content_writes == ()
+    assert len(targeted.blocked_emissions) == 1
