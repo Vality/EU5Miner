@@ -133,6 +133,12 @@ class EmissionEntryActionKind(StrEnum):
     CREATE = "create"
 
 
+class ModMetadataUpdateActionKind(StrEnum):
+    """Recommended metadata update for a mod emission plan."""
+
+    ADD_REPLACE_PATH = "add_replace_path"
+
+
 @dataclass(frozen=True)
 class DirectoryWriteAction:
     """Concrete recommendation for one visible file beneath a subtree."""
@@ -267,6 +273,29 @@ class DirectoryEmissionPlan:
             for emission in self.emissions
             if emission.kind is EmissionEntryActionKind.CREATE
         )
+
+
+@dataclass(frozen=True)
+class ModMetadataUpdateAction:
+    """One metadata update needed to support a mod emission plan."""
+
+    kind: ModMetadataUpdateActionKind
+    raw_path: str
+    relative_root: Path
+    reason: str
+
+
+@dataclass(frozen=True)
+class ModEmissionPlan:
+    """Mod-oriented emission plan combining file and metadata actions."""
+
+    target_source: ContentSource
+    phase: ContentPhase
+    relative_root: Path
+    absolute_root: Path
+    metadata_path: Path
+    directory_plan: DirectoryEmissionPlan
+    metadata_update_actions: tuple[ModMetadataUpdateAction, ...]
 
 
 class VirtualFilesystem:
@@ -525,6 +554,40 @@ class VirtualFilesystem:
             emissions=tuple(emissions),
         )
 
+    def plan_mod_directory_emission(
+        self,
+        target_source_name: str,
+        phase: ContentPhase,
+        relative_root: str | Path,
+        intended_relative_paths: tuple[str | Path, ...] = (),
+    ) -> ModEmissionPlan:
+        target_source = self.get_source(target_source_name)
+        if target_source is None:
+            raise ValueError(f"Unknown content source: {target_source_name}")
+        if target_source.kind is not SourceKind.MOD:
+            raise ValueError("Mod emission planning requires a mod content source")
+
+        directory_plan = self.plan_directory_emission(
+            target_source_name,
+            phase,
+            relative_root,
+            intended_relative_paths=intended_relative_paths,
+        )
+        metadata_update_actions = tuple(
+            _metadata_update_for_subtree_action(action)
+            for action in directory_plan.subtree_actions
+        )
+
+        return ModEmissionPlan(
+            target_source=target_source,
+            phase=phase,
+            relative_root=directory_plan.relative_root,
+            absolute_root=directory_plan.absolute_root,
+            metadata_path=target_source.root / ".metadata" / "metadata.json",
+            directory_plan=directory_plan,
+            metadata_update_actions=metadata_update_actions,
+        )
+
     def _is_hidden_by_later_replace_path(self, source_file: SourceFile) -> bool:
         for source in self._sources:
             if source.priority <= source_file.source.priority:
@@ -635,3 +698,18 @@ def _classify_emission_kind(write_plan: WritePlan, intended: bool) -> EmissionEn
 
 def _path_is_within_root(path: Path, root: Path) -> bool:
     return path == root or root in path.parents
+
+
+def _metadata_update_for_subtree_action(action: SubtreeWriteAction) -> ModMetadataUpdateAction:
+    if action.kind is SubtreeWriteActionKind.ADD_REPLACE_PATH:
+        return ModMetadataUpdateAction(
+            kind=ModMetadataUpdateActionKind.ADD_REPLACE_PATH,
+            raw_path=_replace_path_raw_text(action.relative_root),
+            relative_root=action.relative_root,
+            reason=action.reason,
+        )
+    raise ValueError(f"Unsupported subtree action for metadata update: {action.kind}")
+
+
+def _replace_path_raw_text(relative_root: Path) -> str:
+    return f"game/in_game/{relative_root.as_posix()}"
