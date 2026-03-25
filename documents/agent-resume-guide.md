@@ -143,6 +143,7 @@ Implemented and green:
 - typed CSV helpers for `adjacencies.csv` and `ports.csv`, including integer coordinate parsing and normalization of the trailing marker column in ports rows
 - location/setup cross-linking helpers that merge `definitions.txt`, `10_countries.txt`, and `21_locations.txt` into a per-location index with hierarchy paths, country ownership/control categories, capital references, and optional location setup bodies
 - typed metadata helpers that normalize shared DLC and local mod `.metadata/metadata.json` content, including optional relationship entries and replace-path/tag accessors
+- scripted value adapter for top-level named scalar constants and object formulas, with helper accessors for scalar text versus formula bodies and macro-parameter discovery for formula-based values
 - VFS replace-path support that loads metadata-driven rules from DLC or mod metadata, hides lower-priority files inside replaced trees, exposes precedence-aware write planning for exact target paths, subtree-level ownership summaries, intended emitted files, and mod-scoped metadata updates, derives concrete recommendations such as create, keep, override, blocked, and add-replace-path, supports a first mod skeleton planner that turns a mod emission plan into required directories, metadata.json handling, intended content files, and separated blocked outputs, includes targeted emission helpers that render metadata.json content and per-file write payloads for intended non-blocked outputs, includes filesystem materialization helpers that apply those explicit planned writes to disk, exposes a public `eu5miner.mods` facade with stable plan/apply/report entrypoints, and now includes CLI plan/apply commands that exercise the same workflow with explicit advisories, warnings, overwrite handling, and recursive content-root inputs
 
 Recently validated:
@@ -155,10 +156,11 @@ Recently validated:
 - `default.map` has a small stable top-level contract for referenced file names plus scalar map settings, while its large gameplay-relevant blocks are mostly list-like named-location sets that can be normalized without adding map-specific logic to the generic parser layers
 - `adjacencies.csv` currently uses a stable `From/To/Type/Through/start_x/start_y/stop_x/stop_y/Comment` schema with all observed rows typed as `sea`, while `ports.csv` uses `LandProvince/SeaZone/x/y` plus a trailing constant marker column that is better normalized in a typed helper than exposed directly from the generic CSV reader
 - `10_countries.txt` is the primary source for country-to-location ownership/control sets and capital locations, while `21_locations.txt` carries location-scoped setup objects and `definitions.txt` supplies the hierarchy path for each location name
+- BOM-prefixed Clausewitz script files now parse consistently through the CST and semantic layers, which matters for shipped scalar-heavy files such as `common/script_values/eu4_conversions.txt`
 
 ## Next Planned Work
 
-The active top-level target is to finish the library integration pass: audit exports and naming, update README and CLI-facing examples, and keep the CLI as a thin wrapper over the stable mod workflow facade. After that, the next recommended domain target is `script values`, followed by the rest of the unfinished foundational scripted and identity families.
+The library integration pass is complete enough to move back into domain coverage. The next recommended domain target is `cultures`, followed by `religions` and the remaining unfinished foundational scripted families.
 
 The broader validation sweep is intentionally deferred for later and should stay optional rather than becoming part of the default fast development loop.
 

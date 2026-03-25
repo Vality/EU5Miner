@@ -66,3 +66,41 @@ def test_semantic_document_supports_inline_scalars() -> None:
     assert entry.operator == ">"
     assert isinstance(entry.value, SemanticScalar)
     assert entry.value.text == "70"
+
+
+def test_semantic_document_splits_consecutive_scalar_assignments_by_line() -> None:
+    document = parse_semantic_document(
+        "first_value = 1\n"
+        "second_value = 2\n"
+        "third_value = 3\n"
+    )
+
+    assert [entry.key for entry in document.entries] == [
+        "first_value",
+        "second_value",
+        "third_value",
+    ]
+    values = [
+        entry.value.text if isinstance(entry.value, SemanticScalar) else None
+        for entry in document.entries
+    ]
+
+    assert values == [
+        "1",
+        "2",
+        "3",
+    ]
+
+
+def test_semantic_document_splits_bom_prefixed_consecutive_scalar_assignments() -> None:
+    document = parse_semantic_document(
+        "\ufefffirst_value = 1\n"
+        "second_value = 2\n"
+        "third_value = 3\n"
+    )
+
+    assert [entry.key for entry in document.entries] == [
+        "first_value",
+        "second_value",
+        "third_value",
+    ]
