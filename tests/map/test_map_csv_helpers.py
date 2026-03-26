@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from eu5miner.domains.map_csv_helpers import (
+from eu5miner.domains.map.map_csv_helpers import (
     parse_map_adjacencies_document,
     parse_map_ports_document,
 )
@@ -84,3 +84,4 @@ def test_map_ports_missing_marker_is_none() -> None:
     port = document.get_port("stockholm")
     assert port is not None
     assert port.marker is None
+

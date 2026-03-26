@@ -8,7 +8,7 @@ from eu5miner.domains.country_description_categories import (
     build_country_description_category_usage_document,
     parse_country_description_category_document,
 )
-from eu5miner.domains.setup_countries import parse_setup_country_document
+from eu5miner.domains.map.setup_countries import parse_setup_country_document
 from eu5miner.source import GameInstall
 
 
@@ -87,3 +87,4 @@ def test_build_country_description_category_usage_document_tracks_unknown_catego
     assert bbb is not None
     assert bbb.category is None
     assert bbb.is_defined is False
+

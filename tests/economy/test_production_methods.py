@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from eu5miner.domains.production_methods import parse_production_method_document
+from eu5miner.domains.economy.production_methods import parse_production_method_document
 from eu5miner.source import GameInstall
 
 
@@ -58,3 +58,4 @@ def test_production_method_parses_inline_fields() -> None:
     assert definition.category == "building_maintenance"
     assert definition.no_upkeep is True
     assert definition.allow is not None
+

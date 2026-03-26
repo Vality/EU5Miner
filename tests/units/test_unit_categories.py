@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from eu5miner.domains.unit_categories import parse_unit_category_document
+from eu5miner.domains.units.unit_categories import parse_unit_category_document
 from eu5miner.source import GameInstall
 
 
@@ -63,3 +63,4 @@ def test_unit_category_parses_inline_variant_fields() -> None:
     assert definition.auxiliary is True
     assert definition.combat is not None
     assert definition.get_modifier("attrition_loss") == "0.25"
+

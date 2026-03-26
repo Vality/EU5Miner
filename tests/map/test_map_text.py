@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from eu5miner.domains.map_text import parse_default_map_document
+from eu5miner.domains.map.map_text import parse_default_map_document
 from eu5miner.source import GameInstall
 
 
@@ -87,3 +87,4 @@ def test_missing_default_map_sections_return_empty_or_none() -> None:
     assert document.sound_tolls == ()
     assert document.volcanoes == ()
     assert document.earthquakes == ()
+

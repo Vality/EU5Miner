@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from eu5miner.domains.location_setup_links import (
+from eu5miner.domains.map.location_setup_links import (
     build_linked_location_document,
     parse_country_location_document,
     parse_location_hierarchy_document,
@@ -123,3 +123,4 @@ def test_build_real_linked_location_document(game_install: GameInstall) -> None:
     assert malmo.hierarchy is not None
     assert malmo.location_setup is not None
     assert linked.get_definition("malmo") == malmo
+

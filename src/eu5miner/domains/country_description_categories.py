@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from eu5miner.domains.interfaces import get_by_name, names_from_named
-from eu5miner.domains.setup_countries import SetupCountryDefinition, SetupCountryDocument
+from eu5miner.domains.map.setup_countries import SetupCountryDefinition, SetupCountryDocument
 from eu5miner.formats.semantic import (
     SemanticDocument,
     SemanticEntry,
@@ -140,3 +140,4 @@ def build_country_description_category_usage_document(
         usages=usages,
         assignments=assignments,
     )
+

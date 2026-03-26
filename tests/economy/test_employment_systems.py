@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from eu5miner.domains.employment_systems import parse_employment_system_document
+from eu5miner.domains.economy.employment_systems import parse_employment_system_document
 from eu5miner.source import GameInstall
 
 
@@ -44,3 +44,4 @@ def test_employment_system_parses_inline_fields() -> None:
     assert definition.country_modifier is not None
     assert definition.priority is not None
     assert definition.ai_will_do is not None
+

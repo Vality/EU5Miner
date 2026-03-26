@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from eu5miner.domains.goods_demand_categories import parse_goods_demand_category_document
+from eu5miner.domains.economy.goods_demand_categories import parse_goods_demand_category_document
 from eu5miner.source import GameInstall
 
 
@@ -33,3 +33,4 @@ def test_goods_demand_category_parses_inline_definition() -> None:
     definition = document.get_definition("special_demands")
     assert definition is not None
     assert definition.display == "integer"
+

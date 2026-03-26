@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from eu5miner.domains.goods import parse_goods_document
+from eu5miner.domains.economy.goods import parse_goods_document
 from eu5miner.source import GameInstall
 
 
@@ -62,3 +62,4 @@ def test_goods_parses_inline_fields() -> None:
     assert definition.origin_in_new_world is True
     assert definition.demand_add[0].name == "all"
     assert definition.custom_tags == ("strategic",)
+

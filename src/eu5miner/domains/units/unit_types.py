@@ -11,7 +11,7 @@ from eu5miner.domains._parse_helpers import (
     object_child_keys,
     parse_bool_or_none,
 )
-from eu5miner.domains._unit_helpers import UnitModifierValue, collect_unit_modifier_values, get_unit_modifier
+from eu5miner.domains.units._unit_helpers import UnitModifierValue, collect_unit_modifier_values, get_unit_modifier
 from eu5miner.formats.semantic import (
     SemanticDocument,
     SemanticEntry,
@@ -154,3 +154,4 @@ def _parse_scalar_or_object(entry: SemanticEntry | None) -> str | SemanticObject
     if scalar is not None:
         return scalar
     return entry_object(entry)
+
