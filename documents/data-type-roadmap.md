@@ -79,10 +79,8 @@ Order:
 
 Order:
 
-1. peace treaties
-2. subject types and subject military stances
-3. country interactions and character interactions
-4. unit types, unit abilities, and unit categories
+1. country interactions and character interactions
+2. unit types, unit abilities, and unit categories
 
 ### 6. Government and Society Systems
 
