@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import Protocol, runtime_checkable
 
 from eu5miner.domains._parse_helpers import entry_scalar_text
 from eu5miner.formats.semantic import SemanticEntry, SemanticObject
@@ -46,6 +47,12 @@ class UnitModifierValue:
     entry: SemanticEntry
 
 
+@runtime_checkable
+class UnitModifierBearingLike(Protocol):
+    @property
+    def modifier_values(self) -> tuple[UnitModifierValue, ...]: ...
+
+
 def collect_unit_modifier_values(body: SemanticObject) -> tuple[UnitModifierValue, ...]:
     values: list[UnitModifierValue] = []
     for entry in body.entries:
@@ -56,3 +63,10 @@ def collect_unit_modifier_values(body: SemanticObject) -> tuple[UnitModifierValu
             continue
         values.append(UnitModifierValue(key=entry.key, value=scalar, entry=entry))
     return tuple(values)
+
+
+def get_unit_modifier(definition: UnitModifierBearingLike, key: str) -> str | None:
+    for modifier in definition.modifier_values:
+        if modifier.key == key:
+            return modifier.value
+    return None

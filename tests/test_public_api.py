@@ -11,6 +11,7 @@ from eu5miner import (
     plan_mod_update,
 )
 from eu5miner.domains import (
+    BodyBackedDefinitionLike,
     DiplomacyGraphCatalog,
     DiplomacyGraphReport,
     EstateDefinition,
@@ -69,6 +70,7 @@ from eu5miner.domains import (
     UnitAbilityDocument,
     UnitCategoryDefinition,
     UnitCategoryDocument,
+    UnitModifierBearingLike,
     UnitModifierValue,
     UnitTypeDefinition,
     UnitTypeDocument,
@@ -95,6 +97,8 @@ from eu5miner.domains import (
     flatten_definitions,
     get_by_name,
     get_by_tag,
+    get_scalar_from_body,
+    get_unit_modifier,
     names_from_named,
     parse_attribute_column_document,
     parse_building_category_document,
@@ -435,10 +439,14 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     assert flatten_definitions((estate_document,)) == estate_document.definitions
     assert names_from_named(estate_document.definitions) == ("sample_estate",)
     assert get_by_name(estate_document.definitions, "sample_estate") is estate_document.definitions[0]
+    assert isinstance(price_document.definitions[0], BodyBackedDefinitionLike)
+    assert get_scalar_from_body(price_document.definitions[0], "gold") == "10"
     assert isinstance(setup_document, TaggedDefinitionDocumentLike)
     assert isinstance(setup_document.definitions[0], TaggedDefinitionLike)
     assert tags_from_tagged(setup_document.definitions) == ("FRA",)
     assert get_by_tag(setup_document.definitions, "FRA") is setup_document.definitions[0]
+    assert isinstance(unit_category_document.definitions[0], UnitModifierBearingLike)
+    assert get_unit_modifier(unit_category_document.definitions[0], "movement_speed") is None
     assert war_catalog.get_peace_treaty("peace_example") is not None
     assert war_catalog.get_subject_type("sample_subject") is not None
     assert diplomacy_catalog.get_subject_type("sample_subject") is not None

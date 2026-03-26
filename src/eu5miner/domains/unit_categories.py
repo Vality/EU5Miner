@@ -4,9 +4,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from eu5miner.domains.interfaces import get_by_name, names_from_named
+from eu5miner.domains.interfaces import get_by_name, get_scalar_from_body, names_from_named
 from eu5miner.domains._parse_helpers import parse_bool_or_none, parse_float_or_none, parse_int_or_none
-from eu5miner.domains._unit_helpers import UnitModifierValue, collect_unit_modifier_values
+from eu5miner.domains._unit_helpers import UnitModifierValue, collect_unit_modifier_values, get_unit_modifier
 from eu5miner.formats.semantic import (
     SemanticDocument,
     SemanticEntry,
@@ -35,13 +35,10 @@ class UnitCategoryDefinition:
     entry: SemanticEntry
 
     def get_scalar(self, key: str) -> str | None:
-        return self.body.get_scalar(key)
+        return get_scalar_from_body(self, key)
 
     def get_modifier(self, key: str) -> str | None:
-        for modifier in self.modifier_values:
-            if modifier.key == key:
-                return modifier.value
-        return None
+        return get_unit_modifier(self, key)
 
 
 @dataclass(frozen=True)

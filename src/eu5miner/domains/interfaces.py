@@ -5,6 +5,8 @@ from __future__ import annotations
 from collections.abc import Iterable, Sequence
 from typing import Protocol, TypeVar, runtime_checkable
 
+from eu5miner.formats.semantic import SemanticObject
+
 
 @runtime_checkable
 class NamedDefinitionLike(Protocol):
@@ -16,6 +18,12 @@ class NamedDefinitionLike(Protocol):
 class TaggedDefinitionLike(Protocol):
     @property
     def tag(self) -> str: ...
+
+
+@runtime_checkable
+class BodyBackedDefinitionLike(Protocol):
+    @property
+    def body(self) -> SemanticObject: ...
 
 
 NamedDefinitionT = TypeVar("NamedDefinitionT", bound=NamedDefinitionLike)
@@ -86,3 +94,7 @@ def flatten_definitions(
         for document in documents
         for definition in document.definitions
     )
+
+
+def get_scalar_from_body(definition: BodyBackedDefinitionLike, key: str) -> str | None:
+    return definition.body.get_scalar(key)

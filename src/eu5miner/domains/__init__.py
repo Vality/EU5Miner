@@ -195,6 +195,7 @@ from eu5miner.domains.institutions import (
 	parse_institution_document,
 )
 from eu5miner.domains.interfaces import (
+	BodyBackedDefinitionLike,
 	NamedDefinitionDocumentLike,
 	NamedDefinitionLike,
 	TaggedDefinitionDocumentLike,
@@ -202,6 +203,7 @@ from eu5miner.domains.interfaces import (
 	flatten_definitions,
 	get_by_name,
 	get_by_tag,
+	get_scalar_from_body,
 	names_from_named,
 	tags_from_tagged,
 )
@@ -406,7 +408,7 @@ from eu5miner.domains.unit_types import (
 	UnitTypeDocument,
 	parse_unit_type_document,
 )
-from eu5miner.domains._unit_helpers import UnitModifierValue
+from eu5miner.domains._unit_helpers import UnitModifierBearingLike, UnitModifierValue, get_unit_modifier
 from eu5miner.domains.setup_countries import (
 	SetupCountryDefinition,
 	SetupCountryDocument,
@@ -513,6 +515,7 @@ __all__ = [
 	"HolySiteTypeDocument",
 	"InstitutionDefinition",
 	"InstitutionDocument",
+	"BodyBackedDefinitionLike",
 	"NamedDefinitionDocumentLike",
 	"NamedDefinitionLike",
 	"LawDefinition",
@@ -620,6 +623,7 @@ __all__ = [
 	"UnitCategoryDefinition",
 	"UnitCategoryDocument",
 	"UnitMercenariesPerLocation",
+	"UnitModifierBearingLike",
 	"UnitModifierValue",
 	"UnitTypeDefinition",
 	"UnitTypeDocument",
@@ -665,6 +669,8 @@ __all__ = [
 	"flatten_definitions",
 	"get_by_name",
 	"get_by_tag",
+	"get_scalar_from_body",
+	"get_unit_modifier",
     "iter_phase_localization_sources",
     "materialize_targeted_mod_emission",
 	"names_from_named",
