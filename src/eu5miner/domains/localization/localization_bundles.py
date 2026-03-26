@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from eu5miner.domains.localization_helpers import (
+from eu5miner.domains.localization.localization_helpers import (
     CustomizableLocalizationDocument,
     EffectLocalizationDefinition,
     EffectLocalizationDocument,
@@ -157,3 +157,4 @@ def _collect_variant_references(
             )
 
     return tuple(references)
+

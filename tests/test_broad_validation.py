@@ -48,12 +48,12 @@ from eu5miner.domains.religion.holy_sites import (
 from eu5miner.domains.religion.holy_site_types import parse_holy_site_type_document
 from eu5miner.domains.institutions import parse_institution_document
 from eu5miner.domains.government.laws import build_law_policy_catalog, parse_law_document
-from eu5miner.domains.localization_bundles import (
+from eu5miner.domains.localization.localization_bundles import (
     build_localization_bundle,
     collect_customizable_localization_references,
     find_missing_localization_references,
 )
-from eu5miner.domains.localization_helpers import (
+from eu5miner.domains.localization.localization_helpers import (
     parse_customizable_localization_document,
     parse_effect_localization_document,
     parse_trigger_localization_document,
@@ -675,4 +675,5 @@ def test_broad_real_install_helper_integration_sweep(game_install: GameInstall) 
 
     assert parse_semicolon_csv(_read_text(representative_files["map_adjacencies"]))
     assert parse_metadata_json(_read_text(representative_files["dlc_metadata"]))
+
 

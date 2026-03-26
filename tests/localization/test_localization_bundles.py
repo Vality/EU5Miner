@@ -4,14 +4,14 @@ from pathlib import Path
 
 import pytest
 
-from eu5miner.domains.localization_bundles import (
+from eu5miner.domains.localization.localization_bundles import (
     build_localization_bundle,
     collect_customizable_localization_references,
     collect_effect_localization_references,
     collect_trigger_localization_references,
     find_missing_localization_references,
 )
-from eu5miner.domains.localization_helpers import (
+from eu5miner.domains.localization.localization_helpers import (
     parse_customizable_localization_document,
     parse_effect_localization_document,
     parse_trigger_localization_document,
@@ -152,3 +152,4 @@ def test_missing_localization_references_are_reported() -> None:
     assert missing[0].definition_name == "sample_effect"
     assert missing[0].variant_name == "first"
     assert missing[0].localization_key == "SAMPLE_EFFECT_FIRST"
+
