@@ -32,6 +32,7 @@ def test_parse_location_hierarchy_document_inline() -> None:
     assert stockholm is not None
     assert stockholm.hierarchy_path == ("world", "region", "area", "province")
     assert stockholm.leaf_group == "province"
+    assert document.get_definition("stockholm") == stockholm
 
 
 def test_parse_country_location_document_inline() -> None:
@@ -76,6 +77,7 @@ def test_parse_real_location_hierarchy_document(game_install: GameInstall) -> No
         "western_europe",
         "scandinavian_region",
     )
+    assert document.get_definition("stockholm") == stockholm
 
 
 @pytest.mark.timeout(5)
@@ -114,8 +116,10 @@ def test_build_real_linked_location_document(game_install: GameInstall) -> None:
         for reference in stockholm.country_references
     )
     assert stockholm.has_location_setup is False
+    assert linked.get_definition("stockholm") == stockholm
 
     malmo = linked.get_location("malmo")
     assert malmo is not None
     assert malmo.hierarchy is not None
     assert malmo.location_setup is not None
+    assert linked.get_definition("malmo") == malmo

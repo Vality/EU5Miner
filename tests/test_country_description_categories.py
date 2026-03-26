@@ -44,6 +44,8 @@ def test_build_real_country_description_category_usage_document(
         setup_document,
     )
 
+    assert "military" in usage_document.names()
+
     military_usage = usage_document.get_usage("military")
     assert military_usage is not None
     assert military_usage.is_defined is True
@@ -69,6 +71,8 @@ def test_build_country_description_category_usage_document_tracks_unknown_catego
         category_document,
         setup_document,
     )
+
+    assert usage_document.names() == ("administrative", "maritime", "military")
 
     military_usage = usage_document.get_usage("military")
     assert military_usage is not None

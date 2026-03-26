@@ -73,6 +73,9 @@ class CountryDescriptionCategoryUsageDocument:
     usages: tuple[CountryDescriptionCategoryUsage, ...]
     assignments: tuple[CountryDescriptionAssignment, ...]
 
+    def names(self) -> tuple[str, ...]:
+        return tuple(usage.category_name for usage in self.usages)
+
     def get_usage(self, category_name: str) -> CountryDescriptionCategoryUsage | None:
         for usage in self.usages:
             if usage.category_name == category_name:
