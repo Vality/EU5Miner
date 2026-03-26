@@ -149,6 +149,14 @@ from eu5miner.domains.localization_helpers import (
 	parse_effect_localization_document,
 	parse_trigger_localization_document,
 )
+from eu5miner.domains.laws import (
+	LawDefinition,
+	LawDocument,
+	LawPolicyCatalog,
+	LawPolicyDefinition,
+	build_law_policy_catalog,
+	parse_law_document,
+)
 from eu5miner.domains.location_setup_links import (
 	CountryLocationDefinition,
 	CountryLocationDocument,
@@ -385,6 +393,10 @@ __all__ = [
 	"GovernmentReformDocument",
 	"GovernmentTypeDefinition",
 	"GovernmentTypeDocument",
+	"LawDefinition",
+	"LawDocument",
+	"LawPolicyCatalog",
+	"LawPolicyDefinition",
     "GuiConstant",
     "GuiDocument",
     "GuiRootDefinition",
@@ -482,6 +494,7 @@ __all__ = [
 	"build_on_action_catalog_document",
 	"build_diplomacy_graph_catalog",
 	"build_diplomacy_graph_report",
+	"build_law_policy_catalog",
 	"build_war_flow_catalog",
 	"build_country_description_category_usage_document",
     "build_linked_location_document",
@@ -518,6 +531,7 @@ __all__ = [
 	"parse_goods_demand_document",
 	"parse_goods_document",
     "parse_gui_document",
+	"parse_law_document",
     "parse_location_hierarchy_document",
     "parse_location_setup_document",
     "parse_main_menu_scenarios_document",
