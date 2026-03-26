@@ -5,7 +5,7 @@ from __future__ import annotations
 from collections.abc import Sequence
 from dataclasses import dataclass
 
-from eu5miner.domains.interfaces import flatten_definitions, get_by_name, names_from_named
+from eu5miner.domains.interfaces import flatten_definitions, get_by_name, get_scalar_from_body, names_from_named
 from eu5miner.domains._parse_helpers import object_child_keys, parse_int_or_none
 from eu5miner.domains.holy_site_types import HolySiteTypeDefinition, HolySiteTypeDocument
 from eu5miner.formats.semantic import (
@@ -29,7 +29,7 @@ class HolySiteDefinition:
     entry: SemanticEntry
 
     def get_scalar(self, key: str) -> str | None:
-        return self.body.get_scalar(key)
+        return get_scalar_from_body(self, key)
 
 
 @dataclass(frozen=True)

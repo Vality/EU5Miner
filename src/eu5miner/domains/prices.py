@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from eu5miner.domains.interfaces import get_by_name, names_from_named
+from eu5miner.domains.interfaces import get_by_name, get_scalar_from_body, names_from_named
 from eu5miner.formats.semantic import (
     SemanticDocument,
     SemanticEntry,
@@ -52,7 +52,7 @@ class PriceDefinition:
     entry: SemanticEntry
 
     def get_scalar(self, key: str) -> str | None:
-        return self.body.get_scalar(key)
+        return get_scalar_from_body(self, key)
 
 
 @dataclass(frozen=True)
