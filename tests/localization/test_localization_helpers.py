@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from eu5miner.domains.localization_helpers import (
+from eu5miner.domains.localization.localization_helpers import (
     parse_customizable_localization_document,
     parse_effect_localization_document,
     parse_trigger_localization_document,
@@ -106,3 +106,4 @@ def test_parse_trigger_localization_inline_definition() -> None:
     assert definition.get_variant("global") == "SAMPLE_TRIGGER"
     assert definition.get_variant("global_not") == "SAMPLE_TRIGGER_NOT"
     assert definition.get_variant("first") == "SAMPLE_TRIGGER_FIRST"
+

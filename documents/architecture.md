@@ -35,6 +35,18 @@ The virtual filesystem layer now also needs to carry metadata-derived precedence
 - Preserve enough structure in early readers to inform later parser and writer work.
 - Keep public APIs narrow until real usage patterns emerge from tests.
 
+## Package Layout
+
+The codebase now uses a mixed layout for domain adapters.
+
+- Keep concept-dense families in dedicated subpackages under `src/eu5miner/domains/`.
+- Current grouped families are `religion`, `government`, `diplomacy`, `map`, `economy`, `units`, and `localization`.
+- Keep smaller or still-isolated adapters at the top level until a real cluster emerges.
+- Mirror the same grouping under `tests/` so source and test navigation stay aligned.
+- Treat `src/eu5miner/domains/__init__.py` as the curated public surface even when implementations live in subpackages.
+
+This keeps navigation manageable without forcing every adapter into an extra directory layer before the grouping earns its keep.
+
 ## Initial Modules
 
 - `eu5miner.paths`: install path resolution.
@@ -42,7 +54,7 @@ The virtual filesystem layer now also needs to carry metadata-derived precedence
 - `eu5miner.vfs`: merged source modeling, provenance, and phase-aware file precedence.
 - `eu5miner.formats.cst`: tokenization and first-pass CST document model with statements, scalar values, and blocks for Clausewitz-style text.
 - `eu5miner.formats.semantic`: semantic helpers for object-like definitions, key/value access, and reusable entry lookup on top of the CST.
-- `eu5miner.domains`: domain adapters for specific EU5 data families such as scripted triggers, scripted effects, setup countries, and later events, missions, and situations.
+- `eu5miner.domains`: curated public exports for domain adapters, with denser families grouped into concept packages such as `religion`, `government`, `diplomacy`, `map`, `economy`, `units`, and `localization`.
 - `eu5miner.formats.script_text`: structural script analysis.
 - `eu5miner.formats.localization`: localization file reader.
 - `eu5miner.formats.map_csv`: semicolon CSV reader.

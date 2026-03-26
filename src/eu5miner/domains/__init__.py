@@ -158,7 +158,7 @@ from eu5miner.domains.gui import (
 	GuiTypeGroup,
 	parse_gui_document,
 )
-from eu5miner.domains.localization_bundles import (
+from eu5miner.domains.localization.localization_bundles import (
 	LocalizationBundle,
 	LocalizationBundleEntry,
 	LocalizationReference,
@@ -168,7 +168,7 @@ from eu5miner.domains.localization_bundles import (
 	collect_trigger_localization_references,
 	find_missing_localization_references,
 )
-from eu5miner.domains.localization_helpers import (
+from eu5miner.domains.localization.localization_helpers import (
 	CustomizableLocalizationDefinition,
 	CustomizableLocalizationDocument,
 	CustomizableLocalizationText,
@@ -743,4 +743,5 @@ __all__ = [
     "plan_targeted_mod_emission",
 	"tags_from_tagged",
 ]
+
 
