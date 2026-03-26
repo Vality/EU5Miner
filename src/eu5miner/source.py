@@ -161,10 +161,74 @@ class GameInstall:
             / "common"
             / "casus_belli"
             / "coalition.txt",
+            "casus_belli_subject_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "casus_belli"
+            / "make_tributary_cb.txt",
+            "casus_belli_religious_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "casus_belli"
+            / "religious_superiority.txt",
             "casus_belli_trade_sample": self.phase_dir(ContentPhase.IN_GAME)
             / "common"
             / "casus_belli"
             / "trade_conflict.txt",
+            "peace_treaty_readme": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "peace_treaties"
+            / "readme.txt",
+            "peace_treaty_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "peace_treaties"
+            / "humiliate.txt",
+            "peace_treaty_select_trigger_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "peace_treaties"
+            / "steal_maps_treaty.txt",
+            "peace_treaty_secondary_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "peace_treaties"
+            / "force_tributary.txt",
+            "peace_treaty_special_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "peace_treaties"
+            / "religious_supremacy.txt",
+            "peace_treaty_exclusive_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "peace_treaties"
+            / "dismantle_fort.txt",
+            "subject_type_readme": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "subject_types"
+            / "readme.txt",
+            "subject_type_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "subject_types"
+            / "vassal.txt",
+            "subject_type_secondary_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "subject_types"
+            / "tributary.txt",
+            "subject_type_colonial_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "subject_types"
+            / "colonial_nation.txt",
+            "subject_type_hre_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "subject_types"
+            / "hre.txt",
+            "subject_type_special_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "subject_types"
+            / "appanage.txt",
+            "subject_military_stance_readme": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "subject_military_stances"
+            / "readme.txt",
+            "subject_military_stance_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "subject_military_stances"
+            / "00_default.txt",
             "wargoal_readme": self.phase_dir(ContentPhase.IN_GAME)
             / "common"
             / "wargoals"

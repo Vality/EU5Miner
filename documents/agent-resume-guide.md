@@ -188,7 +188,7 @@ Recently validated:
 
 ## Next Planned Work
 
-The diplomacy and warfare layer now includes typed adapters for both `common/casus_belli/*.txt` and `common/wargoals/*.txt`, covering the stable mix of declaration gating, province/AI script blocks, CB-specific scalar flags, linked war-goal identifiers, and attacker/defender goal-side cost rules. The next recommended domain target is `peace treaties`, continuing the same diplomacy and warfare phase.
+The diplomacy and warfare layer now includes typed adapters for `common/casus_belli/*.txt`, `common/wargoals/*.txt`, `common/peace_treaties/*.txt`, `common/subject_types/*.txt`, and `common/subject_military_stances/*.txt`. The helper layer now follows real shipped links from peace treaties to referenced casus belli and subject types, and from casus belli onward to linked wargoals. The next recommended domain target is `country interactions and character interactions`, continuing the same diplomacy and warfare phase.
 
 The broader validation sweep is intentionally deferred for later and should stay optional rather than becoming part of the default fast development loop.
 

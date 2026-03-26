@@ -65,6 +65,8 @@ The VFS now also has an initial metadata-aware replace-path layer: source metada
 - attribute columns, first anchored on default, market, and goods column files
 - remaining trade and loan economy files validated through those same adapters
 - casus belli and wargoals
+- peace treaties and war-flow helper links
+- subject types and subject military stances
 - setup countries
 - cultures and culture groups
 - religions and religion groups
@@ -84,7 +86,7 @@ The VFS now also has an initial metadata-aware replace-path layer: source metada
 
 Next planned target:
 
-- continue diplomacy and warfare systems with peace treaties
+- continue diplomacy and warfare systems with country interactions and character interactions
 
 The optional broader validation sweep remains deferred until later; do not fold it into normal fast iteration work.
 
@@ -145,7 +147,23 @@ Important representative files:
 - `game/in_game/common/casus_belli/conquest.txt`
 - `game/in_game/common/casus_belli/00_hardcoded.txt`
 - `game/in_game/common/casus_belli/coalition.txt`
+- `game/in_game/common/casus_belli/make_tributary_cb.txt`
+- `game/in_game/common/casus_belli/religious_superiority.txt`
 - `game/in_game/common/casus_belli/trade_conflict.txt`
+- `game/in_game/common/peace_treaties/readme.txt`
+- `game/in_game/common/peace_treaties/humiliate.txt`
+- `game/in_game/common/peace_treaties/steal_maps_treaty.txt`
+- `game/in_game/common/peace_treaties/force_tributary.txt`
+- `game/in_game/common/peace_treaties/religious_supremacy.txt`
+- `game/in_game/common/peace_treaties/dismantle_fort.txt`
+- `game/in_game/common/subject_types/readme.txt`
+- `game/in_game/common/subject_types/vassal.txt`
+- `game/in_game/common/subject_types/tributary.txt`
+- `game/in_game/common/subject_types/colonial_nation.txt`
+- `game/in_game/common/subject_types/hre.txt`
+- `game/in_game/common/subject_types/appanage.txt`
+- `game/in_game/common/subject_military_stances/readme.txt`
+- `game/in_game/common/subject_military_stances/00_default.txt`
 - `game/in_game/common/wargoals/readme.txt`
 - `game/in_game/common/wargoals/00_default.txt`
 - `game/in_game/common/script_values/best_capital_for_colony.txt`

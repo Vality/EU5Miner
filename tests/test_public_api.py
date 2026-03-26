@@ -11,9 +11,12 @@ from eu5miner import (
     plan_mod_update,
 )
 from eu5miner.domains import (
+    build_war_flow_catalog,
     build_country_description_category_usage_document,
     build_linked_location_document,
     build_on_action_catalog_document,
+    collect_casus_belli_references,
+    collect_subject_type_references,
     parse_attribute_column_document,
     parse_building_category_document,
     parse_building_type_document,
@@ -30,6 +33,7 @@ from eu5miner.domains import (
     parse_mod_metadata_document,
     parse_on_action_document,
     parse_on_action_documentation,
+    parse_peace_treaty_document,
     parse_price_document,
     parse_production_method_document,
     parse_religion_document,
@@ -38,6 +42,8 @@ from eu5miner.domains import (
     parse_scripted_modifier_document,
     parse_scripted_relation_document,
     parse_scripted_trigger_document,
+    parse_subject_military_stance_document,
+    parse_subject_type_document,
     parse_setup_country_document,
     parse_wargoal_document,
 )
@@ -100,6 +106,9 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     generic_action_document = parse_generic_action_document(
         "create_market = { type = owncountry select_trigger = { looking_for_a = market } }\n"
     )
+    peace_treaty_document = parse_peace_treaty_document(
+        "peace_example = { potential = { scope:war = { casus_belli ?= casus_belli:sample_cb } } effect = { make_subject_of = { type = subject_type:sample_subject } } }\n"
+    )
     religion_document = parse_religion_document("faith = { group = example tags = { tag } }\n")
     list_document = parse_scripted_list_document(
         "adult = { base = character conditions = { is_adult = yes } }\n"
@@ -110,8 +119,20 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     relation_document = parse_scripted_relation_document(
         "my_relation = { type = diplomacy relation_type = mutual }\n"
     )
+    subject_type_document = parse_subject_type_document(
+        "sample_subject = { level = 1 allow_subjects = no }\n"
+    )
+    subject_stance_document = parse_subject_military_stance_document(
+        "sample_stance = { is_default = yes chase_navy_priority = 4 }\n"
+    )
     wargoal_document = parse_wargoal_document(
         "sample_goal = { type = superiority attacker = { conquer_cost = 1 } }\n"
+    )
+    war_catalog = build_war_flow_catalog(
+        casus_belli_documents=(casus_belli_document,),
+        wargoal_documents=(wargoal_document,),
+        peace_treaty_documents=(peace_treaty_document,),
+        subject_type_documents=(subject_type_document,),
     )
     price_document = parse_price_document("build_road = { gold = 10 }\n")
     script_value_document = parse_script_value_document("my_value = { value = 5 }\n")
@@ -135,13 +156,22 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     assert culture_document.names() == ("example",)
     assert employment_system_document.names() == ("equality",)
     assert generic_action_document.names() == ("create_market",)
+    assert peace_treaty_document.names() == ("peace_example",)
     assert price_document.names() == ("build_road",)
     assert religion_document.names() == ("faith",)
     assert list_document.names() == ("adult",)
     assert modifier_document.names() == ("my_modifier",)
     assert relation_document.names() == ("my_relation",)
+    assert subject_type_document.names() == ("sample_subject",)
+    assert subject_stance_document.names() == ("sample_stance",)
     assert wargoal_document.names() == ("sample_goal",)
     assert script_value_document.names() == ("my_value",)
+    assert collect_casus_belli_references(peace_treaty_document.definitions[0].body) == (
+        "sample_cb",
+    )
+    assert collect_subject_type_references(peace_treaty_document.definitions[0].body) == (
+        "sample_subject",
+    )
     assert default_map_document.referenced_files.as_dict() == {
         "provinces": None,
         "rivers": None,
@@ -156,5 +186,8 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     assert isinstance(definitions_entry.value, SemanticScalar)
     assert definitions_entry.value.text == '"definitions.txt"'
     assert callable(build_on_action_catalog_document)
+    assert callable(build_war_flow_catalog)
     assert callable(build_country_description_category_usage_document)
     assert callable(build_linked_location_document)
+    assert war_catalog.get_peace_treaty("peace_example") is not None
+    assert war_catalog.get_subject_type("sample_subject") is not None
