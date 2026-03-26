@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from eu5miner.domains.setup_countries import parse_setup_country_document
+from eu5miner.domains.map.setup_countries import parse_setup_country_document
 from eu5miner.source import GameInstall
 
 
@@ -65,3 +65,4 @@ def test_parse_setup_country_schema_sample() -> None:
     assert definition.color2 == "hsv360"
     assert definition.description_category == "administrative"
     assert definition.difficulty == 2
+

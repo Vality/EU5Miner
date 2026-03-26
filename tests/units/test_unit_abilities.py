@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from eu5miner.domains.unit_abilities import parse_unit_ability_document
+from eu5miner.domains.units.unit_abilities import parse_unit_ability_document
 from eu5miner.source import GameInstall
 
 
@@ -84,3 +84,4 @@ def test_unit_ability_parses_inline_variant_fields() -> None:
     assert definition.move_entity_state == "move"
     assert definition.available_states is not None
     assert definition.block_reorg is True
+

@@ -1,0 +1,1 @@
+"""Economy-related domain adapters."""

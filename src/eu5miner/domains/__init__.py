@@ -63,7 +63,7 @@ from eu5miner.domains.diplomacy.diplomacy import (
 	build_diplomacy_graph_catalog,
 	build_diplomacy_graph_report,
 )
-from eu5miner.domains.employment_systems import (
+from eu5miner.domains.economy.employment_systems import (
 	EmploymentSystemDefinition,
 	EmploymentSystemDocument,
 	parse_employment_system_document,
@@ -131,18 +131,18 @@ from eu5miner.domains.frontend_content import (
 	iter_phase_localization_sources,
 	parse_main_menu_scenarios_document,
 )
-from eu5miner.domains.goods import (
+from eu5miner.domains.economy.goods import (
 	GoodsAmount,
 	GoodsDefinition,
 	GoodsDocument,
 	parse_goods_document,
 )
-from eu5miner.domains.goods_demand_categories import (
+from eu5miner.domains.economy.goods_demand_categories import (
 	GoodsDemandCategoryDefinition,
 	GoodsDemandCategoryDocument,
 	parse_goods_demand_category_document,
 )
-from eu5miner.domains.goods_demands import (
+from eu5miner.domains.economy.goods_demands import (
 	GoodsDemandAmount,
 	GoodsDemandDefinition,
 	GoodsDemandDocument,
@@ -240,7 +240,7 @@ from eu5miner.domains.religion import (
 	build_religion_catalog,
 	build_religion_report,
 )
-from eu5miner.domains.location_setup_links import (
+from eu5miner.domains.map.location_setup_links import (
 	CountryLocationDefinition,
 	CountryLocationDocument,
 	CountryLocationGroup,
@@ -256,7 +256,7 @@ from eu5miner.domains.location_setup_links import (
 	parse_location_hierarchy_document,
 	parse_location_setup_document,
 )
-from eu5miner.domains.map_csv_helpers import (
+from eu5miner.domains.map.map_csv_helpers import (
 	MapAdjacencyDefinition,
 	MapAdjacencyDocument,
 	MapPortDefinition,
@@ -264,7 +264,7 @@ from eu5miner.domains.map_csv_helpers import (
 	parse_map_adjacencies_document,
 	parse_map_ports_document,
 )
-from eu5miner.domains.map_text import (
+from eu5miner.domains.map.map_text import (
 	DefaultMapDocument,
 	DefaultMapReferencedFiles,
 	SoundTollDefinition,
@@ -330,7 +330,7 @@ from eu5miner.domains.diplomacy.peace_treaties import (
 	PeaceTreatySelectTrigger,
 	parse_peace_treaty_document,
 )
-from eu5miner.domains.prices import (
+from eu5miner.domains.economy.prices import (
 	PriceDefinition,
 	PriceDocument,
 	parse_price_document,
@@ -340,7 +340,7 @@ from eu5miner.domains.societal_values import (
 	SocietalValueDocument,
 	parse_societal_value_document,
 )
-from eu5miner.domains.production_methods import (
+from eu5miner.domains.economy.production_methods import (
 	ProductionMethodDefinition,
 	ProductionMethodDocument,
 	ProductionMethodInput,
@@ -392,24 +392,24 @@ from eu5miner.domains.diplomacy.subject_types import (
 	SubjectTypeDocument,
 	parse_subject_type_document,
 )
-from eu5miner.domains.unit_abilities import (
+from eu5miner.domains.units.unit_abilities import (
 	UnitAbilityDefinition,
 	UnitAbilityDocument,
 	parse_unit_ability_document,
 )
-from eu5miner.domains.unit_categories import (
+from eu5miner.domains.units.unit_categories import (
 	UnitCategoryDefinition,
 	UnitCategoryDocument,
 	parse_unit_category_document,
 )
-from eu5miner.domains.unit_types import (
+from eu5miner.domains.units.unit_types import (
 	UnitMercenariesPerLocation,
 	UnitTypeDefinition,
 	UnitTypeDocument,
 	parse_unit_type_document,
 )
-from eu5miner.domains._unit_helpers import UnitModifierBearingLike, UnitModifierValue, get_unit_modifier
-from eu5miner.domains.setup_countries import (
+from eu5miner.domains.units._unit_helpers import UnitModifierBearingLike, UnitModifierValue, get_unit_modifier
+from eu5miner.domains.map.setup_countries import (
 	SetupCountryDefinition,
 	SetupCountryDocument,
 	parse_setup_country_document,
@@ -743,3 +743,4 @@ __all__ = [
     "plan_targeted_mod_emission",
 	"tags_from_tagged",
 ]
+

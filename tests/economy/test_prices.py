@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from eu5miner.domains.prices import parse_price_document
+from eu5miner.domains.economy.prices import parse_price_document
 from eu5miner.source import GameInstall
 
 
@@ -58,3 +58,4 @@ def test_price_parses_inline_fields() -> None:
     assert definition.prestige == "10"
     assert definition.min_scale == "5"
     assert definition.max_scale == "100"
+

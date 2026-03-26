@@ -6,7 +6,7 @@ from dataclasses import dataclass
 
 from eu5miner.domains.interfaces import get_by_name, get_scalar_from_body, names_from_named
 from eu5miner.domains._parse_helpers import parse_bool_or_none, parse_float_or_none, parse_int_or_none
-from eu5miner.domains._unit_helpers import UnitModifierValue, collect_unit_modifier_values, get_unit_modifier
+from eu5miner.domains.units._unit_helpers import UnitModifierValue, collect_unit_modifier_values, get_unit_modifier
 from eu5miner.formats.semantic import (
     SemanticDocument,
     SemanticEntry,
@@ -87,3 +87,4 @@ def parse_unit_category_document(text: str) -> UnitCategoryDocument:
         definitions=tuple(definitions),
         semantic_document=semantic_document,
     )
+

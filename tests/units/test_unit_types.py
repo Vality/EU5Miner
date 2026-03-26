@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from eu5miner.domains.unit_types import parse_unit_type_document
+from eu5miner.domains.units.unit_types import parse_unit_type_document
 from eu5miner.formats.semantic import SemanticObject
 from eu5miner.source import GameInstall
 
@@ -88,3 +88,4 @@ def test_unit_type_parses_inline_variant_fields() -> None:
     assert isinstance(definition.limit, SemanticObject)
     assert definition.impact is not None
     assert definition.color == "unit_green"
+

@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from eu5miner.domains.goods_demands import parse_goods_demand_document
+from eu5miner.domains.economy.goods_demands import parse_goods_demand_document
 from eu5miner.source import GameInstall
 
 
@@ -70,3 +70,4 @@ def test_goods_demand_parses_inline_fields() -> None:
     assert definition.hidden is True
     assert definition.scalar_demands[0].name == "iron"
     assert definition.scripted_demands[0].name == "wine"
+
