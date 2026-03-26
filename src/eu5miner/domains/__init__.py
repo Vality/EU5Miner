@@ -68,6 +68,16 @@ from eu5miner.domains.employment_systems import (
 	EmploymentSystemDocument,
 	parse_employment_system_document,
 )
+from eu5miner.domains.estate_privileges import (
+	EstatePrivilegeDefinition,
+	EstatePrivilegeDocument,
+	parse_estate_privilege_document,
+)
+from eu5miner.domains.estates import (
+	EstateDefinition,
+	EstateDocument,
+	parse_estate_document,
+)
 from eu5miner.domains.events import (
 	EventDefinition,
 	EventDocument,
@@ -370,6 +380,10 @@ __all__ = [
     "DefaultMapReferencedFiles",
     "DisasterDefinition",
     "DisasterDocument",
+	"EstateDefinition",
+	"EstateDocument",
+	"EstatePrivilegeDefinition",
+	"EstatePrivilegeDocument",
 	"EmploymentSystemDefinition",
 	"EmploymentSystemDocument",
     "EffectLocalizationDefinition",
@@ -521,6 +535,8 @@ __all__ = [
     "parse_customizable_localization_document",
     "parse_default_map_document",
     "parse_disaster_document",
+	"parse_estate_document",
+	"parse_estate_privilege_document",
 	"parse_employment_system_document",
     "parse_effect_localization_document",
     "parse_event_document",
