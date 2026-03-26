@@ -208,8 +208,8 @@ The immediate sequence should be:
 
 1. review the current helper layers now that the integration pass and broad audit are in place
 2. run a fresh code-duplication pass across the expanded parser and helper surface, especially the newer data-type parsing layers
-3. extend helper coverage incrementally where cross-family links justify it
-4. keep growing the optional broad sweep as new representative families land
+3. keep growing the optional broad sweep as new representative families land
+4. decide which feature-facing workflows should come next now that the remaining roadmap adapter gaps are closed
 
 ## Current Status
 
@@ -224,6 +224,7 @@ Implemented:
 - building types and building categories
 - goods, prices, and goods demand
 - production methods and employment systems
+- markets and related economic helpers, via a market catalog/report layer built over goods, prices, generic actions, and attribute columns
 - country interactions and character interactions
 - diplomacy graph/report helpers over parsed war and interaction links
 - unit types, unit abilities, and unit categories
@@ -248,7 +249,7 @@ Implemented:
 - disasters
 - customizable localization and effect/trigger localization helpers
 - localization bundles and cross-reference helpers
-- GUI script and scripted GUI
+- GUI script and scripted GUI, covered by the existing GUI adapter over constants, templates, type groups, and root definitions
 - loading screen and main menu content helpers
 - map text files such as `default.map`
 - map CSV helpers such as adjacencies and ports
