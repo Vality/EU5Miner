@@ -408,7 +408,10 @@ from eu5miner.domains.situations import (
 )
 from eu5miner.domains.war import (
 	WarFlowCatalog,
+	WarFlowReport,
+	WarReferenceEdge,
 	build_war_flow_catalog,
+	build_war_flow_report,
 	collect_casus_belli_references,
 	collect_country_interaction_references,
 	collect_subject_type_references,
@@ -616,6 +619,8 @@ __all__ = [
     "TriggerLocalizationDefinition",
     "TriggerLocalizationDocument",
 	"WarFlowCatalog",
+	"WarFlowReport",
+	"WarReferenceEdge",
 	"WargoalDefinition",
 	"WargoalDocument",
 	"WargoalParticipantDefinition",
@@ -630,6 +635,7 @@ __all__ = [
 	"build_religion_catalog",
 	"build_religion_report",
 	"build_war_flow_catalog",
+	"build_war_flow_report",
 	"build_country_description_category_usage_document",
     "build_linked_location_document",
     "build_localization_bundle",

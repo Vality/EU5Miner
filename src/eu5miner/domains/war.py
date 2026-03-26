@@ -117,6 +117,76 @@ class WarFlowCatalog:
             if subject_type_name in collect_subject_type_references(definition.body)
         )
 
+    def build_report(self) -> WarFlowReport:
+        casus_belli_wargoal_links: list[WarReferenceEdge] = []
+        peace_treaty_casus_belli_links: list[WarReferenceEdge] = []
+        peace_treaty_subject_type_links: list[WarReferenceEdge] = []
+        missing_wargoals: set[str] = set()
+        missing_casus_belli: set[str] = set()
+        missing_subject_types: set[str] = set()
+
+        for casus_belli_definition in self.casus_belli_definitions:
+            if casus_belli_definition.war_goal_type is None:
+                continue
+            casus_belli_wargoal_links.append(
+                WarReferenceEdge(
+                    source_name=casus_belli_definition.name,
+                    referenced_names=(casus_belli_definition.war_goal_type,),
+                )
+            )
+            if self.get_wargoal(casus_belli_definition.war_goal_type) is None:
+                missing_wargoals.add(casus_belli_definition.war_goal_type)
+
+        for peace_treaty_definition in self.peace_treaty_definitions:
+            casus_belli_references = collect_casus_belli_references(peace_treaty_definition.body)
+            if casus_belli_references:
+                peace_treaty_casus_belli_links.append(
+                    WarReferenceEdge(
+                        source_name=peace_treaty_definition.name,
+                        referenced_names=casus_belli_references,
+                    )
+                )
+                for reference in casus_belli_references:
+                    if self.get_casus_belli(reference) is None:
+                        missing_casus_belli.add(reference)
+
+            subject_type_references = collect_subject_type_references(peace_treaty_definition.body)
+            if subject_type_references:
+                peace_treaty_subject_type_links.append(
+                    WarReferenceEdge(
+                        source_name=peace_treaty_definition.name,
+                        referenced_names=subject_type_references,
+                    )
+                )
+                for reference in subject_type_references:
+                    if self.get_subject_type(reference) is None:
+                        missing_subject_types.add(reference)
+
+        return WarFlowReport(
+            casus_belli_wargoal_links=tuple(casus_belli_wargoal_links),
+            peace_treaty_casus_belli_links=tuple(peace_treaty_casus_belli_links),
+            peace_treaty_subject_type_links=tuple(peace_treaty_subject_type_links),
+            missing_wargoal_references=tuple(sorted(missing_wargoals)),
+            missing_casus_belli_references=tuple(sorted(missing_casus_belli)),
+            missing_subject_type_references=tuple(sorted(missing_subject_types)),
+        )
+
+
+@dataclass(frozen=True)
+class WarReferenceEdge:
+    source_name: str
+    referenced_names: tuple[str, ...]
+
+
+@dataclass(frozen=True)
+class WarFlowReport:
+    casus_belli_wargoal_links: tuple[WarReferenceEdge, ...]
+    peace_treaty_casus_belli_links: tuple[WarReferenceEdge, ...]
+    peace_treaty_subject_type_links: tuple[WarReferenceEdge, ...]
+    missing_wargoal_references: tuple[str, ...]
+    missing_casus_belli_references: tuple[str, ...]
+    missing_subject_type_references: tuple[str, ...]
+
 
 def build_war_flow_catalog(
     casus_belli_documents: Sequence[CasusBelliDocument],
@@ -146,6 +216,10 @@ def build_war_flow_catalog(
             for definition in document.definitions
         ),
     )
+
+
+def build_war_flow_report(catalog: WarFlowCatalog) -> WarFlowReport:
+    return catalog.build_report()
 
 
 def collect_casus_belli_references(body: SemanticObject) -> tuple[str, ...]:
