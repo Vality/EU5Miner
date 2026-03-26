@@ -38,6 +38,9 @@ from eu5miner.domains import (
     LawDocument,
     LawPolicyCatalog,
     LawPolicyDefinition,
+    MarketCatalog,
+    MarketReferenceEdge,
+    MarketReport,
     NamedDefinitionDocumentLike,
     NamedDefinitionLike,
     ReligiousAspectDefinition,
@@ -84,6 +87,8 @@ from eu5miner.domains import (
     build_holy_site_catalog,
     build_holy_site_report,
     build_law_policy_catalog,
+    build_market_catalog,
+    build_market_report,
     build_religion_catalog,
     build_religion_report,
     build_war_flow_catalog,
@@ -231,7 +236,12 @@ def test_domains_package_exports_curated_entrypoints() -> None:
         "sample_issue = { type = country estate = crown_estate chance = 0 on_debate_passed = { add = 1 } }\n"
     )
     generic_action_document = parse_generic_action_document(
-        "create_market = { type = owncountry select_trigger = { looking_for_a = market } }\n"
+        "create_market = {\n"
+        "    type = owncountry\n"
+        "    select_trigger = {\n"
+        "        looking_for_a = market\n"
+        "    }\n"
+        "}\n"
     )
     government_type_document = parse_government_type_document(
         "monarchy = { heir_selection = cognatic government_power = legitimacy }\n"
@@ -327,6 +337,14 @@ def test_domains_package_exports_curated_entrypoints() -> None:
         parliament_issue_documents=(parliament_issue_document,),
     )
     government_report = build_government_report(government_catalog)
+    price_document = parse_price_document("build_road = { gold = 10 }\n")
+    market_catalog = build_market_catalog(
+        goods_documents=(goods_document,),
+        price_documents=(price_document,),
+        generic_action_documents=(generic_action_document,),
+        attribute_column_documents=(attribute_column_document,),
+    )
+    market_report = build_market_report(market_catalog)
     holy_site_catalog = build_holy_site_catalog((holy_site_type_document,), (holy_site_document,))
     holy_site_report = build_holy_site_report(holy_site_catalog)
     religion_catalog = build_religion_catalog(
@@ -346,7 +364,6 @@ def test_domains_package_exports_curated_entrypoints() -> None:
         subject_type_documents=(subject_type_document,),
     )
     war_report = build_war_flow_report(war_catalog)
-    price_document = parse_price_document("build_road = { gold = 10 }\n")
     script_value_document = parse_script_value_document("my_value = { value = 5 }\n")
     default_map_document = parse_default_map_document("definitions = \"definitions.txt\"\n")
 
@@ -429,6 +446,8 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     assert callable(build_holy_site_catalog)
     assert callable(build_holy_site_report)
     assert callable(build_law_policy_catalog)
+    assert callable(build_market_catalog)
+    assert callable(build_market_report)
     assert callable(build_religion_catalog)
     assert callable(build_religion_report)
     assert callable(build_country_description_category_usage_document)
@@ -452,11 +471,15 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     assert diplomacy_catalog.get_subject_type("sample_subject") is not None
     assert law_catalog.get_policy("policy_a") is not None
     assert government_catalog.get_government_type("monarchy") is not None
+    assert market_catalog.get_market_actions()[0].name == "create_market"
+    assert market_catalog.get_goods_with_default_market_price() == ()
     assert holy_site_catalog.get_holy_site_type("temple") is not None
     assert isinstance(diplomacy_catalog, DiplomacyGraphCatalog)
     assert isinstance(diplomacy_report, DiplomacyGraphReport)
     assert isinstance(government_catalog, GovernmentCatalog)
     assert isinstance(government_report, GovernmentReport)
+    assert isinstance(market_catalog, MarketCatalog)
+    assert isinstance(market_report, MarketReport)
     assert isinstance(holy_site_catalog, HolySiteCatalog)
     assert isinstance(holy_site_report, HolySiteReport)
     assert isinstance(religion_catalog, ReligionCatalog)
@@ -470,6 +493,7 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     assert EstatePrivilegeDefinition.__name__ == "EstatePrivilegeDefinition"
     assert EstatePrivilegeDocument.__name__ == "EstatePrivilegeDocument"
     assert GovernmentReferenceEdge.__name__ == "GovernmentReferenceEdge"
+    assert MarketReferenceEdge.__name__ == "MarketReferenceEdge"
     assert HolySiteReferenceEdge.__name__ == "HolySiteReferenceEdge"
     assert ParliamentTypeDefinition.__name__ == "ParliamentTypeDefinition"
     assert ParliamentTypeDocument.__name__ == "ParliamentTypeDocument"

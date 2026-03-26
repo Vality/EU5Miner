@@ -68,6 +68,13 @@ from eu5miner.domains.economy.employment_systems import (
 	EmploymentSystemDocument,
 	parse_employment_system_document,
 )
+from eu5miner.domains.economy import (
+	MarketCatalog,
+	MarketReferenceEdge,
+	MarketReport,
+	build_market_catalog,
+	build_market_report,
+)
 from eu5miner.domains.government.estate_privileges import (
 	EstatePrivilegeDefinition,
 	EstatePrivilegeDocument,
@@ -565,6 +572,9 @@ __all__ = [
     "MissionDocument",
     "MissionPackDefinition",
     "MissionTaskDefinition",
+	"MarketCatalog",
+	"MarketReferenceEdge",
+	"MarketReport",
     "ModMetadataDocument",
     "ModRelationship",
     "ModSkeletonFile",
@@ -651,6 +661,8 @@ __all__ = [
 	"build_holy_site_catalog",
 	"build_holy_site_report",
 	"build_law_policy_catalog",
+	"build_market_catalog",
+	"build_market_report",
 	"build_religion_catalog",
 	"build_religion_report",
 	"build_war_flow_catalog",
