@@ -102,7 +102,7 @@ from eu5miner.domains.subject_types import parse_subject_type_document
 from eu5miner.domains.unit_abilities import parse_unit_ability_document
 from eu5miner.domains.unit_categories import parse_unit_category_document
 from eu5miner.domains.unit_types import parse_unit_type_document
-from eu5miner.domains.war import build_war_flow_catalog
+from eu5miner.domains.war import build_war_flow_catalog, build_war_flow_report
 from eu5miner.domains.wargoals import parse_wargoal_document
 from eu5miner.formats.localization import parse_localization
 from eu5miner.formats.map_csv import parse_semicolon_csv
@@ -512,8 +512,12 @@ def test_broad_real_install_helper_integration_sweep(game_install: GameInstall) 
             ),
         ),
     )
+    war_flow_report = build_war_flow_report(war_flow_catalog)
     assert war_flow_catalog.casus_belli_definitions
     assert war_flow_catalog.wargoal_definitions
+    assert war_flow_report.missing_wargoal_references == ()
+    assert war_flow_report.missing_casus_belli_references == ()
+    assert war_flow_report.missing_subject_type_references == ()
 
     common_dir = game_install.phase_dir(ContentPhase.IN_GAME) / "common"
     diplomacy_catalog = build_diplomacy_graph_catalog(

@@ -66,6 +66,9 @@ from eu5miner.domains import (
     UnitModifierValue,
     UnitTypeDefinition,
     UnitTypeDocument,
+    WarFlowCatalog,
+    WarFlowReport,
+    WarReferenceEdge,
     build_diplomacy_graph_catalog,
     build_diplomacy_graph_report,
     build_government_catalog,
@@ -76,6 +79,7 @@ from eu5miner.domains import (
     build_religion_catalog,
     build_religion_report,
     build_war_flow_catalog,
+    build_war_flow_report,
     build_country_description_category_usage_document,
     build_linked_location_document,
     build_on_action_catalog_document,
@@ -326,6 +330,7 @@ def test_domains_package_exports_curated_entrypoints() -> None:
         peace_treaty_documents=(peace_treaty_document,),
         subject_type_documents=(subject_type_document,),
     )
+    war_report = build_war_flow_report(war_catalog)
     price_document = parse_price_document("build_road = { gold = 10 }\n")
     script_value_document = parse_script_value_document("my_value = { value = 5 }\n")
     default_map_document = parse_default_map_document("definitions = \"definitions.txt\"\n")
@@ -413,6 +418,7 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     assert callable(build_religion_report)
     assert callable(build_country_description_category_usage_document)
     assert callable(build_linked_location_document)
+    assert callable(build_war_flow_report)
     assert war_catalog.get_peace_treaty("peace_example") is not None
     assert war_catalog.get_subject_type("sample_subject") is not None
     assert diplomacy_catalog.get_subject_type("sample_subject") is not None
@@ -427,6 +433,8 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     assert isinstance(holy_site_report, HolySiteReport)
     assert isinstance(religion_catalog, ReligionCatalog)
     assert isinstance(religion_report, ReligionReport)
+    assert isinstance(war_catalog, WarFlowCatalog)
+    assert isinstance(war_report, WarFlowReport)
     assert isinstance(law_catalog, LawPolicyCatalog)
     assert UnitModifierValue.__name__ == "UnitModifierValue"
     assert EstateDefinition.__name__ == "EstateDefinition"
@@ -459,6 +467,7 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     assert ReligiousSchoolDefinition.__name__ == "ReligiousSchoolDefinition"
     assert ReligiousSchoolDocument.__name__ == "ReligiousSchoolDocument"
     assert ReligionReferenceEdge.__name__ == "ReligionReferenceEdge"
+    assert WarReferenceEdge.__name__ == "WarReferenceEdge"
     assert ReligiousFigureDefinition.__name__ == "ReligiousFigureDefinition"
     assert ReligiousFigureDocument.__name__ == "ReligiousFigureDocument"
     assert ReligionCatalog.__name__ == "ReligionCatalog"

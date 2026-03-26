@@ -9,9 +9,11 @@ from eu5miner.domains.peace_treaties import parse_peace_treaty_document
 from eu5miner.domains.subject_types import parse_subject_type_document
 from eu5miner.domains.war import (
     build_war_flow_catalog,
+    build_war_flow_report,
     collect_casus_belli_references,
     collect_country_interaction_references,
     collect_subject_type_references,
+    WarFlowReport,
 )
 from eu5miner.domains.wargoals import parse_wargoal_document
 from eu5miner.source import GameInstall
@@ -115,6 +117,16 @@ def test_build_war_flow_catalog_links_inline_documents() -> None:
         "peace_example",
     )
 
+    report = build_war_flow_report(catalog)
+    assert tuple(edge.source_name for edge in report.casus_belli_wargoal_links) == ("cb_example",)
+    assert tuple(edge.source_name for edge in report.peace_treaty_casus_belli_links) == (
+        "peace_example",
+    )
+    assert report.missing_wargoal_references == ()
+    assert report.missing_casus_belli_references == ()
+    assert report.missing_subject_type_references == ()
+    assert isinstance(report, WarFlowReport)
+
 
 def test_collect_country_interaction_references_from_embedded_string() -> None:
     peace_treaty_document = parse_peace_treaty_document(
@@ -124,3 +136,34 @@ def test_collect_country_interaction_references_from_embedded_string() -> None:
     assert collect_country_interaction_references(peace_treaty_document.definitions[0].body) == (
         "send_warning",
     )
+
+
+def test_build_war_flow_report_collects_missing_references() -> None:
+    catalog = build_war_flow_catalog(
+        casus_belli_documents=(
+            parse_casus_belli_document("cb_example = { war_goal_type = missing_goal }\n"),
+        ),
+        wargoal_documents=(parse_wargoal_document("resolved_goal = { type = superiority }\n"),),
+        peace_treaty_documents=(
+            parse_peace_treaty_document(
+                "peace_example = {\n"
+                "    potential = { scope:war = { casus_belli ?= casus_belli:missing_cb } }\n"
+                "    effect = { make_subject_of = { type = subject_type:missing_subject } }\n"
+                "}\n"
+            ),
+        ),
+        subject_type_documents=(parse_subject_type_document("resolved_subject = { level = 1 }\n"),),
+    )
+
+    report = catalog.build_report()
+
+    assert tuple(edge.source_name for edge in report.casus_belli_wargoal_links) == ("cb_example",)
+    assert tuple(edge.source_name for edge in report.peace_treaty_casus_belli_links) == (
+        "peace_example",
+    )
+    assert tuple(edge.source_name for edge in report.peace_treaty_subject_type_links) == (
+        "peace_example",
+    )
+    assert report.missing_wargoal_references == ("missing_goal",)
+    assert report.missing_casus_belli_references == ("missing_cb",)
+    assert report.missing_subject_type_references == ("missing_subject",)
