@@ -24,6 +24,15 @@ from eu5miner.domains import (
     GovernmentReformDocument,
     GovernmentTypeDefinition,
     GovernmentTypeDocument,
+    HolySiteCatalog,
+    HolySiteDefinition,
+    HolySiteDocument,
+    HolySiteReferenceEdge,
+    HolySiteReport,
+    HolySiteTypeDefinition,
+    HolySiteTypeDocument,
+    InstitutionDefinition,
+    InstitutionDocument,
     LawDefinition,
     LawDocument,
     LawPolicyCatalog,
@@ -45,6 +54,8 @@ from eu5miner.domains import (
     build_diplomacy_graph_report,
     build_government_catalog,
     build_government_report,
+    build_holy_site_catalog,
+    build_holy_site_report,
     build_law_policy_catalog,
     build_war_flow_catalog,
     build_country_description_category_usage_document,
@@ -72,6 +83,9 @@ from eu5miner.domains import (
     parse_goods_demand_category_document,
     parse_goods_demand_document,
     parse_goods_document,
+    parse_holy_site_document,
+    parse_holy_site_type_document,
+    parse_institution_document,
     parse_law_document,
     parse_mod_metadata_document,
     parse_on_action_document,
@@ -182,6 +196,9 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     government_reform_document = parse_government_reform_document(
         "sample_reform = { government = monarchy years = 2 country_modifier = { add = 1 } }\n"
     )
+    institution_document = parse_institution_document(
+        "renaissance = { age = age_2_renaissance can_spawn = { always = yes } promote_chance = { add = 1 } }\n"
+    )
     law_document = parse_law_document(
         "sample_law = {\n"
         "    law_category = administrative\n"
@@ -203,6 +220,12 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     )
     relation_document = parse_scripted_relation_document(
         "my_relation = { type = diplomacy relation_type = mutual }\n"
+    )
+    holy_site_type_document = parse_holy_site_type_document(
+        "temple = { location_modifier = { add = 1 } }\n"
+    )
+    holy_site_document = parse_holy_site_document(
+        "sample_site = { location = rome type = temple importance = 4 religions = { catholic } }\n"
     )
     subject_type_document = parse_subject_type_document(
         "sample_subject = { level = 1 allow_subjects = no }\n"
@@ -243,6 +266,8 @@ def test_domains_package_exports_curated_entrypoints() -> None:
         parliament_issue_documents=(parliament_issue_document,),
     )
     government_report = build_government_report(government_catalog)
+    holy_site_catalog = build_holy_site_catalog((holy_site_type_document,), (holy_site_document,))
+    holy_site_report = build_holy_site_report(holy_site_catalog)
     war_catalog = build_war_flow_catalog(
         casus_belli_documents=(casus_belli_document,),
         wargoal_documents=(wargoal_document,),
@@ -280,7 +305,10 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     assert generic_action_document.names() == ("create_market",)
     assert government_type_document.names() == ("monarchy",)
     assert government_reform_document.names() == ("sample_reform",)
+    assert institution_document.names() == ("renaissance",)
     assert law_document.names() == ("sample_law",)
+    assert holy_site_type_document.names() == ("temple",)
+    assert holy_site_document.names() == ("sample_site",)
     assert peace_treaty_document.names() == ("peace_example",)
     assert price_document.names() == ("build_road",)
     assert religion_document.names() == ("faith",)
@@ -320,6 +348,8 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     assert callable(build_diplomacy_graph_report)
     assert callable(build_government_catalog)
     assert callable(build_government_report)
+    assert callable(build_holy_site_catalog)
+    assert callable(build_holy_site_report)
     assert callable(build_law_policy_catalog)
     assert callable(build_country_description_category_usage_document)
     assert callable(build_linked_location_document)
@@ -328,10 +358,13 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     assert diplomacy_catalog.get_subject_type("sample_subject") is not None
     assert law_catalog.get_policy("policy_a") is not None
     assert government_catalog.get_government_type("monarchy") is not None
+    assert holy_site_catalog.get_holy_site_type("temple") is not None
     assert isinstance(diplomacy_catalog, DiplomacyGraphCatalog)
     assert isinstance(diplomacy_report, DiplomacyGraphReport)
     assert isinstance(government_catalog, GovernmentCatalog)
     assert isinstance(government_report, GovernmentReport)
+    assert isinstance(holy_site_catalog, HolySiteCatalog)
+    assert isinstance(holy_site_report, HolySiteReport)
     assert isinstance(law_catalog, LawPolicyCatalog)
     assert UnitModifierValue.__name__ == "UnitModifierValue"
     assert EstateDefinition.__name__ == "EstateDefinition"
@@ -339,12 +372,19 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     assert EstatePrivilegeDefinition.__name__ == "EstatePrivilegeDefinition"
     assert EstatePrivilegeDocument.__name__ == "EstatePrivilegeDocument"
     assert GovernmentReferenceEdge.__name__ == "GovernmentReferenceEdge"
+    assert HolySiteReferenceEdge.__name__ == "HolySiteReferenceEdge"
     assert ParliamentTypeDefinition.__name__ == "ParliamentTypeDefinition"
     assert ParliamentTypeDocument.__name__ == "ParliamentTypeDocument"
     assert ParliamentAgendaDefinition.__name__ == "ParliamentAgendaDefinition"
     assert ParliamentAgendaDocument.__name__ == "ParliamentAgendaDocument"
     assert ParliamentIssueDefinition.__name__ == "ParliamentIssueDefinition"
     assert ParliamentIssueDocument.__name__ == "ParliamentIssueDocument"
+    assert HolySiteDefinition.__name__ == "HolySiteDefinition"
+    assert HolySiteDocument.__name__ == "HolySiteDocument"
+    assert HolySiteTypeDefinition.__name__ == "HolySiteTypeDefinition"
+    assert HolySiteTypeDocument.__name__ == "HolySiteTypeDocument"
+    assert InstitutionDefinition.__name__ == "InstitutionDefinition"
+    assert InstitutionDocument.__name__ == "InstitutionDocument"
     assert UnitTypeDefinition.__name__ == "UnitTypeDefinition"
     assert UnitTypeDocument.__name__ == "UnitTypeDocument"
     assert UnitAbilityDefinition.__name__ == "UnitAbilityDefinition"
