@@ -12,12 +12,12 @@ from eu5miner.domains.building_categories import (
 	BuildingCategoryDocument,
 	parse_building_category_document,
 )
-from eu5miner.domains.casus_belli import (
+from eu5miner.domains.diplomacy.casus_belli import (
 	CasusBelliDefinition,
 	CasusBelliDocument,
 	parse_casus_belli_document,
 )
-from eu5miner.domains.character_interactions import (
+from eu5miner.domains.diplomacy.character_interactions import (
 	CharacterInteractionColumn,
 	CharacterInteractionDefinition,
 	CharacterInteractionDocument,
@@ -29,7 +29,7 @@ from eu5miner.domains.building_types import (
 	BuildingTypeDocument,
 	parse_building_type_document,
 )
-from eu5miner.domains.country_interactions import (
+from eu5miner.domains.diplomacy.country_interactions import (
 	CountryInteractionColumn,
 	CountryInteractionDefinition,
 	CountryInteractionDocument,
@@ -56,7 +56,7 @@ from eu5miner.domains.disasters import (
 	DisasterDocument,
 	parse_disaster_document,
 )
-from eu5miner.domains.diplomacy import (
+from eu5miner.domains.diplomacy.diplomacy import (
 	DiplomacyGraphCatalog,
 	DiplomacyGraphReport,
 	DiplomacyReferenceEdge,
@@ -68,12 +68,12 @@ from eu5miner.domains.employment_systems import (
 	EmploymentSystemDocument,
 	parse_employment_system_document,
 )
-from eu5miner.domains.estate_privileges import (
+from eu5miner.domains.government.estate_privileges import (
 	EstatePrivilegeDefinition,
 	EstatePrivilegeDocument,
 	parse_estate_privilege_document,
 )
-from eu5miner.domains.estates import (
+from eu5miner.domains.government.estates import (
 	EstateDefinition,
 	EstateDocument,
 	parse_estate_document,
@@ -84,7 +84,7 @@ from eu5miner.domains.events import (
 	EventOption,
 	parse_event_document,
 )
-from eu5miner.domains.generic_actions import (
+from eu5miner.domains.diplomacy.generic_actions import (
 	GenericActionColumn,
 	GenericActionDefinition,
 	GenericActionDocument,
@@ -98,22 +98,22 @@ from eu5miner.domains.government import (
 	build_government_catalog,
 	build_government_report,
 )
-from eu5miner.domains.government_reforms import (
+from eu5miner.domains.government.government_reforms import (
 	GovernmentReformDefinition,
 	GovernmentReformDocument,
 	parse_government_reform_document,
 )
-from eu5miner.domains.government_types import (
+from eu5miner.domains.government.government_types import (
 	GovernmentTypeDefinition,
 	GovernmentTypeDocument,
 	parse_government_type_document,
 )
-from eu5miner.domains.holy_site_types import (
+from eu5miner.domains.religion.holy_site_types import (
 	HolySiteTypeDefinition,
 	HolySiteTypeDocument,
 	parse_holy_site_type_document,
 )
-from eu5miner.domains.holy_sites import (
+from eu5miner.domains.religion.holy_sites import (
 	HolySiteCatalog,
 	HolySiteDefinition,
 	HolySiteDocument,
@@ -181,7 +181,7 @@ from eu5miner.domains.localization_helpers import (
 	parse_effect_localization_document,
 	parse_trigger_localization_document,
 )
-from eu5miner.domains.laws import (
+from eu5miner.domains.government.laws import (
 	LawDefinition,
 	LawDocument,
 	LawPolicyCatalog,
@@ -207,28 +207,28 @@ from eu5miner.domains.interfaces import (
 	names_from_named,
 	tags_from_tagged,
 )
-from eu5miner.domains.religious_aspects import (
+from eu5miner.domains.religion.religious_aspects import (
 	ReligiousAspectDefinition,
 	ReligiousAspectDocument,
 	ReligiousAspectOpinion,
 	parse_religious_aspect_document,
 )
-from eu5miner.domains.religious_factions import (
+from eu5miner.domains.religion.religious_factions import (
 	ReligiousFactionDefinition,
 	ReligiousFactionDocument,
 	parse_religious_faction_document,
 )
-from eu5miner.domains.religious_figures import (
+from eu5miner.domains.religion.religious_figures import (
 	ReligiousFigureDefinition,
 	ReligiousFigureDocument,
 	parse_religious_figure_document,
 )
-from eu5miner.domains.religious_focuses import (
+from eu5miner.domains.religion.religious_focuses import (
 	ReligiousFocusDefinition,
 	ReligiousFocusDocument,
 	parse_religious_focus_document,
 )
-from eu5miner.domains.religious_schools import (
+from eu5miner.domains.religion.religious_schools import (
 	ReligiousSchoolDefinition,
 	ReligiousSchoolDocument,
 	parse_religious_school_document,
@@ -308,22 +308,22 @@ from eu5miner.domains.on_actions import (
 	parse_on_action_document,
 	parse_on_action_documentation,
 )
-from eu5miner.domains.parliament_agendas import (
+from eu5miner.domains.government.parliament_agendas import (
 	ParliamentAgendaDefinition,
 	ParliamentAgendaDocument,
 	parse_parliament_agenda_document,
 )
-from eu5miner.domains.parliament_issues import (
+from eu5miner.domains.government.parliament_issues import (
 	ParliamentIssueDefinition,
 	ParliamentIssueDocument,
 	parse_parliament_issue_document,
 )
-from eu5miner.domains.parliament_types import (
+from eu5miner.domains.government.parliament_types import (
 	ParliamentTypeDefinition,
 	ParliamentTypeDocument,
 	parse_parliament_type_document,
 )
-from eu5miner.domains.peace_treaties import (
+from eu5miner.domains.diplomacy.peace_treaties import (
 	PeaceTreatyColumn,
 	PeaceTreatyDefinition,
 	PeaceTreatyDocument,
@@ -346,7 +346,7 @@ from eu5miner.domains.production_methods import (
 	ProductionMethodInput,
 	parse_production_method_document,
 )
-from eu5miner.domains.religions import (
+from eu5miner.domains.religion.religions import (
 	ReligionDefinition,
 	ReligionDocument,
 	ReligionOpinion,
@@ -387,7 +387,7 @@ from eu5miner.domains.subject_military_stances import (
 	SubjectMilitaryStanceDocument,
 	parse_subject_military_stance_document,
 )
-from eu5miner.domains.subject_types import (
+from eu5miner.domains.diplomacy.subject_types import (
 	SubjectTypeDefinition,
 	SubjectTypeDocument,
 	parse_subject_type_document,
@@ -419,7 +419,7 @@ from eu5miner.domains.situations import (
 	SituationDocument,
 	parse_situation_document,
 )
-from eu5miner.domains.war import (
+from eu5miner.domains.diplomacy import (
 	WarFlowCatalog,
 	WarFlowReport,
 	WarReferenceEdge,
@@ -429,7 +429,7 @@ from eu5miner.domains.war import (
 	collect_country_interaction_references,
 	collect_subject_type_references,
 )
-from eu5miner.domains.wargoals import (
+from eu5miner.domains.diplomacy.wargoals import (
 	WargoalDefinition,
 	WargoalDocument,
 	WargoalParticipantDefinition,
