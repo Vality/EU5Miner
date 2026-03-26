@@ -188,7 +188,7 @@ Recently validated:
 
 ## Next Planned Work
 
-The diplomacy and warfare layer now includes typed adapters for `common/casus_belli/*.txt`, `common/wargoals/*.txt`, `common/peace_treaties/*.txt`, `common/subject_types/*.txt`, and `common/subject_military_stances/*.txt`. The helper layer now follows real shipped links from peace treaties to referenced casus belli and subject types, and from casus belli onward to linked wargoals. The next recommended domain target is `country interactions and character interactions`, continuing the same diplomacy and warfare phase.
+The diplomacy and warfare layer now includes typed adapters for `common/casus_belli/*.txt`, `common/wargoals/*.txt`, `common/peace_treaties/*.txt`, `common/subject_types/*.txt`, `common/subject_military_stances/*.txt`, `common/country_interactions/*.txt`, and `common/character_interactions/*.txt`. The helper layer now follows real shipped links from peace treaties to referenced casus belli and subject types, and from casus belli onward to linked wargoals. The next recommended step is a higher-level diplomacy graph/report helper layer over those parsed war and interaction links before moving on to unit families.
 
 The broader validation sweep is intentionally deferred for later and should stay optional rather than becoming part of the default fast development loop.
 

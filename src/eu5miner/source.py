@@ -229,6 +229,34 @@ class GameInstall:
             / "common"
             / "subject_military_stances"
             / "00_default.txt",
+            "country_interaction_readme": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "country_interactions"
+            / "readme.txt",
+            "country_interaction_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "country_interactions"
+            / "request_loan.txt",
+            "country_interaction_secondary_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "country_interactions"
+            / "sell_icon.txt",
+            "character_interaction_readme": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "character_interactions"
+            / "readme.txt",
+            "character_interaction_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "character_interactions"
+            / "abdicate.txt",
+            "character_interaction_secondary_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "character_interactions"
+            / "move_children_to_court.txt",
+            "character_interaction_ui_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "character_interactions"
+            / "marry_noble.txt",
             "wargoal_readme": self.phase_dir(ContentPhase.IN_GAME)
             / "common"
             / "wargoals"
