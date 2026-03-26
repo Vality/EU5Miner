@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from eu5miner.domains.interfaces import get_by_name, names_from_named
 from eu5miner.domains._parse_helpers import body_value_text
 from eu5miner.formats.semantic import (
     SemanticDocument,
@@ -33,13 +34,10 @@ class ReligiousSchoolDocument:
     semantic_document: SemanticDocument
 
     def names(self) -> tuple[str, ...]:
-        return tuple(definition.name for definition in self.definitions)
+        return names_from_named(self.definitions)
 
     def get_definition(self, name: str) -> ReligiousSchoolDefinition | None:
-        for definition in self.definitions:
-            if definition.name == name:
-                return definition
-        return None
+        return get_by_name(self.definitions, name)
 
 
 def parse_religious_school_document(text: str) -> ReligiousSchoolDocument:

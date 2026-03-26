@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from eu5miner.domains.interfaces import get_by_tag, tags_from_tagged
 from eu5miner.domains._parse_helpers import body_value_text, parse_int_or_none
 from eu5miner.formats.semantic import (
     SemanticDocument,
@@ -39,13 +40,10 @@ class SetupCountryDocument:
     semantic_document: SemanticDocument
 
     def tags(self) -> tuple[str, ...]:
-        return tuple(definition.tag for definition in self.definitions)
+        return tags_from_tagged(self.definitions)
 
     def get_definition(self, tag: str) -> SetupCountryDefinition | None:
-        for definition in self.definitions:
-            if definition.tag == tag:
-                return definition
-        return None
+        return get_by_tag(self.definitions, tag)
 
 
 def parse_setup_country_document(text: str) -> SetupCountryDocument:

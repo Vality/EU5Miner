@@ -194,6 +194,16 @@ from eu5miner.domains.institutions import (
 	InstitutionDocument,
 	parse_institution_document,
 )
+from eu5miner.domains.interfaces import (
+	NamedDefinitionDocumentLike,
+	NamedDefinitionLike,
+	TaggedDefinitionDocumentLike,
+	TaggedDefinitionLike,
+	get_by_name,
+	get_by_tag,
+	names_from_named,
+	tags_from_tagged,
+)
 from eu5miner.domains.religious_aspects import (
 	ReligiousAspectDefinition,
 	ReligiousAspectDocument,
@@ -502,6 +512,8 @@ __all__ = [
 	"HolySiteTypeDocument",
 	"InstitutionDefinition",
 	"InstitutionDocument",
+	"NamedDefinitionDocumentLike",
+	"NamedDefinitionLike",
 	"LawDefinition",
 	"LawDocument",
 	"LawPolicyCatalog",
@@ -616,6 +628,8 @@ __all__ = [
     "SituationDocument",
     "SoundTollDefinition",
     "TargetedModEmission",
+	"TaggedDefinitionDocumentLike",
+	"TaggedDefinitionLike",
     "TriggerLocalizationDefinition",
     "TriggerLocalizationDocument",
 	"WarFlowCatalog",
@@ -647,8 +661,11 @@ __all__ = [
     "collect_effect_localization_references",
     "collect_trigger_localization_references",
     "find_missing_localization_references",
+	"get_by_name",
+	"get_by_tag",
     "iter_phase_localization_sources",
     "materialize_targeted_mod_emission",
+	"names_from_named",
 	"parse_attribute_column_document",
 	"parse_building_category_document",
 	"parse_building_type_document",
@@ -716,4 +733,5 @@ __all__ = [
 	"parse_wargoal_document",
     "plan_mod_skeleton",
     "plan_targeted_mod_emission",
+	"tags_from_tagged",
 ]

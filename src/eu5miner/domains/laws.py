@@ -5,6 +5,7 @@ from __future__ import annotations
 from collections.abc import Sequence
 from dataclasses import dataclass
 
+from eu5miner.domains.interfaces import get_by_name, names_from_named
 from eu5miner.domains._parse_helpers import (
     entry_object,
     entry_scalar_text,
@@ -134,13 +135,10 @@ class LawDefinition:
         return self.body.get_scalar(key)
 
     def policy_names(self) -> tuple[str, ...]:
-        return tuple(policy.name for policy in self.policies)
+        return names_from_named(self.policies)
 
     def get_policy(self, name: str) -> LawPolicyDefinition | None:
-        for policy in self.policies:
-            if policy.name == name:
-                return policy
-        return None
+        return get_by_name(self.policies, name)
 
 
 @dataclass(frozen=True)
@@ -149,13 +147,10 @@ class LawDocument:
     semantic_document: SemanticDocument
 
     def names(self) -> tuple[str, ...]:
-        return tuple(definition.name for definition in self.definitions)
+        return names_from_named(self.definitions)
 
     def get_definition(self, name: str) -> LawDefinition | None:
-        for definition in self.definitions:
-            if definition.name == name:
-                return definition
-        return None
+        return get_by_name(self.definitions, name)
 
 
 @dataclass(frozen=True)
@@ -163,10 +158,7 @@ class LawPolicyCatalog:
     law_definitions: tuple[LawDefinition, ...]
 
     def get_law(self, name: str) -> LawDefinition | None:
-        for definition in self.law_definitions:
-            if definition.name == name:
-                return definition
-        return None
+        return get_by_name(self.law_definitions, name)
 
     def get_policy(self, name: str) -> LawPolicyDefinition | None:
         for definition in self.law_definitions:
