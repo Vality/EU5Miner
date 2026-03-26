@@ -17,6 +17,10 @@ from eu5miner.domains import (
     GovernmentReformDocument,
     GovernmentTypeDefinition,
     GovernmentTypeDocument,
+    LawDefinition,
+    LawDocument,
+    LawPolicyCatalog,
+    LawPolicyDefinition,
     UnitAbilityDefinition,
     UnitAbilityDocument,
     UnitCategoryDefinition,
@@ -26,6 +30,7 @@ from eu5miner.domains import (
     UnitTypeDocument,
     build_diplomacy_graph_catalog,
     build_diplomacy_graph_report,
+    build_law_policy_catalog,
     build_war_flow_catalog,
     build_country_description_category_usage_document,
     build_linked_location_document,
@@ -50,6 +55,7 @@ from eu5miner.domains import (
     parse_goods_demand_category_document,
     parse_goods_demand_document,
     parse_goods_document,
+    parse_law_document,
     parse_mod_metadata_document,
     parse_on_action_document,
     parse_on_action_documentation,
@@ -141,6 +147,15 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     government_reform_document = parse_government_reform_document(
         "sample_reform = { government = monarchy years = 2 country_modifier = { add = 1 } }\n"
     )
+    law_document = parse_law_document(
+        "sample_law = {\n"
+        "    law_category = administrative\n"
+        "    policy_a = {\n"
+        "        years = 2\n"
+        "        country_modifier = { add = 1 }\n"
+        "    }\n"
+        "}\n"
+    )
     peace_treaty_document = parse_peace_treaty_document(
         "peace_example = { potential = { scope:war = { casus_belli ?= casus_belli:sample_cb } } effect = { make_subject_of = { type = subject_type:sample_subject } } }\n"
     )
@@ -181,6 +196,7 @@ def test_domains_package_exports_curated_entrypoints() -> None:
         character_interaction_documents=(character_interaction_document,),
     )
     diplomacy_report = build_diplomacy_graph_report(diplomacy_catalog)
+    law_catalog = build_law_policy_catalog((law_document,))
     war_catalog = build_war_flow_catalog(
         casus_belli_documents=(casus_belli_document,),
         wargoal_documents=(wargoal_document,),
@@ -213,6 +229,7 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     assert generic_action_document.names() == ("create_market",)
     assert government_type_document.names() == ("monarchy",)
     assert government_reform_document.names() == ("sample_reform",)
+    assert law_document.names() == ("sample_law",)
     assert peace_treaty_document.names() == ("peace_example",)
     assert price_document.names() == ("build_road",)
     assert religion_document.names() == ("faith",)
@@ -250,13 +267,16 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     assert callable(build_war_flow_catalog)
     assert callable(build_diplomacy_graph_catalog)
     assert callable(build_diplomacy_graph_report)
+    assert callable(build_law_policy_catalog)
     assert callable(build_country_description_category_usage_document)
     assert callable(build_linked_location_document)
     assert war_catalog.get_peace_treaty("peace_example") is not None
     assert war_catalog.get_subject_type("sample_subject") is not None
     assert diplomacy_catalog.get_subject_type("sample_subject") is not None
+    assert law_catalog.get_policy("policy_a") is not None
     assert isinstance(diplomacy_catalog, DiplomacyGraphCatalog)
     assert isinstance(diplomacy_report, DiplomacyGraphReport)
+    assert isinstance(law_catalog, LawPolicyCatalog)
     assert UnitModifierValue.__name__ == "UnitModifierValue"
     assert UnitTypeDefinition.__name__ == "UnitTypeDefinition"
     assert UnitTypeDocument.__name__ == "UnitTypeDocument"
@@ -268,3 +288,6 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     assert GovernmentTypeDocument.__name__ == "GovernmentTypeDocument"
     assert GovernmentReformDefinition.__name__ == "GovernmentReformDefinition"
     assert GovernmentReformDocument.__name__ == "GovernmentReformDocument"
+    assert LawDefinition.__name__ == "LawDefinition"
+    assert LawDocument.__name__ == "LawDocument"
+    assert LawPolicyDefinition.__name__ == "LawPolicyDefinition"
