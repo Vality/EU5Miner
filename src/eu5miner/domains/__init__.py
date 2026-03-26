@@ -194,6 +194,32 @@ from eu5miner.domains.institutions import (
 	InstitutionDocument,
 	parse_institution_document,
 )
+from eu5miner.domains.religious_aspects import (
+	ReligiousAspectDefinition,
+	ReligiousAspectDocument,
+	ReligiousAspectOpinion,
+	parse_religious_aspect_document,
+)
+from eu5miner.domains.religious_factions import (
+	ReligiousFactionDefinition,
+	ReligiousFactionDocument,
+	parse_religious_faction_document,
+)
+from eu5miner.domains.religious_figures import (
+	ReligiousFigureDefinition,
+	ReligiousFigureDocument,
+	parse_religious_figure_document,
+)
+from eu5miner.domains.religious_focuses import (
+	ReligiousFocusDefinition,
+	ReligiousFocusDocument,
+	parse_religious_focus_document,
+)
+from eu5miner.domains.religious_schools import (
+	ReligiousSchoolDefinition,
+	ReligiousSchoolDocument,
+	parse_religious_school_document,
+)
 from eu5miner.domains.location_setup_links import (
 	CountryLocationDefinition,
 	CountryLocationDocument,
@@ -288,6 +314,11 @@ from eu5miner.domains.prices import (
 	PriceDefinition,
 	PriceDocument,
 	parse_price_document,
+)
+from eu5miner.domains.societal_values import (
+	SocietalValueDefinition,
+	SocietalValueDocument,
+	parse_societal_value_document,
 )
 from eu5miner.domains.production_methods import (
 	ProductionMethodDefinition,
@@ -465,6 +496,19 @@ __all__ = [
 	"LawDocument",
 	"LawPolicyCatalog",
 	"LawPolicyDefinition",
+	"ReligiousAspectDefinition",
+	"ReligiousAspectDocument",
+	"ReligiousAspectOpinion",
+	"ReligiousFactionDefinition",
+	"ReligiousFactionDocument",
+	"ReligiousFigureDefinition",
+	"ReligiousFigureDocument",
+	"ReligiousFocusDefinition",
+	"ReligiousFocusDocument",
+	"ReligiousSchoolDefinition",
+	"ReligiousSchoolDocument",
+	"SocietalValueDefinition",
+	"SocietalValueDocument",
     "GuiConstant",
     "GuiDocument",
     "GuiRootDefinition",
@@ -630,13 +674,19 @@ __all__ = [
 	"parse_peace_treaty_document",
     "parse_price_document",
     "parse_production_method_document",
+	"parse_religious_aspect_document",
+	"parse_religious_faction_document",
+	"parse_religious_figure_document",
+	"parse_religious_focus_document",
 	"parse_religion_document",
+	"parse_religious_school_document",
     "parse_scripted_effect_document",
 	"parse_scripted_list_document",
 	"parse_scripted_modifier_document",
 	"parse_scripted_relation_document",
 	"parse_script_value_document",
     "parse_scripted_trigger_document",
+	"parse_societal_value_document",
 	"parse_subject_military_stance_document",
 	"parse_subject_type_document",
     "parse_setup_country_document",
