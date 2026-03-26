@@ -17,10 +17,24 @@ from eu5miner.domains.casus_belli import (
 	CasusBelliDocument,
 	parse_casus_belli_document,
 )
+from eu5miner.domains.character_interactions import (
+	CharacterInteractionColumn,
+	CharacterInteractionDefinition,
+	CharacterInteractionDocument,
+	CharacterInteractionSelectTrigger,
+	parse_character_interaction_document,
+)
 from eu5miner.domains.building_types import (
 	BuildingTypeDefinition,
 	BuildingTypeDocument,
 	parse_building_type_document,
+)
+from eu5miner.domains.country_interactions import (
+	CountryInteractionColumn,
+	CountryInteractionDefinition,
+	CountryInteractionDocument,
+	CountryInteractionSelectTrigger,
+	parse_country_interaction_document,
 )
 from eu5miner.domains.country_description_categories import (
 	CountryDescriptionAssignment,
@@ -282,12 +296,20 @@ __all__ = [
 	"BuildingCategoryDocument",
 	"CasusBelliDefinition",
 	"CasusBelliDocument",
+	"CharacterInteractionColumn",
+	"CharacterInteractionDefinition",
+	"CharacterInteractionDocument",
+	"CharacterInteractionSelectTrigger",
 	"BuildingTypeDefinition",
 	"BuildingTypeDocument",
     "CountryLocationDefinition",
     "CountryLocationDocument",
     "CountryLocationGroup",
 	"CountryDescriptionAssignment",
+	"CountryInteractionColumn",
+	"CountryInteractionDefinition",
+	"CountryInteractionDocument",
+	"CountryInteractionSelectTrigger",
 	"CountryDescriptionCategoryDefinition",
 	"CountryDescriptionCategoryDocument",
 	"CountryDescriptionCategoryUsage",
@@ -425,7 +447,9 @@ __all__ = [
 	"parse_building_category_document",
 	"parse_building_type_document",
 	"parse_casus_belli_document",
+	"parse_character_interaction_document",
     "parse_country_location_document",
+	"parse_country_interaction_document",
 	"parse_country_description_category_document",
 	"parse_culture_document",
     "parse_customizable_localization_document",

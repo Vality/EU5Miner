@@ -80,7 +80,8 @@ Order:
 Order:
 
 1. country interactions and character interactions
-2. unit types, unit abilities, and unit categories
+2. diplomacy graph/report helpers over parsed war and interaction links
+3. unit types, unit abilities, and unit categories
 
 ### 6. Government and Society Systems
 

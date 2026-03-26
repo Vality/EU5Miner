@@ -67,6 +67,7 @@ The VFS now also has an initial metadata-aware replace-path layer: source metada
 - casus belli and wargoals
 - peace treaties and war-flow helper links
 - subject types and subject military stances
+- country interactions and character interactions
 - setup countries
 - cultures and culture groups
 - religions and religion groups
@@ -86,7 +87,7 @@ The VFS now also has an initial metadata-aware replace-path layer: source metada
 
 Next planned target:
 
-- continue diplomacy and warfare systems with country interactions and character interactions
+- add diplomacy graph/report helpers over parsed war and interaction links
 
 The optional broader validation sweep remains deferred until later; do not fold it into normal fast iteration work.
 
@@ -164,6 +165,13 @@ Important representative files:
 - `game/in_game/common/subject_types/appanage.txt`
 - `game/in_game/common/subject_military_stances/readme.txt`
 - `game/in_game/common/subject_military_stances/00_default.txt`
+- `game/in_game/common/country_interactions/readme.txt`
+- `game/in_game/common/country_interactions/request_loan.txt`
+- `game/in_game/common/country_interactions/sell_icon.txt`
+- `game/in_game/common/character_interactions/readme.txt`
+- `game/in_game/common/character_interactions/abdicate.txt`
+- `game/in_game/common/character_interactions/move_children_to_court.txt`
+- `game/in_game/common/character_interactions/marry_noble.txt`
 - `game/in_game/common/wargoals/readme.txt`
 - `game/in_game/common/wargoals/00_default.txt`
 - `game/in_game/common/script_values/best_capital_for_colony.txt`

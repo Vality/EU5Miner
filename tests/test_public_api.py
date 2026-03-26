@@ -21,7 +21,9 @@ from eu5miner.domains import (
     parse_building_category_document,
     parse_building_type_document,
     parse_casus_belli_document,
+    parse_character_interaction_document,
     parse_country_description_category_document,
+    parse_country_interaction_document,
     parse_culture_document,
     parse_default_map_document,
     parse_employment_system_document,
@@ -80,11 +82,17 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     casus_belli_document = parse_casus_belli_document(
         "sample_cb = { war_goal_type = superiority trade = yes }\n"
     )
+    character_interaction_document = parse_character_interaction_document(
+        "sample_character_interaction = { message = yes on_own_nation = yes }\n"
+    )
     attribute_column_document = parse_attribute_column_document(
         "market = { name = { widget = default_text_column } }\n"
     )
     building_type_document = parse_building_type_document(
         "granary = { category = infrastructure_category pop_type = peasants }\n"
+    )
+    country_interaction_document = parse_country_interaction_document(
+        "sample_country_interaction = { type = diplomacy category = CATEGORY_ACTIONS }\n"
     )
     goods_document = parse_goods_document(
         "iron = { method = mining category = raw_material }\n"
@@ -146,8 +154,10 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     assert on_action_documentation.names() == ("on_example",)
     assert building_category_document.names() == ("trade_category",)
     assert casus_belli_document.names() == ("sample_cb",)
+    assert character_interaction_document.names() == ("sample_character_interaction",)
     assert attribute_column_document.names() == ("market",)
     assert building_type_document.names() == ("granary",)
+    assert country_interaction_document.names() == ("sample_country_interaction",)
     assert goods_document.names() == ("iron",)
     assert goods_demand_category_document.names() == ("building_construction",)
     assert goods_demand_document.names() == ("sample_demand",)
