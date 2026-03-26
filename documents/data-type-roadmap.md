@@ -201,8 +201,8 @@ Order:
 
 The immediate sequence should be:
 
-1. add a higher-level government helper layer over reforms, laws, policies, and estates
-2. then continue the government and society phase with parliament types, agendas, and issues
+1. continue the government and society phase with institutions, holy sites, and religion-adjacent societal structures
+2. keep extending helper coverage incrementally as new government-adjacent families land
 3. keep diplomacy helper coverage incremental as new cross-family links appear
 
 ## Current Status
@@ -224,6 +224,8 @@ Implemented:
 - government types and government reforms
 - laws and policies
 - estates and estate privileges
+- parliament types, agendas, and issues
+- higher-level government helper layer over reforms, laws, policies, estates, and parliament-related families
 - generic actions, with first validation anchored on market and employment-system action files
 - attribute columns, first validated against default, market, and goods column groups
 - remaining trade and loan economy files now validated through the generic-actions and attribute-columns adapters rather than a separate domain family
@@ -253,6 +255,6 @@ Implemented:
 
 Next recommended target:
 
-- add a higher-level government helper layer over reforms, laws, policies, and estates
+- continue the government and society phase with institutions, holy sites, and religion-adjacent societal structures
 
 This gives broad value quickly while staying aligned with the current parser architecture.

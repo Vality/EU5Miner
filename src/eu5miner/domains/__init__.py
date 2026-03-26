@@ -91,6 +91,13 @@ from eu5miner.domains.generic_actions import (
 	GenericActionSelectTrigger,
 	parse_generic_action_document,
 )
+from eu5miner.domains.government import (
+	GovernmentCatalog,
+	GovernmentReferenceEdge,
+	GovernmentReport,
+	build_government_catalog,
+	build_government_report,
+)
 from eu5miner.domains.government_reforms import (
 	GovernmentReformDefinition,
 	GovernmentReformDocument,
@@ -234,6 +241,21 @@ from eu5miner.domains.on_actions import (
 	build_on_action_catalog_document,
 	parse_on_action_document,
 	parse_on_action_documentation,
+)
+from eu5miner.domains.parliament_agendas import (
+	ParliamentAgendaDefinition,
+	ParliamentAgendaDocument,
+	parse_parliament_agenda_document,
+)
+from eu5miner.domains.parliament_issues import (
+	ParliamentIssueDefinition,
+	ParliamentIssueDocument,
+	parse_parliament_issue_document,
+)
+from eu5miner.domains.parliament_types import (
+	ParliamentTypeDefinition,
+	ParliamentTypeDocument,
+	parse_parliament_type_document,
 )
 from eu5miner.domains.peace_treaties import (
 	PeaceTreatyColumn,
@@ -403,6 +425,9 @@ __all__ = [
 	"GoodsDemandDefinition",
 	"GoodsDemandDocument",
 	"GoodsDocument",
+	"GovernmentCatalog",
+	"GovernmentReferenceEdge",
+	"GovernmentReport",
 	"GovernmentReformDefinition",
 	"GovernmentReformDocument",
 	"GovernmentTypeDefinition",
@@ -454,6 +479,12 @@ __all__ = [
 	"OnActionRandomEvent",
 	"OnActionRandomEvents",
 	"OnActionReference",
+	"ParliamentAgendaDefinition",
+	"ParliamentAgendaDocument",
+	"ParliamentIssueDefinition",
+	"ParliamentIssueDocument",
+	"ParliamentTypeDefinition",
+	"ParliamentTypeDocument",
     "PhaseLocalizationSource",
     "PeaceTreatyColumn",
     "PeaceTreatyDefinition",
@@ -508,6 +539,8 @@ __all__ = [
 	"build_on_action_catalog_document",
 	"build_diplomacy_graph_catalog",
 	"build_diplomacy_graph_report",
+	"build_government_catalog",
+	"build_government_report",
 	"build_law_policy_catalog",
 	"build_war_flow_catalog",
 	"build_country_description_category_usage_document",
@@ -557,6 +590,9 @@ __all__ = [
     "parse_mod_metadata_document",
 	"parse_on_action_document",
 	"parse_on_action_documentation",
+	"parse_parliament_agenda_document",
+	"parse_parliament_issue_document",
+	"parse_parliament_type_document",
 	"parse_peace_treaty_document",
     "parse_price_document",
     "parse_production_method_document",

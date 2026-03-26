@@ -361,6 +361,50 @@ class GameInstall:
             / "common"
             / "estate_privileges"
             / "nobles_estate.txt",
+            "parliament_type_readme": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "parliament_types"
+            / "readme.txt",
+            "parliament_type_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "parliament_types"
+            / "00_default.txt",
+            "parliament_type_secondary_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "parliament_types"
+            / "01_international_organization.txt",
+            "parliament_agenda_readme": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "parliament_agendas"
+            / "readme.txt",
+            "parliament_agenda_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "parliament_agendas"
+            / "00_common.txt",
+            "parliament_agenda_secondary_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "parliament_agendas"
+            / "01_societal_values.txt",
+            "parliament_agenda_special_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "parliament_agendas"
+            / "10_hre_agendas.txt",
+            "parliament_issue_readme": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "parliament_issues"
+            / "readme.txt",
+            "parliament_issue_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "parliament_issues"
+            / "02_crown_estate_parliament_issues.txt",
+            "parliament_issue_secondary_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "parliament_issues"
+            / "03_nobles_estate_parliament_issues.txt",
+            "parliament_issue_special_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "parliament_issues"
+            / "10_hre_issues.txt",
             "wargoal_readme": self.phase_dir(ContentPhase.IN_GAME)
             / "common"
             / "wargoals"

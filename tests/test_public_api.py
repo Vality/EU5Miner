@@ -17,6 +17,9 @@ from eu5miner.domains import (
     EstateDocument,
     EstatePrivilegeDefinition,
     EstatePrivilegeDocument,
+    GovernmentCatalog,
+    GovernmentReferenceEdge,
+    GovernmentReport,
     GovernmentReformDefinition,
     GovernmentReformDocument,
     GovernmentTypeDefinition,
@@ -25,6 +28,12 @@ from eu5miner.domains import (
     LawDocument,
     LawPolicyCatalog,
     LawPolicyDefinition,
+    ParliamentAgendaDefinition,
+    ParliamentAgendaDocument,
+    ParliamentIssueDefinition,
+    ParliamentIssueDocument,
+    ParliamentTypeDefinition,
+    ParliamentTypeDocument,
     UnitAbilityDefinition,
     UnitAbilityDocument,
     UnitCategoryDefinition,
@@ -34,6 +43,8 @@ from eu5miner.domains import (
     UnitTypeDocument,
     build_diplomacy_graph_catalog,
     build_diplomacy_graph_report,
+    build_government_catalog,
+    build_government_report,
     build_law_policy_catalog,
     build_war_flow_catalog,
     build_country_description_category_usage_document,
@@ -66,6 +77,9 @@ from eu5miner.domains import (
     parse_on_action_document,
     parse_on_action_documentation,
     parse_peace_treaty_document,
+    parse_parliament_agenda_document,
+    parse_parliament_issue_document,
+    parse_parliament_type_document,
     parse_price_document,
     parse_production_method_document,
     parse_religion_document,
@@ -150,6 +164,15 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     estate_privilege_document = parse_estate_privilege_document(
         "sample_privilege = { estate = nobles_estate country_modifier = { add = 1 } }\n"
     )
+    parliament_type_document = parse_parliament_type_document(
+        "sample_parliament = { type = country modifier = { add = 1 } }\n"
+    )
+    parliament_agenda_document = parse_parliament_agenda_document(
+        "sample_agenda = { type = country estate = nobles_estate chance = 10 on_accept = { add = 1 } }\n"
+    )
+    parliament_issue_document = parse_parliament_issue_document(
+        "sample_issue = { type = country estate = crown_estate chance = 0 on_debate_passed = { add = 1 } }\n"
+    )
     generic_action_document = parse_generic_action_document(
         "create_market = { type = owncountry select_trigger = { looking_for_a = market } }\n"
     )
@@ -209,6 +232,17 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     )
     diplomacy_report = build_diplomacy_graph_report(diplomacy_catalog)
     law_catalog = build_law_policy_catalog((law_document,))
+    government_catalog = build_government_catalog(
+        government_type_documents=(government_type_document,),
+        government_reform_documents=(government_reform_document,),
+        law_documents=(law_document,),
+        estate_documents=(estate_document,),
+        estate_privilege_documents=(estate_privilege_document,),
+        parliament_type_documents=(parliament_type_document,),
+        parliament_agenda_documents=(parliament_agenda_document,),
+        parliament_issue_documents=(parliament_issue_document,),
+    )
+    government_report = build_government_report(government_catalog)
     war_catalog = build_war_flow_catalog(
         casus_belli_documents=(casus_belli_document,),
         wargoal_documents=(wargoal_document,),
@@ -240,6 +274,9 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     assert employment_system_document.names() == ("equality",)
     assert estate_document.names() == ("sample_estate",)
     assert estate_privilege_document.names() == ("sample_privilege",)
+    assert parliament_type_document.names() == ("sample_parliament",)
+    assert parliament_agenda_document.names() == ("sample_agenda",)
+    assert parliament_issue_document.names() == ("sample_issue",)
     assert generic_action_document.names() == ("create_market",)
     assert government_type_document.names() == ("monarchy",)
     assert government_reform_document.names() == ("sample_reform",)
@@ -281,6 +318,8 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     assert callable(build_war_flow_catalog)
     assert callable(build_diplomacy_graph_catalog)
     assert callable(build_diplomacy_graph_report)
+    assert callable(build_government_catalog)
+    assert callable(build_government_report)
     assert callable(build_law_policy_catalog)
     assert callable(build_country_description_category_usage_document)
     assert callable(build_linked_location_document)
@@ -288,14 +327,24 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     assert war_catalog.get_subject_type("sample_subject") is not None
     assert diplomacy_catalog.get_subject_type("sample_subject") is not None
     assert law_catalog.get_policy("policy_a") is not None
+    assert government_catalog.get_government_type("monarchy") is not None
     assert isinstance(diplomacy_catalog, DiplomacyGraphCatalog)
     assert isinstance(diplomacy_report, DiplomacyGraphReport)
+    assert isinstance(government_catalog, GovernmentCatalog)
+    assert isinstance(government_report, GovernmentReport)
     assert isinstance(law_catalog, LawPolicyCatalog)
     assert UnitModifierValue.__name__ == "UnitModifierValue"
     assert EstateDefinition.__name__ == "EstateDefinition"
     assert EstateDocument.__name__ == "EstateDocument"
     assert EstatePrivilegeDefinition.__name__ == "EstatePrivilegeDefinition"
     assert EstatePrivilegeDocument.__name__ == "EstatePrivilegeDocument"
+    assert GovernmentReferenceEdge.__name__ == "GovernmentReferenceEdge"
+    assert ParliamentTypeDefinition.__name__ == "ParliamentTypeDefinition"
+    assert ParliamentTypeDocument.__name__ == "ParliamentTypeDocument"
+    assert ParliamentAgendaDefinition.__name__ == "ParliamentAgendaDefinition"
+    assert ParliamentAgendaDocument.__name__ == "ParliamentAgendaDocument"
+    assert ParliamentIssueDefinition.__name__ == "ParliamentIssueDefinition"
+    assert ParliamentIssueDocument.__name__ == "ParliamentIssueDocument"
     assert UnitTypeDefinition.__name__ == "UnitTypeDefinition"
     assert UnitTypeDocument.__name__ == "UnitTypeDocument"
     assert UnitAbilityDefinition.__name__ == "UnitAbilityDefinition"
