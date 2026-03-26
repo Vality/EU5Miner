@@ -206,10 +206,10 @@ Order:
 
 The immediate sequence should be:
 
-1. review the current helper layers now that the integration pass and broad audit are in place
-2. run a fresh code-duplication pass across the expanded parser and helper surface, especially the newer data-type parsing layers
-3. keep growing the optional broad sweep as new representative families land
-4. decide which feature-facing workflows should come next now that the remaining roadmap adapter gaps are closed
+1. finish the post-adapter library integration pass by tightening the curated export surface, cross-domain naming, and README or CLI examples around the now-complete adapter matrix
+2. run a fresh code-duplication and helper-shape review across the newer package entrypoints, especially diplomacy, government, religion, economy, localization, and map helpers
+3. expand the optional broad sweep from representative smoke coverage into a more intentionally selected install-wide regression layer for the implemented families
+4. choose the first feature-facing surface that should consume the stable library APIs rather than adding more parser families
 
 ## Current Status
 
@@ -263,8 +263,16 @@ Implemented:
 - dry-run and reporting helpers for the public mod workflow
 - CLI mod workflow commands for plan/apply, advisories, warnings, and explicit file or content-root inputs
 
-Next recommended target:
+Next recommended work areas:
 
-- start the library integration pass and broader coverage audit
+1. library integration pass and API polish
+2. broader validation sweep expansion
+3. first feature-facing consumer of the stable APIs
 
-This gives broad value quickly while staying aligned with the current parser architecture.
+Recommendation:
+
+- start with the library integration pass and API polish
+- follow it immediately with a broader validation sweep expansion
+- then choose one feature-facing surface, with MCP tooling likely giving faster leverage than a full desktop GUI
+
+This sequence fits the current state of the codebase: the adapter families are effectively in place, so the highest-value next step is to stabilize and harden the integrated library surface before building larger downstream products on top of it.
