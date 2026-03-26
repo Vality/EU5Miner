@@ -11,11 +11,27 @@ from eu5miner import (
     plan_mod_update,
 )
 from eu5miner.domains import (
+    DiplomacyGraphCatalog,
+    DiplomacyGraphReport,
+    GovernmentReformDefinition,
+    GovernmentReformDocument,
+    GovernmentTypeDefinition,
+    GovernmentTypeDocument,
+    UnitAbilityDefinition,
+    UnitAbilityDocument,
+    UnitCategoryDefinition,
+    UnitCategoryDocument,
+    UnitModifierValue,
+    UnitTypeDefinition,
+    UnitTypeDocument,
+    build_diplomacy_graph_catalog,
+    build_diplomacy_graph_report,
     build_war_flow_catalog,
     build_country_description_category_usage_document,
     build_linked_location_document,
     build_on_action_catalog_document,
     collect_casus_belli_references,
+    collect_country_interaction_references,
     collect_subject_type_references,
     parse_attribute_column_document,
     parse_building_category_document,
@@ -29,6 +45,8 @@ from eu5miner.domains import (
     parse_employment_system_document,
     parse_event_document,
     parse_generic_action_document,
+    parse_government_reform_document,
+    parse_government_type_document,
     parse_goods_demand_category_document,
     parse_goods_demand_document,
     parse_goods_document,
@@ -47,6 +65,9 @@ from eu5miner.domains import (
     parse_subject_military_stance_document,
     parse_subject_type_document,
     parse_setup_country_document,
+    parse_unit_ability_document,
+    parse_unit_category_document,
+    parse_unit_type_document,
     parse_wargoal_document,
 )
 from eu5miner.formats.semantic import SemanticScalar
@@ -114,6 +135,12 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     generic_action_document = parse_generic_action_document(
         "create_market = { type = owncountry select_trigger = { looking_for_a = market } }\n"
     )
+    government_type_document = parse_government_type_document(
+        "monarchy = { heir_selection = cognatic government_power = legitimacy }\n"
+    )
+    government_reform_document = parse_government_reform_document(
+        "sample_reform = { government = monarchy years = 2 country_modifier = { add = 1 } }\n"
+    )
     peace_treaty_document = parse_peace_treaty_document(
         "peace_example = { potential = { scope:war = { casus_belli ?= casus_belli:sample_cb } } effect = { make_subject_of = { type = subject_type:sample_subject } } }\n"
     )
@@ -133,9 +160,27 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     subject_stance_document = parse_subject_military_stance_document(
         "sample_stance = { is_default = yes chase_navy_priority = 4 }\n"
     )
+    unit_type_document = parse_unit_type_document(
+        "sample_unit = { category = army_infantry buildable = yes }\n"
+    )
+    unit_ability_document = parse_unit_ability_document(
+        "sample_ability = { toggle = yes army_only = yes }\n"
+    )
+    unit_category_document = parse_unit_category_document(
+        "sample_category = { is_army = yes startup_amount = 1 }\n"
+    )
     wargoal_document = parse_wargoal_document(
         "sample_goal = { type = superiority attacker = { conquer_cost = 1 } }\n"
     )
+    diplomacy_catalog = build_diplomacy_graph_catalog(
+        casus_belli_documents=(casus_belli_document,),
+        wargoal_documents=(wargoal_document,),
+        peace_treaty_documents=(peace_treaty_document,),
+        subject_type_documents=(subject_type_document,),
+        country_interaction_documents=(country_interaction_document,),
+        character_interaction_documents=(character_interaction_document,),
+    )
+    diplomacy_report = build_diplomacy_graph_report(diplomacy_catalog)
     war_catalog = build_war_flow_catalog(
         casus_belli_documents=(casus_belli_document,),
         wargoal_documents=(wargoal_document,),
@@ -166,6 +211,8 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     assert culture_document.names() == ("example",)
     assert employment_system_document.names() == ("equality",)
     assert generic_action_document.names() == ("create_market",)
+    assert government_type_document.names() == ("monarchy",)
+    assert government_reform_document.names() == ("sample_reform",)
     assert peace_treaty_document.names() == ("peace_example",)
     assert price_document.names() == ("build_road",)
     assert religion_document.names() == ("faith",)
@@ -174,6 +221,9 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     assert relation_document.names() == ("my_relation",)
     assert subject_type_document.names() == ("sample_subject",)
     assert subject_stance_document.names() == ("sample_stance",)
+    assert unit_type_document.names() == ("sample_unit",)
+    assert unit_ability_document.names() == ("sample_ability",)
+    assert unit_category_document.names() == ("sample_category",)
     assert wargoal_document.names() == ("sample_goal",)
     assert script_value_document.names() == ("my_value",)
     assert collect_casus_belli_references(peace_treaty_document.definitions[0].body) == (
@@ -182,6 +232,7 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     assert collect_subject_type_references(peace_treaty_document.definitions[0].body) == (
         "sample_subject",
     )
+    assert collect_country_interaction_references(country_interaction_document.definitions[0].body) == ()
     assert default_map_document.referenced_files.as_dict() == {
         "provinces": None,
         "rivers": None,
@@ -197,7 +248,23 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     assert definitions_entry.value.text == '"definitions.txt"'
     assert callable(build_on_action_catalog_document)
     assert callable(build_war_flow_catalog)
+    assert callable(build_diplomacy_graph_catalog)
+    assert callable(build_diplomacy_graph_report)
     assert callable(build_country_description_category_usage_document)
     assert callable(build_linked_location_document)
     assert war_catalog.get_peace_treaty("peace_example") is not None
     assert war_catalog.get_subject_type("sample_subject") is not None
+    assert diplomacy_catalog.get_subject_type("sample_subject") is not None
+    assert isinstance(diplomacy_catalog, DiplomacyGraphCatalog)
+    assert isinstance(diplomacy_report, DiplomacyGraphReport)
+    assert UnitModifierValue.__name__ == "UnitModifierValue"
+    assert UnitTypeDefinition.__name__ == "UnitTypeDefinition"
+    assert UnitTypeDocument.__name__ == "UnitTypeDocument"
+    assert UnitAbilityDefinition.__name__ == "UnitAbilityDefinition"
+    assert UnitAbilityDocument.__name__ == "UnitAbilityDocument"
+    assert UnitCategoryDefinition.__name__ == "UnitCategoryDefinition"
+    assert UnitCategoryDocument.__name__ == "UnitCategoryDocument"
+    assert GovernmentTypeDefinition.__name__ == "GovernmentTypeDefinition"
+    assert GovernmentTypeDocument.__name__ == "GovernmentTypeDocument"
+    assert GovernmentReformDefinition.__name__ == "GovernmentReformDefinition"
+    assert GovernmentReformDocument.__name__ == "GovernmentReformDocument"

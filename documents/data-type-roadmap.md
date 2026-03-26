@@ -201,9 +201,9 @@ Order:
 
 The immediate sequence should be:
 
-1. continue the economy and production systems phase with markets and related economic helpers
-2. follow that with market-adjacent UI/helper schema such as attribute columns where useful
-3. keep optional dump-backed validation helpers incremental rather than making them a hard dependency
+1. continue the government and society systems phase with laws and policies
+2. follow that with estates and estate privileges
+3. keep diplomacy helper coverage incremental as new cross-family links appear
 
 ## Current Status
 
@@ -218,6 +218,10 @@ Implemented:
 - building types and building categories
 - goods, prices, and goods demand
 - production methods and employment systems
+- country interactions and character interactions
+- diplomacy graph/report helpers over parsed war and interaction links
+- unit types, unit abilities, and unit categories
+- government types and government reforms
 - generic actions, with first validation anchored on market and employment-system action files
 - attribute columns, first validated against default, market, and goods column groups
 - remaining trade and loan economy files now validated through the generic-actions and attribute-columns adapters rather than a separate domain family

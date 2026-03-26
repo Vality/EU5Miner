@@ -56,6 +56,13 @@ from eu5miner.domains.disasters import (
 	DisasterDocument,
 	parse_disaster_document,
 )
+from eu5miner.domains.diplomacy import (
+	DiplomacyGraphCatalog,
+	DiplomacyGraphReport,
+	DiplomacyReferenceEdge,
+	build_diplomacy_graph_catalog,
+	build_diplomacy_graph_report,
+)
 from eu5miner.domains.employment_systems import (
 	EmploymentSystemDefinition,
 	EmploymentSystemDocument,
@@ -73,6 +80,16 @@ from eu5miner.domains.generic_actions import (
 	GenericActionDocument,
 	GenericActionSelectTrigger,
 	parse_generic_action_document,
+)
+from eu5miner.domains.government_reforms import (
+	GovernmentReformDefinition,
+	GovernmentReformDocument,
+	parse_government_reform_document,
+)
+from eu5miner.domains.government_types import (
+	GovernmentTypeDefinition,
+	GovernmentTypeDocument,
+	parse_government_type_document,
 )
 from eu5miner.domains.frontend_content import (
 	MainMenuScenarioDefinition,
@@ -264,6 +281,23 @@ from eu5miner.domains.subject_types import (
 	SubjectTypeDocument,
 	parse_subject_type_document,
 )
+from eu5miner.domains.unit_abilities import (
+	UnitAbilityDefinition,
+	UnitAbilityDocument,
+	parse_unit_ability_document,
+)
+from eu5miner.domains.unit_categories import (
+	UnitCategoryDefinition,
+	UnitCategoryDocument,
+	parse_unit_category_document,
+)
+from eu5miner.domains.unit_types import (
+	UnitMercenariesPerLocation,
+	UnitTypeDefinition,
+	UnitTypeDocument,
+	parse_unit_type_document,
+)
+from eu5miner.domains._unit_helpers import UnitModifierValue
 from eu5miner.domains.setup_countries import (
 	SetupCountryDefinition,
 	SetupCountryDocument,
@@ -278,6 +312,7 @@ from eu5miner.domains.war import (
 	WarFlowCatalog,
 	build_war_flow_catalog,
 	collect_casus_belli_references,
+	collect_country_interaction_references,
 	collect_subject_type_references,
 )
 from eu5miner.domains.wargoals import (
@@ -317,6 +352,9 @@ __all__ = [
 	"CultureDefinition",
 	"CultureDocument",
 	"CultureOpinion",
+    "DiplomacyGraphCatalog",
+    "DiplomacyGraphReport",
+    "DiplomacyReferenceEdge",
     "CustomizableLocalizationDefinition",
     "CustomizableLocalizationDocument",
     "CustomizableLocalizationText",
@@ -343,6 +381,10 @@ __all__ = [
 	"GoodsDemandDefinition",
 	"GoodsDemandDocument",
 	"GoodsDocument",
+	"GovernmentReformDefinition",
+	"GovernmentReformDocument",
+	"GovernmentTypeDefinition",
+	"GovernmentTypeDocument",
     "GuiConstant",
     "GuiDocument",
     "GuiRootDefinition",
@@ -417,6 +459,14 @@ __all__ = [
 	"SubjectMilitaryStanceDocument",
 	"SubjectTypeDefinition",
 	"SubjectTypeDocument",
+	"UnitAbilityDefinition",
+	"UnitAbilityDocument",
+	"UnitCategoryDefinition",
+	"UnitCategoryDocument",
+	"UnitMercenariesPerLocation",
+	"UnitModifierValue",
+	"UnitTypeDefinition",
+	"UnitTypeDocument",
     "SetupCountryDefinition",
     "SetupCountryDocument",
     "SituationDefinition",
@@ -430,12 +480,15 @@ __all__ = [
 	"WargoalDocument",
 	"WargoalParticipantDefinition",
 	"build_on_action_catalog_document",
+	"build_diplomacy_graph_catalog",
+	"build_diplomacy_graph_report",
 	"build_war_flow_catalog",
 	"build_country_description_category_usage_document",
     "build_linked_location_document",
     "build_localization_bundle",
     "build_phase_localization_bundle",
 	"collect_casus_belli_references",
+	"collect_country_interaction_references",
 	"collect_subject_type_references",
     "collect_customizable_localization_references",
     "collect_effect_localization_references",
@@ -459,6 +512,8 @@ __all__ = [
     "parse_effect_localization_document",
     "parse_event_document",
 	"parse_generic_action_document",
+	"parse_government_reform_document",
+	"parse_government_type_document",
 	"parse_goods_demand_category_document",
 	"parse_goods_demand_document",
 	"parse_goods_document",
@@ -485,6 +540,9 @@ __all__ = [
 	"parse_subject_military_stance_document",
 	"parse_subject_type_document",
     "parse_setup_country_document",
+	"parse_unit_ability_document",
+	"parse_unit_category_document",
+	"parse_unit_type_document",
     "parse_situation_document",
     "parse_trigger_localization_document",
 	"parse_wargoal_document",

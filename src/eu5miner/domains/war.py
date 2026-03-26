@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from collections.abc import Sequence
 from dataclasses import dataclass
 
@@ -155,17 +156,21 @@ def collect_subject_type_references(body: SemanticObject) -> tuple[str, ...]:
     return _collect_prefixed_references(body, "subject_type:")
 
 
+def collect_country_interaction_references(body: SemanticObject) -> tuple[str, ...]:
+    return _collect_prefixed_references(body, "country_interaction:")
+
+
 def _collect_prefixed_references(body: SemanticObject, prefix: str) -> tuple[str, ...]:
+    pattern = re.compile(re.escape(prefix) + r"([A-Za-z0-9_.-]+)")
     references: list[str] = []
     seen: set[str] = set()
     for scalar_text in _iter_scalar_texts(body):
-        if not scalar_text.startswith(prefix):
-            continue
-        reference = scalar_text.split(":", 1)[1]
-        if reference in seen:
-            continue
-        seen.add(reference)
-        references.append(reference)
+        for match in pattern.finditer(scalar_text):
+            reference = match.group(1)
+            if reference in seen:
+                continue
+            seen.add(reference)
+            references.append(reference)
     return tuple(references)
 
 
