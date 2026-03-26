@@ -61,6 +61,10 @@ def test_religion_document_parses_lists_flags_and_opinions() -> None:
         "    max_sects = 2\n"
         "    ai_wants_convert = yes\n"
         "    has_religious_influence = yes\n"
+        "    religious_school = school_a\n"
+        "    religious_school = school_b\n"
+        "    religious_focuses = { focus_a focus_b }\n"
+        "    num_religious_focuses_needed_for_reform = 2\n"
         "    tags = { gfx_a gfx_b }\n"
         "    custom_tags = { tag_a tag_b }\n"
         "    unique_names = { name_one name_two }\n"
@@ -83,6 +87,9 @@ def test_religion_document_parses_lists_flags_and_opinions() -> None:
     assert definition.max_sects == 2
     assert definition.ai_wants_convert is True
     assert definition.has_religious_influence is True
+    assert definition.religious_schools == ("school_a", "school_b")
+    assert definition.religious_focuses == ("focus_a", "focus_b")
+    assert definition.num_religious_focuses_needed_for_reform == 2
     assert definition.tags == ("gfx_a", "gfx_b")
     assert definition.custom_tags == ("tag_a", "tag_b")
     assert definition.unique_names == ("name_one", "name_two")

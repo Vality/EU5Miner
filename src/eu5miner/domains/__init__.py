@@ -220,6 +220,13 @@ from eu5miner.domains.religious_schools import (
 	ReligiousSchoolDocument,
 	parse_religious_school_document,
 )
+from eu5miner.domains.religion import (
+	ReligionCatalog,
+	ReligionReferenceEdge,
+	ReligionReport,
+	build_religion_catalog,
+	build_religion_report,
+)
 from eu5miner.domains.location_setup_links import (
 	CountryLocationDefinition,
 	CountryLocationDocument,
@@ -507,6 +514,7 @@ __all__ = [
 	"ReligiousFocusDocument",
 	"ReligiousSchoolDefinition",
 	"ReligiousSchoolDocument",
+	"ReligionCatalog",
 	"SocietalValueDefinition",
 	"SocietalValueDocument",
     "GuiConstant",
@@ -572,6 +580,8 @@ __all__ = [
 	"ReligionDefinition",
 	"ReligionDocument",
 	"ReligionOpinion",
+	"ReligionReferenceEdge",
+	"ReligionReport",
 	"ScriptedGoodsDemand",
     "ScriptedEffectDefinition",
     "ScriptedEffectDocument",
@@ -617,6 +627,8 @@ __all__ = [
 	"build_holy_site_catalog",
 	"build_holy_site_report",
 	"build_law_policy_catalog",
+	"build_religion_catalog",
+	"build_religion_report",
 	"build_war_flow_catalog",
 	"build_country_description_category_usage_document",
     "build_linked_location_document",

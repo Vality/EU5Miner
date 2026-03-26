@@ -36,6 +36,7 @@ addopts = ["--strict-markers"]
 timeout = 30
 timeout_method = "thread"
 markers = [
+  "broad: optional broad real-install coverage and integration sweep",
   "timeout: per-test timeout override for performance-sensitive parser tests",
 ]
 

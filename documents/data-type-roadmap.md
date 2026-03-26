@@ -133,7 +133,7 @@ After the major module-level adapters exist, do a single public API integration 
 
 Status:
 
-- in progress
+- implemented with a broad real-install helper integration audit; helper review/refinement is the next follow-up
 
 Order:
 
@@ -156,6 +156,10 @@ Order:
 ### 12. Broader Validation Sweep
 
 Add a larger optional validation layer once the core domain adapters are in place.
+
+Status:
+
+- implemented as an optional `pytest -m broad` sweep over the representative install matrix and current helper layers
 
 Order:
 
@@ -202,9 +206,9 @@ Order:
 
 The immediate sequence should be:
 
-1. move on to interface and presentation systems
-2. keep extending helper coverage incrementally as new government-adjacent families land
-3. keep diplomacy helper coverage incremental as new cross-family links appear
+1. review the current helper layers now that the integration pass and broad audit are in place
+2. extend helper coverage incrementally where cross-family links justify it
+3. keep growing the optional broad sweep as new representative families land
 
 ## Current Status
 
@@ -229,6 +233,7 @@ Implemented:
 - higher-level government helper layer over reforms, laws, policies, estates, and parliament-related families
 - institutions, holy site types, holy sites, and a holy-site catalog/report helper for type links and religion lookups
 - societal values, religious aspects, religious factions, religious focuses, religious schools, and religious figures
+- higher-level religion helper layer over religions, aspects, factions, focuses, schools, figures, and holy sites
 - generic actions, with first validation anchored on market and employment-system action files
 - attribute columns, first validated against default, market, and goods column groups
 - remaining trade and loan economy files now validated through the generic-actions and attribute-columns adapters rather than a separate domain family
@@ -258,6 +263,6 @@ Implemented:
 
 Next recommended target:
 
-- move to interface and presentation systems
+- start the library integration pass and broader coverage audit
 
 This gives broad value quickly while staying aligned with the current parser architecture.

@@ -77,6 +77,7 @@ The VFS now also has an initial metadata-aware replace-path layer: source metada
 - higher-level government helper layer over those connected families
 - institutions, holy site types, holy sites, and a holy-site catalog helper
 - societal values, religious aspects, religious factions, religious focuses, religious schools, and religious figures
+- higher-level religion helper layer over those connected families
 - setup countries
 - cultures and culture groups
 - religions and religion groups
@@ -96,9 +97,9 @@ The VFS now also has an initial metadata-aware replace-path layer: source metada
 
 Next planned target:
 
-- move on to interface and presentation systems
+- review and refine the current helper layers now that the library integration pass and broader coverage audit are in place
 
-The optional broader validation sweep remains deferred until later; do not fold it into normal fast iteration work.
+The optional broader validation sweep now lives behind `pytest -m broad`; keep it out of the normal fast iteration loop.
 
 ## EU5 Install Facts
 

@@ -6,6 +6,7 @@ from dataclasses import dataclass
 
 from eu5miner.domains._parse_helpers import (
     body_value_text,
+    collect_scalar_entries,
     entry_scalar_text,
     object_child_keys,
     parse_bool_or_none,
@@ -52,6 +53,9 @@ class ReligionDefinition:
     has_karma: bool | None
     has_purity: bool | None
     has_honor: bool | None
+    religious_focuses: tuple[str, ...]
+    religious_schools: tuple[str, ...]
+    num_religious_focuses_needed_for_reform: int | None
     definition_modifier: SemanticObject | None
     opinions: tuple[ReligionOpinion, ...]
     tags: tuple[str, ...]
@@ -120,6 +124,11 @@ def parse_religion_document(text: str) -> ReligionDocument:
                 has_karma=parse_bool_or_none(entry.value.get_scalar("has_karma")),
                 has_purity=parse_bool_or_none(entry.value.get_scalar("has_purity")),
                 has_honor=parse_bool_or_none(entry.value.get_scalar("has_honor")),
+                religious_focuses=object_child_keys(entry.value, "religious_focuses"),
+                religious_schools=collect_scalar_entries(entry.value, "religious_school"),
+                num_religious_focuses_needed_for_reform=parse_int_or_none(
+                    entry.value.get_scalar("num_religious_focuses_needed_for_reform")
+                ),
                 definition_modifier=entry.value.get_object("definition_modifier"),
                 opinions=_parse_opinions(entry.value),
                 tags=object_child_keys(entry.value, "tags"),

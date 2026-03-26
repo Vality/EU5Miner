@@ -645,6 +645,18 @@ class GameInstall:
             / "common"
             / "religions"
             / "buddhist.txt",
+            "religion_muslim_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "religions"
+            / "muslim.txt",
+            "religion_tonal_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "religions"
+            / "tonal.txt",
+            "religion_dharmic_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "religions"
+            / "dharmic.txt",
             "country_description_category_readme": self.phase_dir(ContentPhase.IN_GAME)
             / "common"
             / "country_description_categories"
