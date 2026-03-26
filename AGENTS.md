@@ -98,6 +98,7 @@ The VFS now also has an initial metadata-aware replace-path layer: source metada
 Next planned target:
 
 - review and refine the current helper layers now that the library integration pass and broader coverage audit are in place
+- after that helper pass, run another duplication review across the parser and domain layers because the data-type parsing surface has grown substantially
 
 The optional broader validation sweep now lives behind `pytest -m broad`; keep it out of the normal fast iteration loop.
 

@@ -207,8 +207,9 @@ Order:
 The immediate sequence should be:
 
 1. review the current helper layers now that the integration pass and broad audit are in place
-2. extend helper coverage incrementally where cross-family links justify it
-3. keep growing the optional broad sweep as new representative families land
+2. run a fresh code-duplication pass across the expanded parser and helper surface, especially the newer data-type parsing layers
+3. extend helper coverage incrementally where cross-family links justify it
+4. keep growing the optional broad sweep as new representative families land
 
 ## Current Status
 

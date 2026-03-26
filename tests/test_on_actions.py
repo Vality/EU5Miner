@@ -113,6 +113,7 @@ def test_on_action_documentation_and_catalog_cross_link() -> None:
 
     catalog_entry = catalog.get_entry("on_tamil_rebel_death")
     assert catalog_entry is not None
+    assert catalog.get_definition("on_tamil_rebel_death") == catalog_entry
     assert len(catalog_entry.definitions) == 1
     assert catalog_entry.documentation is not None
     assert catalog_entry.documentation.from_code is False

@@ -128,6 +128,9 @@ class OnActionCatalogDocument:
                 return entry
         return None
 
+    def get_definition(self, name: str) -> OnActionCatalogEntry | None:
+        return self.get_entry(name)
+
 
 def parse_on_action_document(text: str) -> OnActionDocument:
     semantic_document = parse_semantic_document(text)

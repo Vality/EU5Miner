@@ -51,6 +51,9 @@ class LocationHierarchyDocument:
                 return definition
         return None
 
+    def get_definition(self, name: str) -> LocationHierarchyDefinition | None:
+        return self.get_location(name)
+
 
 @dataclass(frozen=True)
 class CountryLocationGroup:
@@ -157,6 +160,9 @@ class LinkedLocationDocument:
             if definition.name == name:
                 return definition
         return None
+
+    def get_definition(self, name: str) -> LinkedLocationDefinition | None:
+        return self.get_location(name)
 
 
 def parse_location_hierarchy_document(text: str) -> LocationHierarchyDocument:
