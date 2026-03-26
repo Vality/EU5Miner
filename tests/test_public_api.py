@@ -17,6 +17,7 @@ from eu5miner.domains import (
     parse_attribute_column_document,
     parse_building_category_document,
     parse_building_type_document,
+    parse_casus_belli_document,
     parse_country_description_category_document,
     parse_culture_document,
     parse_default_map_document,
@@ -38,6 +39,7 @@ from eu5miner.domains import (
     parse_scripted_relation_document,
     parse_scripted_trigger_document,
     parse_setup_country_document,
+    parse_wargoal_document,
 )
 from eu5miner.formats.semantic import SemanticScalar
 
@@ -68,6 +70,9 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     )
     building_category_document = parse_building_category_document(
         "trade_category = {}\n"
+    )
+    casus_belli_document = parse_casus_belli_document(
+        "sample_cb = { war_goal_type = superiority trade = yes }\n"
     )
     attribute_column_document = parse_attribute_column_document(
         "market = { name = { widget = default_text_column } }\n"
@@ -105,6 +110,9 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     relation_document = parse_scripted_relation_document(
         "my_relation = { type = diplomacy relation_type = mutual }\n"
     )
+    wargoal_document = parse_wargoal_document(
+        "sample_goal = { type = superiority attacker = { conquer_cost = 1 } }\n"
+    )
     price_document = parse_price_document("build_road = { gold = 10 }\n")
     script_value_document = parse_script_value_document("my_value = { value = 5 }\n")
     default_map_document = parse_default_map_document("definitions = \"definitions.txt\"\n")
@@ -116,6 +124,7 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     assert on_action_document.names() == ("on_example",)
     assert on_action_documentation.names() == ("on_example",)
     assert building_category_document.names() == ("trade_category",)
+    assert casus_belli_document.names() == ("sample_cb",)
     assert attribute_column_document.names() == ("market",)
     assert building_type_document.names() == ("granary",)
     assert goods_document.names() == ("iron",)
@@ -131,6 +140,7 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     assert list_document.names() == ("adult",)
     assert modifier_document.names() == ("my_modifier",)
     assert relation_document.names() == ("my_relation",)
+    assert wargoal_document.names() == ("sample_goal",)
     assert script_value_document.names() == ("my_value",)
     assert default_map_document.referenced_files.as_dict() == {
         "provinces": None,

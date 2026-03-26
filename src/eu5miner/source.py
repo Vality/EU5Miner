@@ -149,6 +149,30 @@ class GameInstall:
             / "common"
             / "scripted_relations"
             / "trade_access.txt",
+            "casus_belli_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "casus_belli"
+            / "conquest.txt",
+            "casus_belli_secondary_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "casus_belli"
+            / "00_hardcoded.txt",
+            "casus_belli_dense_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "casus_belli"
+            / "coalition.txt",
+            "casus_belli_trade_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "casus_belli"
+            / "trade_conflict.txt",
+            "wargoal_readme": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "wargoals"
+            / "readme.txt",
+            "wargoal_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "wargoals"
+            / "00_default.txt",
             "on_action_sample": self.phase_dir(ContentPhase.IN_GAME)
             / "common"
             / "on_action"
@@ -257,6 +281,10 @@ class GameInstall:
             / "common"
             / "generic_actions"
             / "employment_system.txt",
+            "generic_action_loan_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "generic_actions"
+            / "take_bank_loan.txt",
             "attribute_column_readme": self.phase_dir(ContentPhase.IN_GAME)
             / "common"
             / "attribute_columns"
@@ -269,10 +297,18 @@ class GameInstall:
             / "common"
             / "attribute_columns"
             / "19_market.txt",
+            "attribute_column_trade_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "attribute_columns"
+            / "29_trade.txt",
             "attribute_column_secondary_sample": self.phase_dir(ContentPhase.IN_GAME)
             / "common"
             / "attribute_columns"
             / "31_goods.txt",
+            "attribute_column_loan_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "attribute_columns"
+            / "40_loan.txt",
             "culture_info": self.phase_dir(ContentPhase.IN_GAME)
             / "common"
             / "cultures"
