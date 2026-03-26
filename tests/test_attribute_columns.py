@@ -38,8 +38,14 @@ def test_parse_real_default_and_secondary_attribute_columns(game_install: GameIn
     default_document = parse_attribute_column_document(
         _read_text(game_install.representative_files()["attribute_column_default_sample"])
     )
+    trade_document = parse_attribute_column_document(
+        _read_text(game_install.representative_files()["attribute_column_trade_sample"])
+    )
     goods_document = parse_attribute_column_document(
         _read_text(game_install.representative_files()["attribute_column_secondary_sample"])
+    )
+    loan_document = parse_attribute_column_document(
+        _read_text(game_install.representative_files()["attribute_column_loan_sample"])
     )
 
     default_group = default_document.get_group("default")
@@ -59,6 +65,20 @@ def test_parse_real_default_and_secondary_attribute_columns(game_install: GameIn
     goods_name = goods_group.get_column("name")
     assert goods_name is not None
     assert goods_name.sorts[0].sort_text is not None
+
+    trade_group = trade_document.get_group("trade")
+    assert trade_group is not None
+    trade_name = trade_group.get_column("name")
+    assert trade_name is not None
+    assert trade_name.sorts[0].sort_by_tooltip_key == '"SORT_TEXT_NAME_TT"'
+
+    loan_group = loan_document.get_group("loan")
+    assert loan_group is not None
+    loan_name_as_borrower = loan_group.get_column("loan_name_as_borrower")
+    assert loan_name_as_borrower is not None
+    assert loan_name_as_borrower.widget == "loan_name_as_borrower"
+    assert loan_name_as_borrower.is_constant_width is False
+    assert loan_name_as_borrower.sorts[0].sort_by_tooltip_key == '"LOANS_SORT_BY_BORROWER"'
 
 
 def test_attribute_columns_parse_inline_fields() -> None:

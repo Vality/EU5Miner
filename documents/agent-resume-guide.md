@@ -184,10 +184,11 @@ Recently validated:
 - shipped `common/production_methods/unsorted_building_inputs.txt` is a straightforward top-level recipe family matching its readme, and `common/employment_systems/00_default.txt` is a small top-level named-object family with three stable script blocks; neither family currently needs dump-backed schema help to parse cleanly
 - shipped `common/generic_actions/readme.txt` defines a reusable top-level action contract, while `common/generic_actions/markets.txt` and `employment_system.txt` confirm a stable mix of scalar metadata, repeated `select_trigger` blocks, typed `column` definitions, and effect/AI script bodies that justify a generic adapter rather than a market-only parser
 - shipped `common/attribute_columns/*.txt` files are stable top-level object-type groups whose child objects define reusable selection columns with a small common scalar core plus preserved sort blocks; `00_defaults.txt`, `19_market.txt`, and `31_goods.txt` are enough to anchor the first typed adapter without introducing GUI-specific logic into the generic parser layer
+- remaining shipped market/trade/loan data in this phase currently reuse those same parsers rather than requiring another dedicated family: `common/generic_actions/take_bank_loan.txt` fits the generic-action adapter, while `common/attribute_columns/29_trade.txt` and `40_loan.txt` fit the attribute-column adapter cleanly
 
 ## Next Planned Work
 
-The economy and production layer now includes both market primitives, core production rules, generic market action helpers, and typed attribute-column definitions. The next recommended domain target is `broader economy helpers after attribute columns where useful`, followed by the rest of the economy and production systems.
+The diplomacy and warfare layer now includes typed adapters for both `common/casus_belli/*.txt` and `common/wargoals/*.txt`, covering the stable mix of declaration gating, province/AI script blocks, CB-specific scalar flags, linked war-goal identifiers, and attacker/defender goal-side cost rules. The next recommended domain target is `peace treaties`, continuing the same diplomacy and warfare phase.
 
 The broader validation sweep is intentionally deferred for later and should stay optional rather than becoming part of the default fast development loop.
 

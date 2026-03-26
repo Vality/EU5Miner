@@ -63,6 +63,8 @@ The VFS now also has an initial metadata-aware replace-path layer: source metada
 - production methods and employment systems
 - generic actions, first anchored on market and employment-system action files
 - attribute columns, first anchored on default, market, and goods column files
+- remaining trade and loan economy files validated through those same adapters
+- casus belli and wargoals
 - setup countries
 - cultures and culture groups
 - religions and religion groups
@@ -82,7 +84,7 @@ The VFS now also has an initial metadata-aware replace-path layer: source metada
 
 Next planned target:
 
-- continue broader economy helpers after attribute columns where useful
+- continue diplomacy and warfare systems with peace treaties
 
 The optional broader validation sweep remains deferred until later; do not fold it into normal fast iteration work.
 
@@ -133,10 +135,19 @@ Important representative files:
 - `game/in_game/common/generic_actions/readme.txt`
 - `game/in_game/common/generic_actions/markets.txt`
 - `game/in_game/common/generic_actions/employment_system.txt`
+- `game/in_game/common/generic_actions/take_bank_loan.txt`
 - `game/in_game/common/attribute_columns/readme.txt`
 - `game/in_game/common/attribute_columns/00_defaults.txt`
 - `game/in_game/common/attribute_columns/19_market.txt`
+- `game/in_game/common/attribute_columns/29_trade.txt`
 - `game/in_game/common/attribute_columns/31_goods.txt`
+- `game/in_game/common/attribute_columns/40_loan.txt`
+- `game/in_game/common/casus_belli/conquest.txt`
+- `game/in_game/common/casus_belli/00_hardcoded.txt`
+- `game/in_game/common/casus_belli/coalition.txt`
+- `game/in_game/common/casus_belli/trade_conflict.txt`
+- `game/in_game/common/wargoals/readme.txt`
+- `game/in_game/common/wargoals/00_default.txt`
 - `game/in_game/common/script_values/best_capital_for_colony.txt`
 - `game/in_game/common/script_values/eu4_conversions.txt`
 - `game/in_game/common/cultures/00_cultures.info`

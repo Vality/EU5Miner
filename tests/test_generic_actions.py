@@ -51,6 +51,21 @@ def test_parse_real_secondary_generic_action_document(game_install: GameInstall)
     assert change_employment_system.ai_will_do is not None
 
 
+@pytest.mark.timeout(5)
+def test_parse_real_loan_generic_action_document(game_install: GameInstall) -> None:
+    document = parse_generic_action_document(
+        _read_text(game_install.representative_files()["generic_action_loan_sample"])
+    )
+
+    take_estate_loan = document.get_definition("take_estate_loan")
+    assert take_estate_loan is not None
+    assert take_estate_loan.action_type == "owncountry"
+    assert take_estate_loan.ai_tick == "never"
+    assert take_estate_loan.show_message is False
+    assert take_estate_loan.allow is not None
+    assert take_estate_loan.effect is not None
+
+
 def test_generic_action_parses_inline_select_triggers() -> None:
     document = parse_generic_action_document(
         "sample_action = {\n"

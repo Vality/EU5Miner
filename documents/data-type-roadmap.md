@@ -79,11 +79,10 @@ Order:
 
 Order:
 
-1. casus belli and wargoals
-2. peace treaties
-3. subject types and subject military stances
-4. country interactions and character interactions
-5. unit types, unit abilities, and unit categories
+1. peace treaties
+2. subject types and subject military stances
+3. country interactions and character interactions
+4. unit types, unit abilities, and unit categories
 
 ### 6. Government and Society Systems
 
@@ -222,6 +221,7 @@ Implemented:
 - production methods and employment systems
 - generic actions, with first validation anchored on market and employment-system action files
 - attribute columns, first validated against default, market, and goods column groups
+- remaining trade and loan economy files now validated through the generic-actions and attribute-columns adapters rather than a separate domain family
 - setup countries
 - cultures and culture groups
 - religions and religion groups
@@ -248,6 +248,6 @@ Implemented:
 
 Next recommended target:
 
-- continue broader economy helpers after attribute columns where useful
+- move into diplomacy and warfare systems with casus belli and wargoals
 
 This gives broad value quickly while staying aligned with the current parser architecture.

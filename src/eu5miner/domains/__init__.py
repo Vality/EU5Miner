@@ -12,6 +12,11 @@ from eu5miner.domains.building_categories import (
 	BuildingCategoryDocument,
 	parse_building_category_document,
 )
+from eu5miner.domains.casus_belli import (
+	CasusBelliDefinition,
+	CasusBelliDocument,
+	parse_casus_belli_document,
+)
 from eu5miner.domains.building_types import (
 	BuildingTypeDefinition,
 	BuildingTypeDocument,
@@ -238,6 +243,12 @@ from eu5miner.domains.situations import (
 	SituationDocument,
 	parse_situation_document,
 )
+from eu5miner.domains.wargoals import (
+	WargoalDefinition,
+	WargoalDocument,
+	WargoalParticipantDefinition,
+	parse_wargoal_document,
+)
 
 __all__ = [
 	"AttributeColumnDefinition",
@@ -246,6 +257,8 @@ __all__ = [
 	"AttributeColumnSortDefinition",
 	"BuildingCategoryDefinition",
 	"BuildingCategoryDocument",
+	"CasusBelliDefinition",
+	"CasusBelliDocument",
 	"BuildingTypeDefinition",
 	"BuildingTypeDocument",
     "CountryLocationDefinition",
@@ -359,6 +372,9 @@ __all__ = [
     "TargetedModEmission",
     "TriggerLocalizationDefinition",
     "TriggerLocalizationDocument",
+	"WargoalDefinition",
+	"WargoalDocument",
+	"WargoalParticipantDefinition",
 	"build_on_action_catalog_document",
 	"build_country_description_category_usage_document",
     "build_linked_location_document",
@@ -373,6 +389,7 @@ __all__ = [
 	"parse_attribute_column_document",
 	"parse_building_category_document",
 	"parse_building_type_document",
+	"parse_casus_belli_document",
     "parse_country_location_document",
 	"parse_country_description_category_document",
 	"parse_culture_document",
@@ -408,6 +425,7 @@ __all__ = [
     "parse_setup_country_document",
     "parse_situation_document",
     "parse_trigger_localization_document",
+	"parse_wargoal_document",
     "plan_mod_skeleton",
     "plan_targeted_mod_emission",
 ]
