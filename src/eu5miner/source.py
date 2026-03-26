@@ -437,6 +437,54 @@ class GameInstall:
             / "common"
             / "holy_sites"
             / "hindu.txt",
+            "societal_value_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "societal_values"
+            / "00_default.txt",
+            "religious_aspect_readme": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "religious_aspects"
+            / "readme.txt",
+            "religious_aspect_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "religious_aspects"
+            / "common.txt",
+            "religious_aspect_secondary_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "religious_aspects"
+            / "protestant.txt",
+            "religious_faction_readme": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "religious_factions"
+            / "readme.txt",
+            "religious_faction_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "religious_factions"
+            / "shinto.txt",
+            "religious_focus_readme": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "religious_focuses"
+            / "readme.txt",
+            "religious_focus_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "religious_focuses"
+            / "nahuatl.txt",
+            "religious_school_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "religious_schools"
+            / "sunni.txt",
+            "religious_school_secondary_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "religious_schools"
+            / "hinduism.txt",
+            "religious_figure_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "religious_figures"
+            / "00_muslim.txt",
+            "religious_figure_secondary_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "religious_figures"
+            / "01_hindu.txt",
             "wargoal_readme": self.phase_dir(ContentPhase.IN_GAME)
             / "common"
             / "wargoals"
