@@ -6,6 +6,7 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Callable, TypeVar
 
+from eu5miner.domains.interfaces import get_by_name
 from eu5miner.domains.casus_belli import CasusBelliDocument, CasusBelliDefinition
 from eu5miner.domains.character_interactions import (
     CharacterInteractionDefinition,
@@ -58,16 +59,10 @@ class DiplomacyGraphCatalog:
     character_interaction_definitions: tuple[CharacterInteractionDefinition, ...] = ()
 
     def get_country_interaction(self, name: str) -> CountryInteractionDefinition | None:
-        for definition in self.country_interaction_definitions:
-            if definition.name == name:
-                return definition
-        return None
+        return get_by_name(self.country_interaction_definitions, name)
 
     def get_character_interaction(self, name: str) -> CharacterInteractionDefinition | None:
-        for definition in self.character_interaction_definitions:
-            if definition.name == name:
-                return definition
-        return None
+        return get_by_name(self.character_interaction_definitions, name)
 
     def get_casus_belli(self, name: str) -> CasusBelliDefinition | None:
         return self.war_flow_catalog.get_casus_belli(name)

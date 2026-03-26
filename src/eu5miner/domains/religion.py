@@ -6,6 +6,7 @@ from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from typing import Any
 
+from eu5miner.domains.interfaces import get_by_name
 from eu5miner.domains.holy_sites import HolySiteDefinition, HolySiteDocument
 from eu5miner.domains.religions import ReligionDefinition, ReligionDocument
 from eu5miner.domains.religious_aspects import (
@@ -61,46 +62,25 @@ class ReligionCatalog:
     holy_site_definitions: tuple[HolySiteDefinition, ...] = ()
 
     def get_religion(self, name: str) -> ReligionDefinition | None:
-        for definition in self.religion_definitions:
-            if definition.name == name:
-                return definition
-        return None
+        return get_by_name(self.religion_definitions, name)
 
     def get_religious_aspect(self, name: str) -> ReligiousAspectDefinition | None:
-        for definition in self.religious_aspect_definitions:
-            if definition.name == name:
-                return definition
-        return None
+        return get_by_name(self.religious_aspect_definitions, name)
 
     def get_religious_faction(self, name: str) -> ReligiousFactionDefinition | None:
-        for definition in self.religious_faction_definitions:
-            if definition.name == name:
-                return definition
-        return None
+        return get_by_name(self.religious_faction_definitions, name)
 
     def get_religious_focus(self, name: str) -> ReligiousFocusDefinition | None:
-        for definition in self.religious_focus_definitions:
-            if definition.name == name:
-                return definition
-        return None
+        return get_by_name(self.religious_focus_definitions, name)
 
     def get_religious_school(self, name: str) -> ReligiousSchoolDefinition | None:
-        for definition in self.religious_school_definitions:
-            if definition.name == name:
-                return definition
-        return None
+        return get_by_name(self.religious_school_definitions, name)
 
     def get_religious_figure(self, name: str) -> ReligiousFigureDefinition | None:
-        for definition in self.religious_figure_definitions:
-            if definition.name == name:
-                return definition
-        return None
+        return get_by_name(self.religious_figure_definitions, name)
 
     def get_holy_site(self, name: str) -> HolySiteDefinition | None:
-        for definition in self.holy_site_definitions:
-            if definition.name == name:
-                return definition
-        return None
+        return get_by_name(self.holy_site_definitions, name)
 
     def get_religious_aspects_for_religion(
         self, religion_name: str

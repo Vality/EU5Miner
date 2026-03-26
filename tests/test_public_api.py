@@ -37,6 +37,8 @@ from eu5miner.domains import (
     LawDocument,
     LawPolicyCatalog,
     LawPolicyDefinition,
+    NamedDefinitionDocumentLike,
+    NamedDefinitionLike,
     ReligiousAspectDefinition,
     ReligiousAspectDocument,
     ReligiousAspectOpinion,
@@ -53,6 +55,10 @@ from eu5miner.domains import (
     ReligionReport,
     SocietalValueDefinition,
     SocietalValueDocument,
+    SetupCountryDefinition,
+    SetupCountryDocument,
+    TaggedDefinitionDocumentLike,
+    TaggedDefinitionLike,
     ParliamentAgendaDefinition,
     ParliamentAgendaDocument,
     ParliamentIssueDefinition,
@@ -86,6 +92,9 @@ from eu5miner.domains import (
     collect_casus_belli_references,
     collect_country_interaction_references,
     collect_subject_type_references,
+    get_by_name,
+    get_by_tag,
+    names_from_named,
     parse_attribute_column_document,
     parse_building_category_document,
     parse_building_type_document,
@@ -133,6 +142,7 @@ from eu5miner.domains import (
     parse_subject_military_stance_document,
     parse_subject_type_document,
     parse_setup_country_document,
+    tags_from_tagged,
     parse_unit_ability_document,
     parse_unit_category_document,
     parse_unit_type_document,
@@ -419,6 +429,14 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     assert callable(build_country_description_category_usage_document)
     assert callable(build_linked_location_document)
     assert callable(build_war_flow_report)
+    assert isinstance(estate_document, NamedDefinitionDocumentLike)
+    assert isinstance(estate_document.definitions[0], NamedDefinitionLike)
+    assert names_from_named(estate_document.definitions) == ("sample_estate",)
+    assert get_by_name(estate_document.definitions, "sample_estate") is estate_document.definitions[0]
+    assert isinstance(setup_document, TaggedDefinitionDocumentLike)
+    assert isinstance(setup_document.definitions[0], TaggedDefinitionLike)
+    assert tags_from_tagged(setup_document.definitions) == ("FRA",)
+    assert get_by_tag(setup_document.definitions, "FRA") is setup_document.definitions[0]
     assert war_catalog.get_peace_treaty("peace_example") is not None
     assert war_catalog.get_subject_type("sample_subject") is not None
     assert diplomacy_catalog.get_subject_type("sample_subject") is not None
@@ -455,6 +473,8 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     assert HolySiteTypeDocument.__name__ == "HolySiteTypeDocument"
     assert InstitutionDefinition.__name__ == "InstitutionDefinition"
     assert InstitutionDocument.__name__ == "InstitutionDocument"
+    assert SetupCountryDefinition.__name__ == "SetupCountryDefinition"
+    assert SetupCountryDocument.__name__ == "SetupCountryDocument"
     assert SocietalValueDefinition.__name__ == "SocietalValueDefinition"
     assert SocietalValueDocument.__name__ == "SocietalValueDocument"
     assert ReligiousAspectDefinition.__name__ == "ReligiousAspectDefinition"

@@ -5,6 +5,7 @@ from __future__ import annotations
 from collections.abc import Sequence
 from dataclasses import dataclass
 
+from eu5miner.domains.interfaces import get_by_name, names_from_named
 from eu5miner.domains._parse_helpers import object_child_keys, parse_int_or_none
 from eu5miner.domains.holy_site_types import HolySiteTypeDefinition, HolySiteTypeDocument
 from eu5miner.formats.semantic import (
@@ -37,13 +38,10 @@ class HolySiteDocument:
     semantic_document: SemanticDocument
 
     def names(self) -> tuple[str, ...]:
-        return tuple(definition.name for definition in self.definitions)
+        return names_from_named(self.definitions)
 
     def get_definition(self, name: str) -> HolySiteDefinition | None:
-        for definition in self.definitions:
-            if definition.name == name:
-                return definition
-        return None
+        return get_by_name(self.definitions, name)
 
 
 @dataclass(frozen=True)
@@ -64,16 +62,10 @@ class HolySiteCatalog:
     holy_site_definitions: tuple[HolySiteDefinition, ...]
 
     def get_holy_site_type(self, name: str) -> HolySiteTypeDefinition | None:
-        for definition in self.holy_site_type_definitions:
-            if definition.name == name:
-                return definition
-        return None
+        return get_by_name(self.holy_site_type_definitions, name)
 
     def get_holy_site(self, name: str) -> HolySiteDefinition | None:
-        for definition in self.holy_site_definitions:
-            if definition.name == name:
-                return definition
-        return None
+        return get_by_name(self.holy_site_definitions, name)
 
     def get_holy_sites_for_type(self, type_name: str) -> tuple[HolySiteDefinition, ...]:
         return tuple(

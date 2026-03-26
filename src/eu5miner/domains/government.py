@@ -6,6 +6,7 @@ from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from typing import Any
 
+from eu5miner.domains.interfaces import get_by_name
 from eu5miner.domains.estate_privileges import (
     EstatePrivilegeDefinition,
     EstatePrivilegeDocument,
@@ -68,55 +69,31 @@ class GovernmentCatalog:
     parliament_issue_definitions: tuple[ParliamentIssueDefinition, ...] = ()
 
     def get_government_type(self, name: str) -> GovernmentTypeDefinition | None:
-        for definition in self.government_type_definitions:
-            if definition.name == name:
-                return definition
-        return None
+        return get_by_name(self.government_type_definitions, name)
 
     def get_reform(self, name: str) -> GovernmentReformDefinition | None:
-        for definition in self.government_reform_definitions:
-            if definition.name == name:
-                return definition
-        return None
+        return get_by_name(self.government_reform_definitions, name)
 
     def get_law(self, name: str) -> LawDefinition | None:
-        for definition in self.law_definitions:
-            if definition.name == name:
-                return definition
-        return None
+        return get_by_name(self.law_definitions, name)
 
     def get_policy(self, name: str) -> LawPolicyDefinition | None:
         return self.law_policy_catalog.get_policy(name)
 
     def get_estate(self, name: str) -> EstateDefinition | None:
-        for definition in self.estate_definitions:
-            if definition.name == name:
-                return definition
-        return None
+        return get_by_name(self.estate_definitions, name)
 
     def get_privilege(self, name: str) -> EstatePrivilegeDefinition | None:
-        for definition in self.estate_privilege_definitions:
-            if definition.name == name:
-                return definition
-        return None
+        return get_by_name(self.estate_privilege_definitions, name)
 
     def get_parliament_type(self, name: str) -> ParliamentTypeDefinition | None:
-        for definition in self.parliament_type_definitions:
-            if definition.name == name:
-                return definition
-        return None
+        return get_by_name(self.parliament_type_definitions, name)
 
     def get_parliament_agenda(self, name: str) -> ParliamentAgendaDefinition | None:
-        for definition in self.parliament_agenda_definitions:
-            if definition.name == name:
-                return definition
-        return None
+        return get_by_name(self.parliament_agenda_definitions, name)
 
     def get_parliament_issue(self, name: str) -> ParliamentIssueDefinition | None:
-        for definition in self.parliament_issue_definitions:
-            if definition.name == name:
-                return definition
-        return None
+        return get_by_name(self.parliament_issue_definitions, name)
 
     def get_default_estate_for_government(self, government_name: str) -> EstateDefinition | None:
         definition = self.get_government_type(government_name)

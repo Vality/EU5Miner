@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from eu5miner.domains.interfaces import get_by_name, names_from_named
 from eu5miner.formats.semantic import (
     SemanticDocument,
     SemanticEntry,
@@ -31,13 +32,10 @@ class HolySiteTypeDocument:
     semantic_document: SemanticDocument
 
     def names(self) -> tuple[str, ...]:
-        return tuple(definition.name for definition in self.definitions)
+        return names_from_named(self.definitions)
 
     def get_definition(self, name: str) -> HolySiteTypeDefinition | None:
-        for definition in self.definitions:
-            if definition.name == name:
-                return definition
-        return None
+        return get_by_name(self.definitions, name)
 
 
 def parse_holy_site_type_document(text: str) -> HolySiteTypeDocument:

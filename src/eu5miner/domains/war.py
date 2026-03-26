@@ -6,6 +6,7 @@ import re
 from collections.abc import Sequence
 from dataclasses import dataclass
 
+from eu5miner.domains.interfaces import get_by_name
 from eu5miner.domains.casus_belli import CasusBelliDefinition, CasusBelliDocument
 from eu5miner.domains.peace_treaties import PeaceTreatyDefinition, PeaceTreatyDocument
 from eu5miner.domains.subject_types import SubjectTypeDefinition, SubjectTypeDocument
@@ -23,28 +24,16 @@ class WarFlowCatalog:
     subject_type_definitions: tuple[SubjectTypeDefinition, ...] = ()
 
     def get_casus_belli(self, name: str) -> CasusBelliDefinition | None:
-        for definition in self.casus_belli_definitions:
-            if definition.name == name:
-                return definition
-        return None
+        return get_by_name(self.casus_belli_definitions, name)
 
     def get_wargoal(self, name: str) -> WargoalDefinition | None:
-        for definition in self.wargoal_definitions:
-            if definition.name == name:
-                return definition
-        return None
+        return get_by_name(self.wargoal_definitions, name)
 
     def get_peace_treaty(self, name: str) -> PeaceTreatyDefinition | None:
-        for definition in self.peace_treaty_definitions:
-            if definition.name == name:
-                return definition
-        return None
+        return get_by_name(self.peace_treaty_definitions, name)
 
     def get_subject_type(self, name: str) -> SubjectTypeDefinition | None:
-        for definition in self.subject_type_definitions:
-            if definition.name == name:
-                return definition
-        return None
+        return get_by_name(self.subject_type_definitions, name)
 
     def get_wargoal_for_casus_belli(self, casus_belli_name: str) -> WargoalDefinition | None:
         casus_belli = self.get_casus_belli(casus_belli_name)
