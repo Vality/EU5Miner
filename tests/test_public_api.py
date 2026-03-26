@@ -37,6 +37,19 @@ from eu5miner.domains import (
     LawDocument,
     LawPolicyCatalog,
     LawPolicyDefinition,
+    ReligiousAspectDefinition,
+    ReligiousAspectDocument,
+    ReligiousAspectOpinion,
+    ReligiousFactionDefinition,
+    ReligiousFactionDocument,
+    ReligiousFigureDefinition,
+    ReligiousFigureDocument,
+    ReligiousFocusDefinition,
+    ReligiousFocusDocument,
+    ReligiousSchoolDefinition,
+    ReligiousSchoolDocument,
+    SocietalValueDefinition,
+    SocietalValueDocument,
     ParliamentAgendaDefinition,
     ParliamentAgendaDocument,
     ParliamentIssueDefinition,
@@ -96,12 +109,18 @@ from eu5miner.domains import (
     parse_parliament_type_document,
     parse_price_document,
     parse_production_method_document,
+    parse_religious_aspect_document,
+    parse_religious_faction_document,
+    parse_religious_figure_document,
+    parse_religious_focus_document,
     parse_religion_document,
+    parse_religious_school_document,
     parse_script_value_document,
     parse_scripted_list_document,
     parse_scripted_modifier_document,
     parse_scripted_relation_document,
     parse_scripted_trigger_document,
+    parse_societal_value_document,
     parse_subject_military_stance_document,
     parse_subject_type_document,
     parse_setup_country_document,
@@ -199,6 +218,9 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     institution_document = parse_institution_document(
         "renaissance = { age = age_2_renaissance can_spawn = { always = yes } promote_chance = { add = 1 } }\n"
     )
+    societal_value_document = parse_societal_value_document(
+        "tradition_vs_change = { left_modifier = { add = 1 } right_modifier = { add = 2 } opinion_importance_multiplier = 0.5 }\n"
+    )
     law_document = parse_law_document(
         "sample_law = {\n"
         "    law_category = administrative\n"
@@ -226,6 +248,21 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     )
     holy_site_document = parse_holy_site_document(
         "sample_site = { location = rome type = temple importance = 4 religions = { catholic } }\n"
+    )
+    religious_aspect_document = parse_religious_aspect_document(
+        "sample_aspect = { religion = catholic enabled = { always = yes } modifier = { add = 1 } opinions = { sample_aspect = 10 } }\n"
+    )
+    religious_faction_document = parse_religious_faction_document(
+        "sample_faction = { visible = { always = yes } enabled = { always = yes } actions = { action_a action_b } }\n"
+    )
+    religious_focus_document = parse_religious_focus_document(
+        "sample_focus = { monthly_progress = { add = 1 } modifier_on_completion = { add = 1 } }\n"
+    )
+    religious_school_document = parse_religious_school_document(
+        "sample_school = { color = rgb { 1 2 3 } enabled_for_country = { always = yes } modifier = { add = 1 } }\n"
+    )
+    religious_figure_document = parse_religious_figure_document(
+        "sample_figure = { enabled_for_religion = { group = religion_group:christian } }\n"
     )
     subject_type_document = parse_subject_type_document(
         "sample_subject = { level = 1 allow_subjects = no }\n"
@@ -306,9 +343,15 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     assert government_type_document.names() == ("monarchy",)
     assert government_reform_document.names() == ("sample_reform",)
     assert institution_document.names() == ("renaissance",)
+    assert societal_value_document.names() == ("tradition_vs_change",)
     assert law_document.names() == ("sample_law",)
     assert holy_site_type_document.names() == ("temple",)
     assert holy_site_document.names() == ("sample_site",)
+    assert religious_aspect_document.names() == ("sample_aspect",)
+    assert religious_faction_document.names() == ("sample_faction",)
+    assert religious_focus_document.names() == ("sample_focus",)
+    assert religious_school_document.names() == ("sample_school",)
+    assert religious_figure_document.names() == ("sample_figure",)
     assert peace_treaty_document.names() == ("peace_example",)
     assert price_document.names() == ("build_road",)
     assert religion_document.names() == ("faith",)
@@ -385,6 +428,19 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     assert HolySiteTypeDocument.__name__ == "HolySiteTypeDocument"
     assert InstitutionDefinition.__name__ == "InstitutionDefinition"
     assert InstitutionDocument.__name__ == "InstitutionDocument"
+    assert SocietalValueDefinition.__name__ == "SocietalValueDefinition"
+    assert SocietalValueDocument.__name__ == "SocietalValueDocument"
+    assert ReligiousAspectDefinition.__name__ == "ReligiousAspectDefinition"
+    assert ReligiousAspectDocument.__name__ == "ReligiousAspectDocument"
+    assert ReligiousAspectOpinion.__name__ == "ReligiousAspectOpinion"
+    assert ReligiousFactionDefinition.__name__ == "ReligiousFactionDefinition"
+    assert ReligiousFactionDocument.__name__ == "ReligiousFactionDocument"
+    assert ReligiousFocusDefinition.__name__ == "ReligiousFocusDefinition"
+    assert ReligiousFocusDocument.__name__ == "ReligiousFocusDocument"
+    assert ReligiousSchoolDefinition.__name__ == "ReligiousSchoolDefinition"
+    assert ReligiousSchoolDocument.__name__ == "ReligiousSchoolDocument"
+    assert ReligiousFigureDefinition.__name__ == "ReligiousFigureDefinition"
+    assert ReligiousFigureDocument.__name__ == "ReligiousFigureDocument"
     assert UnitTypeDefinition.__name__ == "UnitTypeDefinition"
     assert UnitTypeDocument.__name__ == "UnitTypeDocument"
     assert UnitAbilityDefinition.__name__ == "UnitAbilityDefinition"
