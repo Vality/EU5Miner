@@ -87,3 +87,9 @@ As the CST and writer arrive, the suite should add:
 - Prefer tests that validate the parser against representative shipped files.
 - Keep the test corpus centered on the major moddable text file families.
 - Skip real-install tests cleanly if the install is unavailable.
+
+## Optional Broad Sweep
+
+- Keep one marker-backed broad sweep for wider real-install coverage and cross-helper integration.
+- Run it explicitly with `uv run python -m pytest -m broad` when auditing coverage across the current representative matrix.
+- Keep the `broad` suite out of the default fast loop so focused parser iteration stays cheap.

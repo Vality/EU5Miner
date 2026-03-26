@@ -48,6 +48,9 @@ from eu5miner.domains import (
     ReligiousFocusDocument,
     ReligiousSchoolDefinition,
     ReligiousSchoolDocument,
+    ReligionCatalog,
+    ReligionReferenceEdge,
+    ReligionReport,
     SocietalValueDefinition,
     SocietalValueDocument,
     ParliamentAgendaDefinition,
@@ -70,6 +73,8 @@ from eu5miner.domains import (
     build_holy_site_catalog,
     build_holy_site_report,
     build_law_policy_catalog,
+    build_religion_catalog,
+    build_religion_report,
     build_war_flow_catalog,
     build_country_description_category_usage_document,
     build_linked_location_document,
@@ -305,6 +310,16 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     government_report = build_government_report(government_catalog)
     holy_site_catalog = build_holy_site_catalog((holy_site_type_document,), (holy_site_document,))
     holy_site_report = build_holy_site_report(holy_site_catalog)
+    religion_catalog = build_religion_catalog(
+        religion_documents=(religion_document,),
+        religious_aspect_documents=(religious_aspect_document,),
+        religious_faction_documents=(religious_faction_document,),
+        religious_focus_documents=(religious_focus_document,),
+        religious_school_documents=(religious_school_document,),
+        religious_figure_documents=(religious_figure_document,),
+        holy_site_documents=(holy_site_document,),
+    )
+    religion_report = build_religion_report(religion_catalog)
     war_catalog = build_war_flow_catalog(
         casus_belli_documents=(casus_belli_document,),
         wargoal_documents=(wargoal_document,),
@@ -394,6 +409,8 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     assert callable(build_holy_site_catalog)
     assert callable(build_holy_site_report)
     assert callable(build_law_policy_catalog)
+    assert callable(build_religion_catalog)
+    assert callable(build_religion_report)
     assert callable(build_country_description_category_usage_document)
     assert callable(build_linked_location_document)
     assert war_catalog.get_peace_treaty("peace_example") is not None
@@ -408,6 +425,8 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     assert isinstance(government_report, GovernmentReport)
     assert isinstance(holy_site_catalog, HolySiteCatalog)
     assert isinstance(holy_site_report, HolySiteReport)
+    assert isinstance(religion_catalog, ReligionCatalog)
+    assert isinstance(religion_report, ReligionReport)
     assert isinstance(law_catalog, LawPolicyCatalog)
     assert UnitModifierValue.__name__ == "UnitModifierValue"
     assert EstateDefinition.__name__ == "EstateDefinition"
@@ -439,8 +458,11 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     assert ReligiousFocusDocument.__name__ == "ReligiousFocusDocument"
     assert ReligiousSchoolDefinition.__name__ == "ReligiousSchoolDefinition"
     assert ReligiousSchoolDocument.__name__ == "ReligiousSchoolDocument"
+    assert ReligionReferenceEdge.__name__ == "ReligionReferenceEdge"
     assert ReligiousFigureDefinition.__name__ == "ReligiousFigureDefinition"
     assert ReligiousFigureDocument.__name__ == "ReligiousFigureDocument"
+    assert ReligionCatalog.__name__ == "ReligionCatalog"
+    assert ReligionReport.__name__ == "ReligionReport"
     assert UnitTypeDefinition.__name__ == "UnitTypeDefinition"
     assert UnitTypeDocument.__name__ == "UnitTypeDocument"
     assert UnitAbilityDefinition.__name__ == "UnitAbilityDefinition"
