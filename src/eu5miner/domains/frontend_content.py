@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 
+from eu5miner.domains.interfaces import get_by_name, names_from_named
 from eu5miner.domains.localization_bundles import LocalizationBundle, build_localization_bundle
 from eu5miner.formats import semantic
 from eu5miner.source import ContentPhase, GameInstall
@@ -31,13 +32,10 @@ class MainMenuScenarioDocument:
     semantic_document: semantic.SemanticDocument
 
     def names(self) -> tuple[str, ...]:
-        return tuple(definition.name for definition in self.definitions)
+        return names_from_named(self.definitions)
 
     def get_definition(self, name: str) -> MainMenuScenarioDefinition | None:
-        for definition in self.definitions:
-            if definition.name == name:
-                return definition
-        return None
+        return get_by_name(self.definitions, name)
 
 
 @dataclass(frozen=True)

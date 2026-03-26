@@ -6,7 +6,7 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Callable, TypeVar
 
-from eu5miner.domains.interfaces import get_by_name
+from eu5miner.domains.interfaces import flatten_definitions, get_by_name
 from eu5miner.domains.casus_belli import CasusBelliDocument, CasusBelliDefinition
 from eu5miner.domains.character_interactions import (
     CharacterInteractionDefinition,
@@ -213,15 +213,9 @@ def build_diplomacy_graph_catalog(
             peace_treaty_documents=peace_treaty_documents,
             subject_type_documents=subject_type_documents,
         ),
-        country_interaction_definitions=tuple(
-            definition
-            for document in country_interaction_documents
-            for definition in document.definitions
-        ),
-        character_interaction_definitions=tuple(
-            definition
-            for document in character_interaction_documents
-            for definition in document.definitions
+        country_interaction_definitions=flatten_definitions(country_interaction_documents),
+        character_interaction_definitions=flatten_definitions(
+            character_interaction_documents
         ),
     )
 

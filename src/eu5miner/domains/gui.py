@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from eu5miner.domains.interfaces import get_by_name, names_from_named
 from eu5miner.domains._parse_helpers import entry_object, entry_scalar_text
 from eu5miner.formats import semantic
 
@@ -48,13 +49,10 @@ class GuiTypeGroup:
     entry: semantic.SemanticEntry
 
     def definition_names(self) -> tuple[str, ...]:
-        return tuple(definition.name for definition in self.definitions)
+        return names_from_named(self.definitions)
 
     def get_definition(self, name: str) -> GuiTypeDefinition | None:
-        for definition in self.definitions:
-            if definition.name == name:
-                return definition
-        return None
+        return get_by_name(self.definitions, name)
 
 
 @dataclass(frozen=True)

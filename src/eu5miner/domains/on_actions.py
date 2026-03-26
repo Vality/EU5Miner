@@ -7,6 +7,7 @@ from collections import defaultdict
 from collections.abc import Iterable
 from dataclasses import dataclass
 
+from eu5miner.domains.interfaces import get_by_name, names_from_named
 from eu5miner.domains._macros import collect_parameters_from_object
 from eu5miner.domains._parse_helpers import parse_int_or_none
 from eu5miner.formats.semantic import (
@@ -70,13 +71,10 @@ class OnActionDocument:
     semantic_document: SemanticDocument
 
     def names(self) -> tuple[str, ...]:
-        return tuple(definition.name for definition in self.definitions)
+        return names_from_named(self.definitions)
 
     def get_definition(self, name: str) -> OnActionDefinition | None:
-        for definition in self.definitions:
-            if definition.name == name:
-                return definition
-        return None
+        return get_by_name(self.definitions, name)
 
 
 @dataclass(frozen=True)
@@ -95,13 +93,10 @@ class OnActionDocumentationDocument:
     definitions: tuple[OnActionDocumentationDefinition, ...]
 
     def names(self) -> tuple[str, ...]:
-        return tuple(definition.name for definition in self.definitions)
+        return names_from_named(self.definitions)
 
     def get_definition(self, name: str) -> OnActionDocumentationDefinition | None:
-        for definition in self.definitions:
-            if definition.name == name:
-                return definition
-        return None
+        return get_by_name(self.definitions, name)
 
 
 @dataclass(frozen=True)
@@ -120,13 +115,10 @@ class OnActionCatalogDocument:
     entries: tuple[OnActionCatalogEntry, ...]
 
     def names(self) -> tuple[str, ...]:
-        return tuple(entry.name for entry in self.entries)
+        return names_from_named(self.entries)
 
     def get_entry(self, name: str) -> OnActionCatalogEntry | None:
-        for entry in self.entries:
-            if entry.name == name:
-                return entry
-        return None
+        return get_by_name(self.entries, name)
 
     def get_definition(self, name: str) -> OnActionCatalogEntry | None:
         return self.get_entry(name)

@@ -6,7 +6,7 @@ from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from typing import Any
 
-from eu5miner.domains.interfaces import get_by_name
+from eu5miner.domains.interfaces import flatten_definitions, get_by_name
 from eu5miner.domains.holy_sites import HolySiteDefinition, HolySiteDocument
 from eu5miner.domains.religions import ReligionDefinition, ReligionDocument
 from eu5miner.domains.religious_aspects import (
@@ -217,37 +217,13 @@ def build_religion_catalog(
     holy_site_documents: Sequence[HolySiteDocument] = (),
 ) -> ReligionCatalog:
     return ReligionCatalog(
-        religion_definitions=tuple(
-            definition for document in religion_documents for definition in document.definitions
-        ),
-        religious_aspect_definitions=tuple(
-            definition
-            for document in religious_aspect_documents
-            for definition in document.definitions
-        ),
-        religious_faction_definitions=tuple(
-            definition
-            for document in religious_faction_documents
-            for definition in document.definitions
-        ),
-        religious_focus_definitions=tuple(
-            definition
-            for document in religious_focus_documents
-            for definition in document.definitions
-        ),
-        religious_school_definitions=tuple(
-            definition
-            for document in religious_school_documents
-            for definition in document.definitions
-        ),
-        religious_figure_definitions=tuple(
-            definition
-            for document in religious_figure_documents
-            for definition in document.definitions
-        ),
-        holy_site_definitions=tuple(
-            definition for document in holy_site_documents for definition in document.definitions
-        ),
+        religion_definitions=flatten_definitions(religion_documents),
+        religious_aspect_definitions=flatten_definitions(religious_aspect_documents),
+        religious_faction_definitions=flatten_definitions(religious_faction_documents),
+        religious_focus_definitions=flatten_definitions(religious_focus_documents),
+        religious_school_definitions=flatten_definitions(religious_school_documents),
+        religious_figure_definitions=flatten_definitions(religious_figure_documents),
+        holy_site_definitions=flatten_definitions(holy_site_documents),
     )
 
 

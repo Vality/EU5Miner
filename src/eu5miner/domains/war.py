@@ -6,7 +6,7 @@ import re
 from collections.abc import Sequence
 from dataclasses import dataclass
 
-from eu5miner.domains.interfaces import get_by_name
+from eu5miner.domains.interfaces import flatten_definitions, get_by_name
 from eu5miner.domains.casus_belli import CasusBelliDefinition, CasusBelliDocument
 from eu5miner.domains.peace_treaties import PeaceTreatyDefinition, PeaceTreatyDocument
 from eu5miner.domains.subject_types import SubjectTypeDefinition, SubjectTypeDocument
@@ -184,26 +184,10 @@ def build_war_flow_catalog(
     subject_type_documents: Sequence[SubjectTypeDocument] = (),
 ) -> WarFlowCatalog:
     return WarFlowCatalog(
-        casus_belli_definitions=tuple(
-            definition
-            for document in casus_belli_documents
-            for definition in document.definitions
-        ),
-        wargoal_definitions=tuple(
-            definition
-            for document in wargoal_documents
-            for definition in document.definitions
-        ),
-        peace_treaty_definitions=tuple(
-            definition
-            for document in peace_treaty_documents
-            for definition in document.definitions
-        ),
-        subject_type_definitions=tuple(
-            definition
-            for document in subject_type_documents
-            for definition in document.definitions
-        ),
+        casus_belli_definitions=flatten_definitions(casus_belli_documents),
+        wargoal_definitions=flatten_definitions(wargoal_documents),
+        peace_treaty_definitions=flatten_definitions(peace_treaty_documents),
+        subject_type_definitions=flatten_definitions(subject_type_documents),
     )
 
 

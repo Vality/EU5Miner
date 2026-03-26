@@ -92,6 +92,7 @@ from eu5miner.domains import (
     collect_casus_belli_references,
     collect_country_interaction_references,
     collect_subject_type_references,
+    flatten_definitions,
     get_by_name,
     get_by_tag,
     names_from_named,
@@ -431,6 +432,7 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     assert callable(build_war_flow_report)
     assert isinstance(estate_document, NamedDefinitionDocumentLike)
     assert isinstance(estate_document.definitions[0], NamedDefinitionLike)
+    assert flatten_definitions((estate_document,)) == estate_document.definitions
     assert names_from_named(estate_document.definitions) == ("sample_estate",)
     assert get_by_name(estate_document.definitions, "sample_estate") is estate_document.definitions[0]
     assert isinstance(setup_document, TaggedDefinitionDocumentLike)
