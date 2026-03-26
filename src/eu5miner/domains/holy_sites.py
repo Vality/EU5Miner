@@ -5,7 +5,7 @@ from __future__ import annotations
 from collections.abc import Sequence
 from dataclasses import dataclass
 
-from eu5miner.domains.interfaces import get_by_name, names_from_named
+from eu5miner.domains.interfaces import flatten_definitions, get_by_name, names_from_named
 from eu5miner.domains._parse_helpers import object_child_keys, parse_int_or_none
 from eu5miner.domains.holy_site_types import HolySiteTypeDefinition, HolySiteTypeDocument
 from eu5miner.formats.semantic import (
@@ -146,14 +146,8 @@ def build_holy_site_catalog(
     holy_site_documents: Sequence[HolySiteDocument],
 ) -> HolySiteCatalog:
     return HolySiteCatalog(
-        holy_site_type_definitions=tuple(
-            definition
-            for document in holy_site_type_documents
-            for definition in document.definitions
-        ),
-        holy_site_definitions=tuple(
-            definition for document in holy_site_documents for definition in document.definitions
-        ),
+        holy_site_type_definitions=flatten_definitions(holy_site_type_documents),
+        holy_site_definitions=flatten_definitions(holy_site_documents),
     )
 
 

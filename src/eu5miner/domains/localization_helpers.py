@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from eu5miner.domains.interfaces import get_by_name, names_from_named
 from eu5miner.domains._parse_helpers import entry_scalar_text, parse_bool_or_none
 from eu5miner.formats import semantic
 
@@ -50,13 +51,10 @@ class CustomizableLocalizationDocument:
     semantic_document: semantic.SemanticDocument
 
     def names(self) -> tuple[str, ...]:
-        return tuple(definition.name for definition in self.definitions)
+        return names_from_named(self.definitions)
 
     def get_definition(self, name: str) -> CustomizableLocalizationDefinition | None:
-        for definition in self.definitions:
-            if definition.name == name:
-                return definition
-        return None
+        return get_by_name(self.definitions, name)
 
 
 @dataclass(frozen=True)
@@ -70,10 +68,10 @@ class EffectLocalizationDefinition:
     entry: semantic.SemanticEntry
 
     def get_variant(self, name: str) -> str | None:
-        for variant in self.variants:
-            if variant.name == name:
-                return variant.localization_key
-        return None
+        variant = get_by_name(self.variants, name)
+        if variant is None:
+            return None
+        return variant.localization_key
 
 
 @dataclass(frozen=True)
@@ -84,13 +82,10 @@ class EffectLocalizationDocument:
     semantic_document: semantic.SemanticDocument
 
     def names(self) -> tuple[str, ...]:
-        return tuple(definition.name for definition in self.definitions)
+        return names_from_named(self.definitions)
 
     def get_definition(self, name: str) -> EffectLocalizationDefinition | None:
-        for definition in self.definitions:
-            if definition.name == name:
-                return definition
-        return None
+        return get_by_name(self.definitions, name)
 
 
 @dataclass(frozen=True)
@@ -103,10 +98,10 @@ class TriggerLocalizationDefinition:
     entry: semantic.SemanticEntry
 
     def get_variant(self, name: str) -> str | None:
-        for variant in self.variants:
-            if variant.name == name:
-                return variant.localization_key
-        return None
+        variant = get_by_name(self.variants, name)
+        if variant is None:
+            return None
+        return variant.localization_key
 
 
 @dataclass(frozen=True)
@@ -117,13 +112,10 @@ class TriggerLocalizationDocument:
     semantic_document: semantic.SemanticDocument
 
     def names(self) -> tuple[str, ...]:
-        return tuple(definition.name for definition in self.definitions)
+        return names_from_named(self.definitions)
 
     def get_definition(self, name: str) -> TriggerLocalizationDefinition | None:
-        for definition in self.definitions:
-            if definition.name == name:
-                return definition
-        return None
+        return get_by_name(self.definitions, name)
 
 
 def parse_customizable_localization_document(text: str) -> CustomizableLocalizationDocument:

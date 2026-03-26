@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from eu5miner.domains.interfaces import get_by_name, get_by_tag, names_from_named, tags_from_tagged
 from eu5miner.formats import semantic
 
 COUNTRY_LOCATION_CATEGORIES = (
@@ -43,13 +44,10 @@ class LocationHierarchyDocument:
     semantic_document: semantic.SemanticDocument
 
     def names(self) -> tuple[str, ...]:
-        return tuple(definition.name for definition in self.definitions)
+        return names_from_named(self.definitions)
 
     def get_location(self, name: str) -> LocationHierarchyDefinition | None:
-        for definition in self.definitions:
-            if definition.name == name:
-                return definition
-        return None
+        return get_by_name(self.definitions, name)
 
     def get_definition(self, name: str) -> LocationHierarchyDefinition | None:
         return self.get_location(name)
@@ -88,13 +86,10 @@ class CountryLocationDocument:
     semantic_document: semantic.SemanticDocument
 
     def tags(self) -> tuple[str, ...]:
-        return tuple(definition.tag for definition in self.definitions)
+        return tags_from_tagged(self.definitions)
 
     def get_definition(self, tag: str) -> CountryLocationDefinition | None:
-        for definition in self.definitions:
-            if definition.tag == tag:
-                return definition
-        return None
+        return get_by_tag(self.definitions, tag)
 
 
 @dataclass(frozen=True)
@@ -114,13 +109,10 @@ class LocationSetupDocument:
     semantic_document: semantic.SemanticDocument
 
     def names(self) -> tuple[str, ...]:
-        return tuple(definition.name for definition in self.definitions)
+        return names_from_named(self.definitions)
 
     def get_definition(self, name: str) -> LocationSetupDefinition | None:
-        for definition in self.definitions:
-            if definition.name == name:
-                return definition
-        return None
+        return get_by_name(self.definitions, name)
 
 
 @dataclass(frozen=True)
@@ -153,13 +145,10 @@ class LinkedLocationDocument:
     definitions: tuple[LinkedLocationDefinition, ...]
 
     def names(self) -> tuple[str, ...]:
-        return tuple(definition.name for definition in self.definitions)
+        return names_from_named(self.definitions)
 
     def get_location(self, name: str) -> LinkedLocationDefinition | None:
-        for definition in self.definitions:
-            if definition.name == name:
-                return definition
-        return None
+        return get_by_name(self.definitions, name)
 
     def get_definition(self, name: str) -> LinkedLocationDefinition | None:
         return self.get_location(name)

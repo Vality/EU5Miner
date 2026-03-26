@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Sequence
+from collections.abc import Iterable, Sequence
 from typing import Protocol, TypeVar, runtime_checkable
 
 
@@ -20,13 +20,22 @@ class TaggedDefinitionLike(Protocol):
 
 NamedDefinitionT = TypeVar("NamedDefinitionT", bound=NamedDefinitionLike)
 TaggedDefinitionT = TypeVar("TaggedDefinitionT", bound=TaggedDefinitionLike)
-NamedDefinitionDocT = TypeVar("NamedDefinitionDocT", bound=NamedDefinitionLike)
-TaggedDefinitionDocT = TypeVar("TaggedDefinitionDocT", bound=TaggedDefinitionLike)
+NamedDefinitionDocT = TypeVar(
+    "NamedDefinitionDocT",
+    bound=NamedDefinitionLike,
+    covariant=True,
+)
+TaggedDefinitionDocT = TypeVar(
+    "TaggedDefinitionDocT",
+    bound=TaggedDefinitionLike,
+    covariant=True,
+)
 
 
 @runtime_checkable
 class NamedDefinitionDocumentLike(Protocol[NamedDefinitionDocT]):
-    definitions: tuple[NamedDefinitionDocT, ...]
+    @property
+    def definitions(self) -> tuple[NamedDefinitionDocT, ...]: ...
 
     def names(self) -> tuple[str, ...]: ...
 
@@ -35,7 +44,8 @@ class NamedDefinitionDocumentLike(Protocol[NamedDefinitionDocT]):
 
 @runtime_checkable
 class TaggedDefinitionDocumentLike(Protocol[TaggedDefinitionDocT]):
-    definitions: tuple[TaggedDefinitionDocT, ...]
+    @property
+    def definitions(self) -> tuple[TaggedDefinitionDocT, ...]: ...
 
     def get_definition(self, tag: str) -> TaggedDefinitionDocT | None: ...
 
@@ -66,3 +76,13 @@ def get_by_tag(
         if definition.tag == tag:
             return definition
     return None
+
+
+def flatten_definitions(
+    documents: Iterable[NamedDefinitionDocumentLike[NamedDefinitionDocT]],
+) -> tuple[NamedDefinitionDocT, ...]:
+    return tuple(
+        definition
+        for document in documents
+        for definition in document.definitions
+    )

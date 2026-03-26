@@ -6,7 +6,7 @@ from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from typing import Any
 
-from eu5miner.domains.interfaces import get_by_name
+from eu5miner.domains.interfaces import flatten_definitions, get_by_name
 from eu5miner.domains.estate_privileges import (
     EstatePrivilegeDefinition,
     EstatePrivilegeDocument,
@@ -290,45 +290,17 @@ def build_government_catalog(
     parliament_agenda_documents: Sequence[ParliamentAgendaDocument] = (),
     parliament_issue_documents: Sequence[ParliamentIssueDocument] = (),
 ) -> GovernmentCatalog:
-    law_definitions = tuple(
-        definition for document in law_documents for definition in document.definitions
-    )
+    law_definitions = flatten_definitions(law_documents)
     return GovernmentCatalog(
-        government_type_definitions=tuple(
-            definition
-            for document in government_type_documents
-            for definition in document.definitions
-        ),
-        government_reform_definitions=tuple(
-            definition
-            for document in government_reform_documents
-            for definition in document.definitions
-        ),
+        government_type_definitions=flatten_definitions(government_type_documents),
+        government_reform_definitions=flatten_definitions(government_reform_documents),
         law_definitions=law_definitions,
         law_policy_catalog=build_law_policy_catalog(law_documents),
-        estate_definitions=tuple(
-            definition for document in estate_documents for definition in document.definitions
-        ),
-        estate_privilege_definitions=tuple(
-            definition
-            for document in estate_privilege_documents
-            for definition in document.definitions
-        ),
-        parliament_type_definitions=tuple(
-            definition
-            for document in parliament_type_documents
-            for definition in document.definitions
-        ),
-        parliament_agenda_definitions=tuple(
-            definition
-            for document in parliament_agenda_documents
-            for definition in document.definitions
-        ),
-        parliament_issue_definitions=tuple(
-            definition
-            for document in parliament_issue_documents
-            for definition in document.definitions
-        ),
+        estate_definitions=flatten_definitions(estate_documents),
+        estate_privilege_definitions=flatten_definitions(estate_privilege_documents),
+        parliament_type_definitions=flatten_definitions(parliament_type_documents),
+        parliament_agenda_definitions=flatten_definitions(parliament_agenda_documents),
+        parliament_issue_definitions=flatten_definitions(parliament_issue_documents),
     )
 
 

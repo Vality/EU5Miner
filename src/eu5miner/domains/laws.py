@@ -5,7 +5,7 @@ from __future__ import annotations
 from collections.abc import Sequence
 from dataclasses import dataclass
 
-from eu5miner.domains.interfaces import get_by_name, names_from_named
+from eu5miner.domains.interfaces import flatten_definitions, get_by_name, names_from_named
 from eu5miner.domains._parse_helpers import (
     entry_object,
     entry_scalar_text,
@@ -227,11 +227,7 @@ def parse_law_document(text: str) -> LawDocument:
 
 
 def build_law_policy_catalog(documents: Sequence[LawDocument]) -> LawPolicyCatalog:
-    return LawPolicyCatalog(
-        law_definitions=tuple(
-            definition for document in documents for definition in document.definitions
-        )
-    )
+    return LawPolicyCatalog(law_definitions=flatten_definitions(documents))
 
 
 def _parse_policies(body: SemanticObject) -> tuple[LawPolicyDefinition, ...]:
