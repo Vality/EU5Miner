@@ -32,7 +32,10 @@ def test_religious_aspect_parses_inline_fields() -> None:
         "    visible = { always = yes }\n"
         "    enabled = { always = yes }\n"
         "    modifier = { tolerance_own = 1 }\n"
-        "    opinions = { sample_aspect = 10 rival_aspect = -5 }\n"
+        "    opinions = {\n"
+        "        sample_aspect = 10\n"
+        "        rival_aspect = -5\n"
+        "    }\n"
         "}\n"
     )
 
