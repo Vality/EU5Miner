@@ -13,6 +13,10 @@ from eu5miner import (
 from eu5miner.domains import (
     DiplomacyGraphCatalog,
     DiplomacyGraphReport,
+    EstateDefinition,
+    EstateDocument,
+    EstatePrivilegeDefinition,
+    EstatePrivilegeDocument,
     GovernmentReformDefinition,
     GovernmentReformDocument,
     GovernmentTypeDefinition,
@@ -48,6 +52,8 @@ from eu5miner.domains import (
     parse_culture_document,
     parse_default_map_document,
     parse_employment_system_document,
+    parse_estate_document,
+    parse_estate_privilege_document,
     parse_event_document,
     parse_generic_action_document,
     parse_government_reform_document,
@@ -138,6 +144,12 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     employment_system_document = parse_employment_system_document(
         "equality = { priority = { value = 1 } }\n"
     )
+    estate_document = parse_estate_document(
+        "sample_estate = { color = pop_nobles power_per_pop = 25 tax_per_pop = 100 ruler = yes }\n"
+    )
+    estate_privilege_document = parse_estate_privilege_document(
+        "sample_privilege = { estate = nobles_estate country_modifier = { add = 1 } }\n"
+    )
     generic_action_document = parse_generic_action_document(
         "create_market = { type = owncountry select_trigger = { looking_for_a = market } }\n"
     )
@@ -226,6 +238,8 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     assert category_document.names() == ("military",)
     assert culture_document.names() == ("example",)
     assert employment_system_document.names() == ("equality",)
+    assert estate_document.names() == ("sample_estate",)
+    assert estate_privilege_document.names() == ("sample_privilege",)
     assert generic_action_document.names() == ("create_market",)
     assert government_type_document.names() == ("monarchy",)
     assert government_reform_document.names() == ("sample_reform",)
@@ -278,6 +292,10 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     assert isinstance(diplomacy_report, DiplomacyGraphReport)
     assert isinstance(law_catalog, LawPolicyCatalog)
     assert UnitModifierValue.__name__ == "UnitModifierValue"
+    assert EstateDefinition.__name__ == "EstateDefinition"
+    assert EstateDocument.__name__ == "EstateDocument"
+    assert EstatePrivilegeDefinition.__name__ == "EstatePrivilegeDefinition"
+    assert EstatePrivilegeDocument.__name__ == "EstatePrivilegeDocument"
     assert UnitTypeDefinition.__name__ == "UnitTypeDefinition"
     assert UnitTypeDocument.__name__ == "UnitTypeDocument"
     assert UnitAbilityDefinition.__name__ == "UnitAbilityDefinition"

@@ -72,6 +72,7 @@ The VFS now also has an initial metadata-aware replace-path layer: source metada
 - unit types, unit abilities, and unit categories
 - government types and government reforms
 - laws and policies
+- estates and estate privileges
 - setup countries
 - cultures and culture groups
 - religions and religion groups
@@ -91,7 +92,7 @@ The VFS now also has an initial metadata-aware replace-path layer: source metada
 
 Next planned target:
 
-- continue the government and society phase with estates and estate privileges
+- continue the government and society phase with a higher-level helper layer over reforms, laws, policies, and estates
 
 The optional broader validation sweep remains deferred until later; do not fold it into normal fast iteration work.
 

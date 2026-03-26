@@ -1,0 +1,1 @@
+After a task, run focused pytest for the touched area plus `uv run mypy src`. Update source.py representative-file hooks, curated exports in src/eu5miner/domains/__init__.py, public API smoke coverage in tests/test_public_api.py, and the roadmap/agent docs when a new domain family lands.

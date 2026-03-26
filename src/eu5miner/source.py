@@ -341,6 +341,26 @@ class GameInstall:
             / "common"
             / "policies"
             / "policies.info",
+            "estate_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "estates"
+            / "00_default.txt",
+            "estate_privilege_readme": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "estate_privileges"
+            / "readme.txt",
+            "estate_privilege_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "estate_privileges"
+            / "burghers_estate.txt",
+            "estate_privilege_secondary_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "estate_privileges"
+            / "clergy_estate.txt",
+            "estate_privilege_special_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "estate_privileges"
+            / "nobles_estate.txt",
             "wargoal_readme": self.phase_dir(ContentPhase.IN_GAME)
             / "common"
             / "wargoals"
