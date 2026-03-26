@@ -75,6 +75,7 @@ The VFS now also has an initial metadata-aware replace-path layer: source metada
 - estates and estate privileges
 - parliament types, agendas, and issues
 - higher-level government helper layer over those connected families
+- institutions, holy site types, holy sites, and a holy-site catalog helper
 - setup countries
 - cultures and culture groups
 - religions and religion groups
@@ -94,7 +95,7 @@ The VFS now also has an initial metadata-aware replace-path layer: source metada
 
 Next planned target:
 
-- continue the government and society phase with institutions, holy sites, and religion-adjacent societal structures
+- review any remaining religion-adjacent societal structures, then move on to interface and presentation systems
 
 The optional broader validation sweep remains deferred until later; do not fold it into normal fast iteration work.
 

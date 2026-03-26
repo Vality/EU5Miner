@@ -91,7 +91,8 @@ Order:
 2. laws and policies
 3. estates and estate privileges
 4. parliament types, agendas, and issues
-5. institutions, holy sites, and religion-adjacent societal structures
+5. institutions, holy site types, holy sites, and related link helpers
+6. remaining religion-adjacent societal structures
 
 ### 7. Interface and Presentation Systems
 
@@ -201,7 +202,7 @@ Order:
 
 The immediate sequence should be:
 
-1. continue the government and society phase with institutions, holy sites, and religion-adjacent societal structures
+1. review any remaining religion-adjacent societal structures before switching phases
 2. keep extending helper coverage incrementally as new government-adjacent families land
 3. keep diplomacy helper coverage incremental as new cross-family links appear
 
@@ -226,6 +227,7 @@ Implemented:
 - estates and estate privileges
 - parliament types, agendas, and issues
 - higher-level government helper layer over reforms, laws, policies, estates, and parliament-related families
+- institutions, holy site types, holy sites, and a holy-site catalog/report helper for type links and religion lookups
 - generic actions, with first validation anchored on market and employment-system action files
 - attribute columns, first validated against default, market, and goods column groups
 - remaining trade and loan economy files now validated through the generic-actions and attribute-columns adapters rather than a separate domain family
@@ -255,6 +257,6 @@ Implemented:
 
 Next recommended target:
 
-- continue the government and society phase with institutions, holy sites, and religion-adjacent societal structures
+- review any remaining religion-adjacent societal structures, then move to interface and presentation systems when that slice is clear
 
 This gives broad value quickly while staying aligned with the current parser architecture.

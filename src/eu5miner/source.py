@@ -405,6 +405,38 @@ class GameInstall:
             / "common"
             / "parliament_issues"
             / "10_hre_issues.txt",
+            "institution_readme": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "institution"
+            / "readme.txt",
+            "institution_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "institution"
+            / "age_1_traditions_institutions.txt",
+            "institution_secondary_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "institution"
+            / "age_4_reformation_institutions.txt",
+            "holy_site_type_readme": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "holy_site_types"
+            / "readme.txt",
+            "holy_site_type_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "holy_site_types"
+            / "00_holy_site_types.txt",
+            "holy_site_readme": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "holy_sites"
+            / "readme.txt",
+            "holy_site_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "holy_sites"
+            / "catholic.txt",
+            "holy_site_secondary_sample": self.phase_dir(ContentPhase.IN_GAME)
+            / "common"
+            / "holy_sites"
+            / "hindu.txt",
             "wargoal_readme": self.phase_dir(ContentPhase.IN_GAME)
             / "common"
             / "wargoals"
