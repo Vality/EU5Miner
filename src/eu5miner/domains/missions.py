@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from eu5miner.domains.interfaces import get_by_name, names_from_named
 from eu5miner.domains._parse_helpers import (
     entry_object,
     entry_scalar_text,
@@ -84,13 +85,10 @@ class MissionPackDefinition:
     entry: semantic.SemanticEntry
 
     def task_names(self) -> tuple[str, ...]:
-        return tuple(task.name for task in self.tasks)
+        return names_from_named(self.tasks)
 
     def get_task(self, name: str) -> MissionTaskDefinition | None:
-        for task in self.tasks:
-            if task.name == name:
-                return task
-        return None
+        return get_by_name(self.tasks, name)
 
 
 @dataclass(frozen=True)
@@ -101,13 +99,10 @@ class MissionDocument:
     semantic_document: semantic.SemanticDocument
 
     def names(self) -> tuple[str, ...]:
-        return tuple(definition.name for definition in self.definitions)
+        return names_from_named(self.definitions)
 
     def get_definition(self, name: str) -> MissionPackDefinition | None:
-        for definition in self.definitions:
-            if definition.name == name:
-                return definition
-        return None
+        return get_by_name(self.definitions, name)
 
 
 def parse_mission_document(text: str) -> MissionDocument:
