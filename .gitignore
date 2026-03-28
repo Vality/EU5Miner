@@ -1,5 +1,7 @@
 .mypy_cache
 .pytest_cache
 .ruff_cache
+.venv
+.serena
 **/__pycache__/**
 *.pyc
