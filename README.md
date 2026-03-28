@@ -1,8 +1,10 @@
 # EU5Miner
 
-EU5Miner is a text-first Python library for reading, indexing, and eventually editing Europa Universalis V data and mod files.
+EU5Miner is a text-first Python library for reading, indexing, and planning edits to Europa Universalis V data and mod files.
 
-The initial implementation focuses on the major moddable text-based file families:
+Release `0.5.0` is the first public preview release.
+
+The current release focuses on the major moddable text-based file families:
 
 - Clausewitz-style script text used in `common`, `events`, `setup`, and `map_data`
 - GUI script
@@ -10,7 +12,17 @@ The initial implementation focuses on the major moddable text-based file familie
 - JSON metadata
 - Semicolon-delimited CSV
 
-The project is intentionally test-heavy. Early functionality is validated against real EU5 install files so later parser work is anchored in observed game behavior instead of assumptions.
+The project is intentionally test-heavy. Core functionality is validated against representative real EU5 install files so later parser work is anchored in observed game behavior instead of assumptions.
+
+## Status
+
+The `0.5.x` line should be treated as a public preview.
+
+- The root package, grouped domain packages, and the `eu5miner.mods` facade are intended for real use.
+- The CLI is intended as a thin convenience surface over the same library APIs.
+- Additional helper layers, future editing surfaces, and the planned MCP and GUI packages are still expected to evolve before `1.0`.
+
+In practice, this release is suitable for install inspection, virtual filesystem queries, representative parsing, typed domain reads, and the current mod update planning and application workflow. It is not yet a promise that every exported helper will remain unchanged across future minor releases.
 
 ## Development
 
@@ -162,7 +174,7 @@ category_usage = build_country_description_category_usage_document(
 )
 ```
 
-For mod editing workflows, `eu5miner.mods` remains the stable higher-level seam, while the CLI stays a thin wrapper over the same plan/apply/report operations.
+For mod update workflows in the preview release, `eu5miner.mods` remains the stable higher-level seam, while the CLI stays a thin wrapper over the same plan/apply/report operations.
 
 Grouped domain packages also provide stable entrypoints when you want to stay inside one concept area instead of importing from the fully curated top-level surface:
 
@@ -196,3 +208,5 @@ Developer environment notes for the OneDrive/`uv` workflow are in [documents/dev
 The planned game-data implementation order is tracked in [documents/data-type-roadmap.md](documents/data-type-roadmap.md).
 
 The MCP planning report and packaging recommendation live in [documents/mcp-server-design.md](documents/mcp-server-design.md).
+
+Release history is tracked in [CHANGELOG.md](CHANGELOG.md).
