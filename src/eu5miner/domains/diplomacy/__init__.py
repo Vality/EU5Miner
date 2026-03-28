@@ -233,3 +233,28 @@ def _append_scalar_texts(body: SemanticObject, values: list[str]) -> None:
             values.append(entry.value.text)
         elif isinstance(entry.value, SemanticObject):
             _append_scalar_texts(entry.value, values)
+
+
+from eu5miner.domains.diplomacy.diplomacy import (
+    DiplomacyGraphCatalog,
+    DiplomacyGraphReport,
+    DiplomacyReferenceEdge,
+    build_diplomacy_graph_catalog,
+    build_diplomacy_graph_report,
+)
+
+__all__ = [
+    "DiplomacyGraphCatalog",
+    "DiplomacyGraphReport",
+    "DiplomacyReferenceEdge",
+    "WarFlowCatalog",
+    "WarFlowReport",
+    "WarReferenceEdge",
+    "build_diplomacy_graph_catalog",
+    "build_diplomacy_graph_report",
+    "build_war_flow_catalog",
+    "build_war_flow_report",
+    "collect_casus_belli_references",
+    "collect_country_interaction_references",
+    "collect_subject_type_references",
+]

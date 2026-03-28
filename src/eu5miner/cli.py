@@ -1,4 +1,4 @@
-"""Thin CLI for install inspection, parser diagnostics, and mod update workflows."""
+"""Thin CLI for install inspection, parser diagnostics, system reports, and mod workflows."""
 
 from __future__ import annotations
 
@@ -7,6 +7,7 @@ import sys
 from collections.abc import Mapping, Sequence
 from pathlib import Path
 
+from eu5miner.cli_reports import build_system_report, format_system_report, list_systems
 from eu5miner.formats.cst import parse_cst_document
 from eu5miner.formats.script_text import ScriptFeatures, analyze_script_text
 from eu5miner.mods import (
@@ -29,8 +30,12 @@ def main(argv: Sequence[str] | None = None) -> int:
         return _run_inspect_install(args)
     if command == "list-files":
         return _run_list_files(args)
+    if command == "list-systems":
+        return _run_list_systems()
     if command == "analyze-script":
         return _run_analyze_script(args)
+    if command == "report-system":
+        return _run_report_system(args)
     if command == "plan-mod-update":
         return _run_plan_mod_update(args)
     if command == "apply-mod-update":
@@ -54,6 +59,11 @@ def build_parser() -> argparse.ArgumentParser:
     subparsers.add_parser(
         "inspect-install",
         help="Show the discovered install, phase roots, and content sources.",
+    )
+
+    subparsers.add_parser(
+        "list-systems",
+        help="List the major system reports available in the CLI.",
     )
 
     list_parser = subparsers.add_parser(
@@ -96,6 +106,22 @@ def build_parser() -> argparse.ArgumentParser:
     target_group.add_argument(
         "--representative",
         help="Representative file key from the discovered install.",
+    )
+
+    report_parser = subparsers.add_parser(
+        "report-system",
+        help="Build a higher-level report for a major implemented system.",
+    )
+    report_parser.add_argument(
+        "--system",
+        choices=[info.name for info in list_systems()],
+        required=True,
+        help="Major system to summarize.",
+    )
+    report_parser.add_argument(
+        "--language",
+        default="english",
+        help="Localization language to use for interface reports. Defaults to english.",
     )
 
     plan_parser = subparsers.add_parser(
@@ -261,6 +287,13 @@ def _run_list_files(args: argparse.Namespace) -> int:
     return 0
 
 
+def _run_list_systems() -> int:
+    print("Supported system reports:")
+    for info in list_systems():
+        print(f"- {info.name}: {info.description}")
+    return 0
+
+
 def _run_analyze_script(args: argparse.Namespace) -> int:
     install = GameInstall.discover(args.install_root) if args.representative else None
     target_path = _resolve_target_path(args.file, args.representative, install)
@@ -275,6 +308,13 @@ def _run_analyze_script(args: argparse.Namespace) -> int:
     print(f"non_trivia_token_count: {len(document.non_trivia_tokens())}")
     print(f"top_level_entry_count: {len(document.entries)}")
     print(f"cst_brace_balanced: {document.is_brace_balanced}")
+    return 0
+
+
+def _run_report_system(args: argparse.Namespace) -> int:
+    install = GameInstall.discover(args.install_root)
+    report = build_system_report(install, args.system, language=args.language)
+    print(format_system_report(report))
     return 0
 
 

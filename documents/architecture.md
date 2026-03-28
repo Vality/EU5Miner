@@ -44,6 +44,7 @@ The codebase now uses a mixed layout for domain adapters.
 - Keep smaller or still-isolated adapters at the top level until a real cluster emerges.
 - Mirror the same grouping under `tests/` so source and test navigation stay aligned.
 - Treat `src/eu5miner/domains/__init__.py` as the curated public surface even when implementations live in subpackages.
+- Let grouped packages expose stable package-level entrypoints for system-local imports, especially where callers want to work within one concept area such as `eu5miner.domains.diplomacy`, `...map`, `...localization`, `...economy`, or `...units`.
 
 This keeps navigation manageable without forcing every adapter into an extra directory layer before the grouping earns its keep.
 
