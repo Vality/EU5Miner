@@ -53,11 +53,16 @@ The project now ships a thin CLI:
 
 ```powershell
 eu5miner inspect-install
+eu5miner list-systems
 eu5miner list-files --phase in_game --subpath gui --limit 10
 eu5miner analyze-script --representative scripted_trigger
+eu5miner report-system --install-root C:\EU5 --system economy
+eu5miner report-system --install-root C:\EU5 --system diplomacy
 eu5miner plan-mod-update --install-root C:\EU5 --mod-root C:\mods\my_mod --phase in_game --subtree common/buildings --content-root C:\work\content
 eu5miner apply-mod-update --install-root C:\EU5 --mod-root C:\mods\my_mod --phase in_game --subtree common/buildings --content-root C:\work\content
 ```
+
+`list-systems` and `report-system` provide install-backed summaries for the major connected systems currently implemented in the library: `economy`, `diplomacy`, `government`, `religion`, `interface`, and `map`.
 
 The mod workflow commands print a structured report to stdout, `note:` advisories for planned metadata actions such as `replace_path` additions, and `warning:` diagnostics for intended outputs that will still be shadowed by later sources.
 
@@ -159,6 +164,16 @@ category_usage = build_country_description_category_usage_document(
 
 For mod editing workflows, `eu5miner.mods` remains the stable higher-level seam, while the CLI stays a thin wrapper over the same plan/apply/report operations.
 
+Grouped domain packages also provide stable entrypoints when you want to stay inside one concept area instead of importing from the fully curated top-level surface:
+
+```python
+from eu5miner.domains.diplomacy import build_diplomacy_graph_catalog, build_war_flow_catalog
+from eu5miner.domains.economy import build_market_catalog
+from eu5miner.domains.localization import build_localization_bundle
+from eu5miner.domains.map import build_linked_location_document, parse_default_map_document
+from eu5miner.domains.units import parse_unit_type_document
+```
+
 ## Testing
 
 The suite includes timeout protection for parser-sensitive tests so future performance regressions fail quickly instead of appearing to hang indefinitely.
@@ -179,3 +194,5 @@ Agent-facing resume and steering notes are in [AGENTS.md](AGENTS.md) and [docume
 Developer environment notes for the OneDrive/`uv` workflow are in [documents/development-environment.md](documents/development-environment.md).
 
 The planned game-data implementation order is tracked in [documents/data-type-roadmap.md](documents/data-type-roadmap.md).
+
+The MCP planning report and packaging recommendation live in [documents/mcp-server-design.md](documents/mcp-server-design.md).

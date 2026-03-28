@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
+
 from eu5miner.cli import main
 from eu5miner.source import GameInstall
 
@@ -13,6 +15,16 @@ def test_inspect_install_cli_smoke(game_install: GameInstall, capsys) -> None:
     assert exit_code == 0
     assert "Install root:" in captured.out
     assert "Sources:" in captured.out
+
+
+def test_list_systems_cli_smoke(capsys) -> None:
+    exit_code = main(["list-systems"])
+
+    captured = capsys.readouterr()
+    assert exit_code == 0
+    assert "Supported system reports:" in captured.out
+    assert "economy" in captured.out
+    assert "diplomacy" in captured.out
 
 
 def test_list_files_cli_smoke(game_install: GameInstall, capsys) -> None:
@@ -51,6 +63,29 @@ def test_analyze_script_cli_smoke(game_install: GameInstall, capsys) -> None:
     assert exit_code == 0
     assert "balanced_braces: True" in captured.out
     assert "token_count:" in captured.out
+
+
+@pytest.mark.parametrize(
+    "system",
+    ["economy", "diplomacy", "government", "religion", "interface", "map"],
+)
+@pytest.mark.timeout(10)
+def test_report_system_cli_smoke(game_install: GameInstall, system: str, capsys) -> None:
+    exit_code = main(
+        [
+            "--install-root",
+            str(game_install.root),
+            "report-system",
+            "--system",
+            system,
+        ]
+    )
+
+    captured = capsys.readouterr()
+    assert exit_code == 0
+    assert f"System report: {system}" in captured.out
+    assert "Representative files:" in captured.out
+    assert "Summary:" in captured.out
 
 
 def test_plan_mod_update_cli_reports_dry_run_summary(tmp_path: Path, capsys) -> None:
