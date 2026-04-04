@@ -245,7 +245,8 @@ def _build_economy_report(representative_files: dict[str, Path]) -> CliSystemRep
             f"goods definitions: {len(market_catalog.goods_definitions)}",
             f"price definitions: {len(market_catalog.price_definitions)}",
             f"goods demand categories: {len(goods_demand_category_document.definitions)}",
-            f"goods demand definitions: {sum(len(document.definitions) for document in goods_demand_documents)}",
+            "goods demand definitions: "
+            f"{sum(len(document.definitions) for document in goods_demand_documents)}",
             f"production method definitions: {len(production_method_document.definitions)}",
             f"employment system definitions: {len(employment_system_document.definitions)}",
             f"market actions: {len(market_catalog.get_market_actions())}",
@@ -365,15 +366,23 @@ def _build_diplomacy_report(representative_files: dict[str, Path]) -> CliSystemR
             f"wargoal definitions: {len(war_flow_catalog.wargoal_definitions)}",
             f"peace treaty definitions: {len(war_flow_catalog.peace_treaty_definitions)}",
             f"subject type definitions: {len(war_flow_catalog.subject_type_definitions)}",
-            f"country interaction definitions: {len(diplomacy_catalog.country_interaction_definitions)}",
-            f"character interaction definitions: {len(diplomacy_catalog.character_interaction_definitions)}",
+            "country interaction definitions: "
+            f"{len(diplomacy_catalog.country_interaction_definitions)}",
+            "character interaction definitions: "
+            f"{len(diplomacy_catalog.character_interaction_definitions)}",
             f"missing wargoal references: {len(war_flow_report.missing_wargoal_references)}",
-            f"missing casus belli references: {len(diplomacy_report.missing_casus_belli_references)}",
-            f"missing subject type references: {len(diplomacy_report.missing_subject_type_references)}",
-            f"missing country interaction references: {len(diplomacy_report.missing_country_interaction_references)}",
-            f"unit type definitions: {sum(len(document.definitions) for document in unit_type_documents)}",
-            f"unit ability definitions: {sum(len(document.definitions) for document in unit_ability_documents)}",
-            f"unit category definitions: {sum(len(document.definitions) for document in unit_category_documents)}",
+            "missing casus belli references: "
+            f"{len(diplomacy_report.missing_casus_belli_references)}",
+            "missing subject type references: "
+            f"{len(diplomacy_report.missing_subject_type_references)}",
+            "missing country interaction references: "
+            f"{len(diplomacy_report.missing_country_interaction_references)}",
+            "unit type definitions: "
+            f"{sum(len(document.definitions) for document in unit_type_documents)}",
+            "unit ability definitions: "
+            f"{sum(len(document.definitions) for document in unit_ability_documents)}",
+            "unit category definitions: "
+            f"{sum(len(document.definitions) for document in unit_category_documents)}",
         ),
     )
 
@@ -474,16 +483,20 @@ def _build_government_report(representative_files: dict[str, Path]) -> CliSystem
         representative_keys=representative_keys,
         summary_lines=(
             f"government type definitions: {len(government_catalog.government_type_definitions)}",
-            f"government reform definitions: {len(government_catalog.government_reform_definitions)}",
+            "government reform definitions: "
+            f"{len(government_catalog.government_reform_definitions)}",
             f"law definitions: {len(government_catalog.law_definitions)}",
             f"law policy definitions: {policy_count}",
             f"estate definitions: {len(government_catalog.estate_definitions)}",
             f"estate privilege definitions: {len(government_catalog.estate_privilege_definitions)}",
             f"parliament type definitions: {len(government_catalog.parliament_type_definitions)}",
-            f"parliament agenda definitions: {len(government_catalog.parliament_agenda_definitions)}",
+            "parliament agenda definitions: "
+            f"{len(government_catalog.parliament_agenda_definitions)}",
             f"parliament issue definitions: {len(government_catalog.parliament_issue_definitions)}",
-            f"institution definitions: {sum(len(document.definitions) for document in institution_documents)}",
-            f"missing government type references: {len(government_report.missing_government_type_references)}",
+            "institution definitions: "
+            f"{sum(len(document.definitions) for document in institution_documents)}",
+            "missing government type references: "
+            f"{len(government_report.missing_government_type_references)}",
             f"missing estate references: {len(government_report.missing_estate_references)}",
         ),
     )
@@ -560,11 +573,14 @@ def _build_religion_report(representative_files: dict[str, Path]) -> CliSystemRe
             f"religious focus definitions: {len(religion_catalog.religious_focus_definitions)}",
             f"religious school definitions: {len(religion_catalog.religious_school_definitions)}",
             f"religious figure definitions: {len(religion_catalog.religious_figure_definitions)}",
-            f"holy site type definitions: {sum(len(document.definitions) for document in holy_site_type_documents)}",
+            "holy site type definitions: "
+            f"{sum(len(document.definitions) for document in holy_site_type_documents)}",
             f"holy site definitions: {len(religion_catalog.holy_site_definitions)}",
-            f"missing faction references: {len(religion_report.missing_religious_faction_references)}",
+            "missing faction references: "
+            f"{len(religion_report.missing_religious_faction_references)}",
             f"missing focus references: {len(religion_report.missing_religious_focus_references)}",
-            f"missing school references: {len(religion_report.missing_religious_school_references)}",
+            "missing school references: "
+            f"{len(religion_report.missing_religious_school_references)}",
         ),
     )
 
@@ -634,6 +650,14 @@ def _build_interface_report(
         triggers_bundle,
         collect_trigger_localization_references(trigger_document),
     )
+    gui_typed_definition_count = sum(
+        len(group.definitions)
+        for document in gui_documents
+        for group in document.type_groups
+    )
+    gui_root_definition_count = sum(
+        len(document.root_definitions) for document in gui_documents
+    )
 
     return CliSystemReport(
         name="interface",
@@ -652,8 +676,8 @@ def _build_interface_report(
             f"GUI constants: {sum(len(document.constants) for document in gui_documents)}",
             f"GUI templates: {sum(len(document.templates) for document in gui_documents)}",
             f"GUI type groups: {sum(len(document.type_groups) for document in gui_documents)}",
-            f"GUI typed definitions: {sum(len(group.definitions) for document in gui_documents for group in document.type_groups)}",
-            f"GUI root definitions: {sum(len(document.root_definitions) for document in gui_documents)}",
+            f"GUI typed definitions: {gui_typed_definition_count}",
+            f"GUI root definitions: {gui_root_definition_count}",
             f"main menu scenarios: {len(scenario_document.definitions)}",
             f"loading-screen localization keys ({language}): {len(loading_bundle.entries)}",
         ),
@@ -669,7 +693,9 @@ def _build_map_report(representative_files: dict[str, Path]) -> CliSystemReport:
         "main_menu_country_setup_sample",
         "main_menu_location_setup_sample",
     )
-    default_map_document = parse_default_map_document(_read_text(representative_files["map_default"]))
+    default_map_document = parse_default_map_document(
+        _read_text(representative_files["map_default"])
+    )
     hierarchy_document = parse_location_hierarchy_document(
         _read_text(representative_files["map_definitions"])
     )
