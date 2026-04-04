@@ -176,13 +176,19 @@ category_usage = build_country_description_category_usage_document(
 
 For mod update workflows in the preview release, `eu5miner.mods` remains the stable higher-level seam, while the CLI stays a thin wrapper over the same plan/apply/report operations.
 
-Grouped domain packages also provide stable entrypoints when you want to stay inside one concept area instead of importing from the fully curated top-level surface:
+Grouped domain packages are the preferred stable seam when you want to stay inside one concept area instead of importing from the fully curated top-level surface. For grouped families, prefer package-level imports such as `eu5miner.domains.diplomacy` over internal implementation modules like `eu5miner.domains.diplomacy.casus_belli`:
 
 ```python
-from eu5miner.domains.diplomacy import build_diplomacy_graph_catalog, build_war_flow_catalog
-from eu5miner.domains.economy import build_market_catalog
+from eu5miner.domains.diplomacy import (
+	build_diplomacy_graph_catalog,
+	parse_casus_belli_document,
+	parse_wargoal_document,
+)
+from eu5miner.domains.economy import build_market_catalog, parse_goods_document, parse_price_document
+from eu5miner.domains.government import build_government_catalog, parse_government_type_document
 from eu5miner.domains.localization import build_localization_bundle
 from eu5miner.domains.map import build_linked_location_document, parse_default_map_document
+from eu5miner.domains.religion import build_religion_catalog, parse_religion_document
 from eu5miner.domains.units import parse_unit_type_document
 ```
 

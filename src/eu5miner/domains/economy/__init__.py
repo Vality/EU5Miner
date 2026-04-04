@@ -14,8 +14,40 @@ from eu5miner.domains.diplomacy.generic_actions import (
     GenericActionDefinition,
     GenericActionDocument,
 )
-from eu5miner.domains.economy.goods import GoodsDefinition, GoodsDocument
-from eu5miner.domains.economy.prices import PriceDefinition, PriceDocument
+from eu5miner.domains.economy.employment_systems import (
+    EmploymentSystemDefinition,
+    EmploymentSystemDocument,
+    parse_employment_system_document,
+)
+from eu5miner.domains.economy.goods import (
+    GoodsAmount,
+    GoodsDefinition,
+    GoodsDocument,
+    parse_goods_document,
+)
+from eu5miner.domains.economy.goods_demand_categories import (
+    GoodsDemandCategoryDefinition,
+    GoodsDemandCategoryDocument,
+    parse_goods_demand_category_document,
+)
+from eu5miner.domains.economy.goods_demands import (
+    GoodsDemandAmount,
+    GoodsDemandDefinition,
+    GoodsDemandDocument,
+    ScriptedGoodsDemand,
+    parse_goods_demand_document,
+)
+from eu5miner.domains.economy.prices import (
+    PriceDefinition,
+    PriceDocument,
+    parse_price_document,
+)
+from eu5miner.domains.economy.production_methods import (
+    ProductionMethodDefinition,
+    ProductionMethodDocument,
+    ProductionMethodInput,
+    parse_production_method_document,
+)
 from eu5miner.domains.interfaces import flatten_definitions, get_by_name
 
 
@@ -133,9 +165,31 @@ def _collect_select_trigger_targets(
 
 
 __all__ = [
+    "EmploymentSystemDefinition",
+    "EmploymentSystemDocument",
+    "GoodsAmount",
+    "GoodsDefinition",
+    "GoodsDemandAmount",
+    "GoodsDemandCategoryDefinition",
+    "GoodsDemandCategoryDocument",
+    "GoodsDemandDefinition",
+    "GoodsDemandDocument",
+    "GoodsDocument",
     "MarketCatalog",
     "MarketReferenceEdge",
     "MarketReport",
+    "PriceDefinition",
+    "PriceDocument",
+    "ProductionMethodDefinition",
+    "ProductionMethodDocument",
+    "ProductionMethodInput",
+    "ScriptedGoodsDemand",
     "build_market_catalog",
     "build_market_report",
+    "parse_employment_system_document",
+    "parse_goods_demand_category_document",
+    "parse_goods_demand_document",
+    "parse_goods_document",
+    "parse_price_document",
+    "parse_production_method_document",
 ]

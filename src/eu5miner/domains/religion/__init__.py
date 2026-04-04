@@ -7,27 +7,52 @@ from dataclasses import dataclass
 from typing import Any
 
 from eu5miner.domains.interfaces import NamedDefinitionLike, flatten_definitions, get_by_name
-from eu5miner.domains.religion.holy_sites import HolySiteDefinition, HolySiteDocument
-from eu5miner.domains.religion.religions import ReligionDefinition, ReligionDocument
+from eu5miner.domains.religion.holy_site_types import (
+    HolySiteTypeDefinition,
+    HolySiteTypeDocument,
+    parse_holy_site_type_document,
+)
+from eu5miner.domains.religion.holy_sites import (
+    HolySiteCatalog,
+    HolySiteDefinition,
+    HolySiteDocument,
+    HolySiteReferenceEdge,
+    HolySiteReport,
+    build_holy_site_catalog,
+    build_holy_site_report,
+    parse_holy_site_document,
+)
+from eu5miner.domains.religion.religions import (
+    ReligionDefinition,
+    ReligionDocument,
+    ReligionOpinion,
+    parse_religion_document,
+)
 from eu5miner.domains.religion.religious_aspects import (
     ReligiousAspectDefinition,
     ReligiousAspectDocument,
+    ReligiousAspectOpinion,
+    parse_religious_aspect_document,
 )
 from eu5miner.domains.religion.religious_factions import (
     ReligiousFactionDefinition,
     ReligiousFactionDocument,
+    parse_religious_faction_document,
 )
 from eu5miner.domains.religion.religious_figures import (
     ReligiousFigureDefinition,
     ReligiousFigureDocument,
+    parse_religious_figure_document,
 )
 from eu5miner.domains.religion.religious_focuses import (
     ReligiousFocusDefinition,
     ReligiousFocusDocument,
+    parse_religious_focus_document,
 )
 from eu5miner.domains.religion.religious_schools import (
     ReligiousSchoolDefinition,
     ReligiousSchoolDocument,
+    parse_religious_school_document,
 )
 from eu5miner.formats.semantic import SemanticObject, SemanticScalar
 
@@ -288,3 +313,43 @@ def _iter_scalar_texts(body: SemanticObject) -> tuple[str, ...]:
         elif isinstance(entry.value, SemanticObject):
             values.extend(_iter_scalar_texts(entry.value))
     return tuple(values)
+
+
+__all__ = [
+    "HolySiteCatalog",
+    "HolySiteDefinition",
+    "HolySiteDocument",
+    "HolySiteReferenceEdge",
+    "HolySiteReport",
+    "HolySiteTypeDefinition",
+    "HolySiteTypeDocument",
+    "ReligionCatalog",
+    "ReligionDefinition",
+    "ReligionDocument",
+    "ReligionOpinion",
+    "ReligionReferenceEdge",
+    "ReligionReport",
+    "ReligiousAspectDefinition",
+    "ReligiousAspectDocument",
+    "ReligiousAspectOpinion",
+    "ReligiousFactionDefinition",
+    "ReligiousFactionDocument",
+    "ReligiousFigureDefinition",
+    "ReligiousFigureDocument",
+    "ReligiousFocusDefinition",
+    "ReligiousFocusDocument",
+    "ReligiousSchoolDefinition",
+    "ReligiousSchoolDocument",
+    "build_holy_site_catalog",
+    "build_holy_site_report",
+    "build_religion_catalog",
+    "build_religion_report",
+    "parse_holy_site_document",
+    "parse_holy_site_type_document",
+    "parse_religion_document",
+    "parse_religious_aspect_document",
+    "parse_religious_faction_document",
+    "parse_religious_figure_document",
+    "parse_religious_focus_document",
+    "parse_religious_school_document",
+]

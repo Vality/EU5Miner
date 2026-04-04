@@ -9,15 +9,22 @@ from typing import Any
 from eu5miner.domains.government.estate_privileges import (
     EstatePrivilegeDefinition,
     EstatePrivilegeDocument,
+    parse_estate_privilege_document,
 )
-from eu5miner.domains.government.estates import EstateDefinition, EstateDocument
+from eu5miner.domains.government.estates import (
+    EstateDefinition,
+    EstateDocument,
+    parse_estate_document,
+)
 from eu5miner.domains.government.government_reforms import (
     GovernmentReformDefinition,
     GovernmentReformDocument,
+    parse_government_reform_document,
 )
 from eu5miner.domains.government.government_types import (
     GovernmentTypeDefinition,
     GovernmentTypeDocument,
+    parse_government_type_document,
 )
 from eu5miner.domains.government.laws import (
     LawDefinition,
@@ -25,18 +32,22 @@ from eu5miner.domains.government.laws import (
     LawPolicyCatalog,
     LawPolicyDefinition,
     build_law_policy_catalog,
+    parse_law_document,
 )
 from eu5miner.domains.government.parliament_agendas import (
     ParliamentAgendaDefinition,
     ParliamentAgendaDocument,
+    parse_parliament_agenda_document,
 )
 from eu5miner.domains.government.parliament_issues import (
     ParliamentIssueDefinition,
     ParliamentIssueDocument,
+    parse_parliament_issue_document,
 )
 from eu5miner.domains.government.parliament_types import (
     ParliamentTypeDefinition,
     ParliamentTypeDocument,
+    parse_parliament_type_document,
 )
 from eu5miner.domains.interfaces import flatten_definitions, get_by_name
 
@@ -339,3 +350,39 @@ def _build_edges(
             if resolver(reference) is None:
                 missing.add(reference)
     return tuple(edges), missing
+
+
+__all__ = [
+    "EstateDefinition",
+    "EstateDocument",
+    "EstatePrivilegeDefinition",
+    "EstatePrivilegeDocument",
+    "GovernmentCatalog",
+    "GovernmentReferenceEdge",
+    "GovernmentReformDefinition",
+    "GovernmentReformDocument",
+    "GovernmentReport",
+    "GovernmentTypeDefinition",
+    "GovernmentTypeDocument",
+    "LawDefinition",
+    "LawDocument",
+    "LawPolicyCatalog",
+    "LawPolicyDefinition",
+    "ParliamentAgendaDefinition",
+    "ParliamentAgendaDocument",
+    "ParliamentIssueDefinition",
+    "ParliamentIssueDocument",
+    "ParliamentTypeDefinition",
+    "ParliamentTypeDocument",
+    "build_government_catalog",
+    "build_government_report",
+    "build_law_policy_catalog",
+    "parse_estate_document",
+    "parse_estate_privilege_document",
+    "parse_government_reform_document",
+    "parse_government_type_document",
+    "parse_law_document",
+    "parse_parliament_agenda_document",
+    "parse_parliament_issue_document",
+    "parse_parliament_type_document",
+]

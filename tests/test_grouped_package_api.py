@@ -1,24 +1,41 @@
 from __future__ import annotations
 
-from eu5miner.domains import (
-    parse_casus_belli_document,
-    parse_character_interaction_document,
-    parse_country_interaction_document,
-    parse_goods_document,
-    parse_peace_treaty_document,
-    parse_price_document,
-    parse_subject_type_document,
-    parse_wargoal_document,
-)
+import eu5miner.domains.diplomacy as diplomacy_api
+import eu5miner.domains.economy as economy_api
+import eu5miner.domains.government as government_api
+import eu5miner.domains.localization as localization_api
+import eu5miner.domains.map as map_api
+import eu5miner.domains.religion as religion_api
+import eu5miner.domains.units as units_api
 from eu5miner.domains.attribute_columns import parse_attribute_column_document
 from eu5miner.domains.diplomacy import (
     DiplomacyGraphCatalog,
     WarFlowCatalog,
     build_diplomacy_graph_catalog,
     build_war_flow_catalog,
+    parse_casus_belli_document,
+    parse_character_interaction_document,
+    parse_country_interaction_document,
+    parse_generic_action_document,
+    parse_peace_treaty_document,
+    parse_subject_type_document,
+    parse_wargoal_document,
 )
-from eu5miner.domains.diplomacy.generic_actions import parse_generic_action_document
-from eu5miner.domains.economy import MarketCatalog, build_market_catalog
+from eu5miner.domains.economy import (
+    MarketCatalog,
+    build_market_catalog,
+    parse_goods_document,
+    parse_price_document,
+)
+from eu5miner.domains.government import (
+    GovernmentCatalog,
+    build_government_catalog,
+    parse_estate_document,
+    parse_estate_privilege_document,
+    parse_government_reform_document,
+    parse_government_type_document,
+    parse_law_document,
+)
 from eu5miner.domains.localization import (
     LocalizationBundle,
     build_localization_bundle,
@@ -32,7 +49,27 @@ from eu5miner.domains.map import (
     parse_location_hierarchy_document,
     parse_location_setup_document,
 )
+from eu5miner.domains.religion import (
+    HolySiteCatalog,
+    ReligionCatalog,
+    build_holy_site_catalog,
+    build_religion_catalog,
+    parse_holy_site_document,
+    parse_holy_site_type_document,
+    parse_religion_document,
+    parse_religious_aspect_document,
+)
 from eu5miner.domains.units import UnitCategoryDocument, parse_unit_category_document
+
+
+def test_grouped_packages_publish_package_level_entrypoints() -> None:
+    assert "parse_casus_belli_document" in diplomacy_api.__all__
+    assert "parse_goods_document" in economy_api.__all__
+    assert "parse_government_type_document" in government_api.__all__
+    assert "parse_effect_localization_document" in localization_api.__all__
+    assert "parse_default_map_document" in map_api.__all__
+    assert "parse_religion_document" in religion_api.__all__
+    assert "parse_unit_category_document" in units_api.__all__
 
 
 def test_grouped_diplomacy_package_exports_both_helper_layers() -> None:
@@ -136,3 +173,57 @@ def test_grouped_economy_and_units_packages_support_inline_usage() -> None:
     assert isinstance(market_catalog, MarketCatalog)
     assert market_catalog.get_market_actions()[0].name == "create_market"
     assert isinstance(unit_category_document, UnitCategoryDocument)
+
+
+def test_grouped_government_and_religion_packages_support_inline_usage() -> None:
+    government_type_document = parse_government_type_document(
+        "monarchy = { heir_selection = cognatic government_power = legitimacy }\n"
+    )
+    government_reform_document = parse_government_reform_document(
+        "sample_reform = { government = monarchy years = 2 country_modifier = { add = 1 } }\n"
+    )
+    law_document = parse_law_document(
+        "sample_law = {\n"
+        "    law_category = administrative\n"
+        "    policy_a = {\n"
+        "        years = 2\n"
+        "        country_modifier = { add = 1 }\n"
+        "    }\n"
+        "}\n"
+    )
+    estate_document = parse_estate_document(
+        "sample_estate = { color = pop_nobles power_per_pop = 25 tax_per_pop = 100 ruler = yes }\n"
+    )
+    estate_privilege_document = parse_estate_privilege_document(
+        "sample_privilege = { estate = sample_estate country_modifier = { add = 1 } }\n"
+    )
+    government_catalog = build_government_catalog(
+        government_type_documents=(government_type_document,),
+        government_reform_documents=(government_reform_document,),
+        law_documents=(law_document,),
+        estate_documents=(estate_document,),
+        estate_privilege_documents=(estate_privilege_document,),
+    )
+
+    holy_site_type_document = parse_holy_site_type_document(
+        "temple = { location_modifier = { add = 1 } }\n"
+    )
+    holy_site_document = parse_holy_site_document(
+        "sample_site = { location = rome type = temple importance = 4 religions = { faith } }\n"
+    )
+    religion_document = parse_religion_document(
+        "faith = { group = example religious_aspects = { sample_aspect } }\n"
+    )
+    religious_aspect_document = parse_religious_aspect_document(
+        "sample_aspect = { religion = faith enabled = { always = yes } modifier = { add = 1 } }\n"
+    )
+    holy_site_catalog = build_holy_site_catalog((holy_site_type_document,), (holy_site_document,))
+    religion_catalog = build_religion_catalog(
+        religion_documents=(religion_document,),
+        religious_aspect_documents=(religious_aspect_document,),
+        holy_site_documents=(holy_site_document,),
+    )
+
+    assert isinstance(government_catalog, GovernmentCatalog)
+    assert isinstance(holy_site_catalog, HolySiteCatalog)
+    assert isinstance(religion_catalog, ReligionCatalog)

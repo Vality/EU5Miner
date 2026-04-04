@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import eu5miner
 from eu5miner import (
     ContentPhase,
     GameInstall,
@@ -160,8 +161,32 @@ from eu5miner.domains import (
 )
 from eu5miner.formats.semantic import SemanticScalar
 
+EXPECTED_ROOT_EXPORTS = {
+    "AppliedModUpdate",
+    "AppliedModWrite",
+    "BlockedModEmission",
+    "ContentPhase",
+    "ContentSource",
+    "DEFAULT_WINDOWS_INSTALL",
+    "GameInstall",
+    "ModUpdateAdvisory",
+    "ModUpdateAdvisoryKind",
+    "ModUpdateWarning",
+    "ModUpdateWarningKind",
+    "ModUpdateWrite",
+    "ModUpdateWriteKind",
+    "PlannedModUpdate",
+    "SourceKind",
+    "VirtualFilesystem",
+    "apply_mod_update",
+    "format_mod_update_report",
+    "plan_mod_update",
+    "resolve_install_path",
+}
+
 
 def test_root_package_exports_mod_workflow_surface() -> None:
+    assert set(eu5miner.__all__) == EXPECTED_ROOT_EXPORTS
     assert ContentPhase.IN_GAME.value == "in_game"
     assert GameInstall.__name__ == "GameInstall"
     assert VirtualFilesystem.__name__ == "VirtualFilesystem"
@@ -170,6 +195,12 @@ def test_root_package_exports_mod_workflow_surface() -> None:
     assert callable(format_mod_update_report)
     assert ModUpdateAdvisory.__name__ == "ModUpdateAdvisory"
     assert ModUpdateWarning.__name__ == "ModUpdateWarning"
+
+
+def test_root_package_keeps_domain_helpers_out_of_root_surface() -> None:
+    assert not hasattr(eu5miner, "build_market_catalog")
+    assert not hasattr(eu5miner, "parse_goods_document")
+    assert not hasattr(eu5miner, "parse_religion_document")
 
 
 def test_domains_package_exports_curated_entrypoints() -> None:
