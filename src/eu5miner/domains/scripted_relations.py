@@ -4,12 +4,12 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from eu5miner.domains.interfaces import get_by_name, names_from_named
 from eu5miner.domains._parse_helpers import (
     body_value_text,
     parse_bool_or_none,
     parse_int_or_none,
 )
+from eu5miner.domains.interfaces import get_by_name, names_from_named
 from eu5miner.formats.semantic import (
     SemanticDocument,
     SemanticEntry,
@@ -150,12 +150,8 @@ def parse_scripted_relation_document(text: str) -> ScriptedRelationDocument:
                 gold_to_second=body_value_text(body, "gold_to_second"),
                 favors_to_first=body_value_text(body, "favors_to_first"),
                 favors_to_second=body_value_text(body, "favors_to_second"),
-                institution_spread_to_first=body_value_text(
-                    body, "institution_spread_to_first"
-                ),
-                institution_spread_to_second=body_value_text(
-                    body, "institution_spread_to_second"
-                ),
+                institution_spread_to_first=body_value_text(body, "institution_spread_to_first"),
+                institution_spread_to_second=body_value_text(body, "institution_spread_to_second"),
                 annullment_favours_required=parse_int_or_none(
                     body.get_scalar("annullment_favours_required")
                 ),
@@ -170,18 +166,14 @@ def parse_scripted_relation_document(text: str) -> ScriptedRelationDocument:
                 break_on_becoming_subject=parse_bool_or_none(
                     body.get_scalar("break_on_becoming_subject")
                 ),
-                break_on_not_spying=parse_bool_or_none(
-                    body.get_scalar("break_on_not_spying")
-                ),
+                break_on_not_spying=parse_bool_or_none(body.get_scalar("break_on_not_spying")),
                 annulled_by_peace_treaty=parse_bool_or_none(
                     body.get_scalar("annulled_by_peace_treaty")
                 ),
                 disallow_war=parse_bool_or_none(body.get_scalar("disallow_war")),
                 embargo=parse_bool_or_none(body.get_scalar("embargo")),
                 military_access=parse_bool_or_none(body.get_scalar("military_access")),
-                fleet_basing_rights=parse_bool_or_none(
-                    body.get_scalar("fleet_basing_rights")
-                ),
+                fleet_basing_rights=parse_bool_or_none(body.get_scalar("fleet_basing_rights")),
                 food_access=parse_bool_or_none(body.get_scalar("food_access")),
                 is_exempt_from_sound_toll=parse_bool_or_none(
                     body.get_scalar("is_exempt_from_sound_toll")
@@ -215,9 +207,7 @@ def parse_scripted_relation_document(text: str) -> ScriptedRelationDocument:
                 wants_to_give=body.get_object("wants_to_give"),
                 wants_to_receive=body.get_object("wants_to_receive"),
                 wants_to_give_diplo_chance=body.get_object("wants_to_give_diplo_chance"),
-                wants_to_receive_diplo_chance=body.get_object(
-                    "wants_to_receive_diplo_chance"
-                ),
+                wants_to_receive_diplo_chance=body.get_object("wants_to_receive_diplo_chance"),
                 wants_to_keep=body.get_object("wants_to_keep"),
                 wants_to_keep_diplo_chance=body.get_object("wants_to_keep_diplo_chance"),
                 giving_modifier_scale=body.get_object("giving_modifier_scale"),

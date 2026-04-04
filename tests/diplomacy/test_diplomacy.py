@@ -99,9 +99,7 @@ def test_build_diplomacy_graph_report_summarizes_links_and_missing_references() 
                 "}\n"
             ),
         ),
-        subject_type_documents=(
-            parse_subject_type_document("sample_subject = { level = 1 }\n"),
-        ),
+        subject_type_documents=(parse_subject_type_document("sample_subject = { level = 1 }\n"),),
         country_interaction_documents=(
             parse_country_interaction_document(
                 "country_link = {\n"
@@ -111,7 +109,8 @@ def test_build_diplomacy_graph_report_summarizes_links_and_missing_references() 
                 "    effect = { make_subject_of = { type = subject_type:sample_subject } }\n"
                 "}\n"
                 "interaction_link = {\n"
-                "    ai_will_do = { add = \"scope:actor.country_interaction_acceptance(country_interaction:country_link|scope:recipient)\" }\n"
+                '    ai_will_do = { add = "scope:actor.country_interaction_acceptance('
+                'country_interaction:country_link|scope:recipient)" }\n'
                 "}\n"
                 "missing_link = {\n"
                 "    effect = { add_casus_belli = { type = casus_belli:cb_missing } }\n"
@@ -150,11 +149,20 @@ def test_build_diplomacy_graph_report_summarizes_links_and_missing_references() 
     assert report.missing_country_interaction_references == ()
 
     assert tuple(
-        definition.name for definition in catalog.get_country_interactions_for_casus_belli("cb_example")
+        definition.name
+        for definition in catalog.get_country_interactions_for_casus_belli(
+            "cb_example"
+        )
     ) == ("country_link",)
     assert tuple(
-        definition.name for definition in catalog.get_country_interactions_for_subject_type("sample_subject")
+        definition.name
+        for definition in catalog.get_country_interactions_for_subject_type(
+            "sample_subject"
+        )
     ) == ("subject_link",)
     assert tuple(
-        definition.name for definition in catalog.get_character_interactions_for_subject_type("sample_subject")
+        definition.name
+        for definition in catalog.get_character_interactions_for_subject_type(
+            "sample_subject"
+        )
     ) == ("character_link",)

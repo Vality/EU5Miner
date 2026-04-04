@@ -34,11 +34,15 @@ def test_parse_real_common_law_document(game_install: GameInstall) -> None:
 
 @pytest.mark.timeout(5)
 def test_parse_real_variant_law_documents(game_install: GameInstall) -> None:
-    monarchy = parse_law_document(_read_text(game_install.representative_files()["law_secondary_sample"]))
+    monarchy = parse_law_document(
+        _read_text(game_install.representative_files()["law_secondary_sample"])
+    )
     country_specific = parse_law_document(
         _read_text(game_install.representative_files()["law_country_specific_sample"])
     )
-    io_document = parse_law_document(_read_text(game_install.representative_files()["law_io_sample"]))
+    io_document = parse_law_document(
+        _read_text(game_install.representative_files()["law_io_sample"])
+    )
 
     royal_court = monarchy.get_definition("royal_court_customs_law")
     assert royal_court is not None

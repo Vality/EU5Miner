@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from eu5miner.domains.interfaces import get_by_name, names_from_named
 from eu5miner.domains._parse_helpers import entry_scalar_text, parse_bool_or_none
+from eu5miner.domains.interfaces import get_by_name, names_from_named
 from eu5miner.formats import semantic
 
 
@@ -246,6 +246,8 @@ def _parse_variants(body: semantic.SemanticObject) -> tuple[LocalizationVariant,
         )
 
     return tuple(variants)
+
+
 def _normalized_scalar(value: str | None) -> str | None:
     return _strip_quotes(value)
 

@@ -333,8 +333,7 @@ def test_apply_mod_update_cli_requires_some_content_or_intent(tmp_path: Path, ca
 
     assert exit_code == 2
     assert (
-        "error: At least one --intended-path, --content-file, or --content-root "
-        "entry is required"
+        "error: At least one --intended-path, --content-file, or --content-root entry is required"
     ) in captured.err
 
 

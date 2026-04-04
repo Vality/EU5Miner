@@ -14,7 +14,9 @@ def _read_text(path: Path) -> str:
 
 @pytest.mark.timeout(5)
 def test_parse_real_estate_document(game_install: GameInstall) -> None:
-    document = parse_estate_document(_read_text(game_install.representative_files()["estate_sample"]))
+    document = parse_estate_document(
+        _read_text(game_install.representative_files()["estate_sample"])
+    )
 
     crown = document.get_definition("crown_estate")
     assert crown is not None

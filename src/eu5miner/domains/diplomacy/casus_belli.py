@@ -4,13 +4,13 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from eu5miner.domains.interfaces import get_by_name, names_from_named
 from eu5miner.domains._parse_helpers import (
     entry_object,
     entry_scalar_text,
     object_child_keys,
     parse_bool_or_none,
 )
+from eu5miner.domains.interfaces import get_by_name, names_from_named
 from eu5miner.formats.semantic import (
     SemanticDocument,
     SemanticEntry,
@@ -107,9 +107,7 @@ def parse_casus_belli_document(text: str) -> CasusBelliDocument:
                 ),
                 max_warscore_from_battles=body.get_scalar("max_warscore_from_battles"),
                 allow_release_areas=parse_bool_or_none(body.get_scalar("allow_release_areas")),
-                allow_separate_peace=parse_bool_or_none(
-                    body.get_scalar("allow_separate_peace")
-                ),
+                allow_separate_peace=parse_bool_or_none(body.get_scalar("allow_separate_peace")),
                 allow_wars_on_own_subjects=parse_bool_or_none(
                     body.get_scalar("allow_wars_on_own_subjects")
                 ),
@@ -117,9 +115,7 @@ def parse_casus_belli_document(text: str) -> CasusBelliDocument:
                     body.get_scalar("allow_ports_for_reach_ai")
                 ),
                 can_expire=parse_bool_or_none(body.get_scalar("can_expire")),
-                cut_down_in_size_cb=parse_bool_or_none(
-                    body.get_scalar("cut_down_in_size_cb")
-                ),
+                cut_down_in_size_cb=parse_bool_or_none(body.get_scalar("cut_down_in_size_cb")),
                 no_cb=parse_bool_or_none(body.get_scalar("no_cb")),
                 trade=parse_bool_or_none(body.get_scalar("trade")),
                 entry=entry,

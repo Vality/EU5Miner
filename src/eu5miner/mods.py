@@ -255,8 +255,7 @@ def _normalize_content_mapping(
     if content_by_relative_path is None:
         return None
     return {
-        Path(relative_path): content
-        for relative_path, content in content_by_relative_path.items()
+        Path(relative_path): content for relative_path, content in content_by_relative_path.items()
     }
 
 
@@ -308,10 +307,7 @@ def _build_advisories(
         advisories.append(
             ModUpdateAdvisory(
                 kind=ModUpdateAdvisoryKind.ADD_REPLACE_PATH,
-                message=(
-                    "Planning metadata update to add replace_path entry: "
-                    f"{raw_path}"
-                ),
+                message=(f"Planning metadata update to add replace_path entry: {raw_path}"),
                 raw_path=raw_path,
             )
         )
@@ -369,10 +365,7 @@ def _format_applied_update_report(update: AppliedModUpdate) -> str:
         f"- advisories: {len(update.advisories)}",
         "Write results:",
     ]
-    lines.extend(
-        f"- {write.status.value}: {write.path.as_posix()}"
-        for write in update.writes
-    )
+    lines.extend(f"- {write.status.value}: {write.path.as_posix()}" for write in update.writes)
 
     if update.advisories:
         lines.append("Advisories:")

@@ -6,7 +6,12 @@ import pytest
 
 from eu5miner.domains.attribute_columns import parse_attribute_column_document
 from eu5miner.domains.diplomacy.generic_actions import parse_generic_action_document
-from eu5miner.domains.economy import MarketCatalog, MarketReport, build_market_catalog, build_market_report
+from eu5miner.domains.economy import (
+    MarketCatalog,
+    MarketReport,
+    build_market_catalog,
+    build_market_report,
+)
 from eu5miner.domains.economy.goods import parse_goods_document
 from eu5miner.domains.economy.prices import parse_price_document
 from eu5miner.source import GameInstall
@@ -56,9 +61,15 @@ def test_build_market_catalog_collects_market_helpers() -> None:
     assert catalog.get_price("build_road") is not None
     assert catalog.get_generic_action("create_market") is not None
     assert catalog.get_attribute_group("market") is not None
-    assert tuple(definition.name for definition in catalog.get_market_actions()) == ("create_market",)
-    assert tuple(definition.name for definition in catalog.get_goods_with_default_market_price()) == ("iron",)
-    assert tuple(definition.name for definition in catalog.get_columns_for_group("market")) == ("name",)
+    assert tuple(definition.name for definition in catalog.get_market_actions()) == (
+        "create_market",
+    )
+    assert tuple(
+        definition.name for definition in catalog.get_goods_with_default_market_price()
+    ) == ("iron",)
+    assert tuple(definition.name for definition in catalog.get_columns_for_group("market")) == (
+        "name",
+    )
     assert report.available_attribute_groups == ("goods", "market")
     assert report.priced_goods == ("iron",)
     assert report.action_target_links[0].source_name == "create_market"

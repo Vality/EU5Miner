@@ -4,17 +4,17 @@ from pathlib import Path
 
 import pytest
 
-from eu5miner.domains.diplomacy.casus_belli import parse_casus_belli_document
-from eu5miner.domains.diplomacy.peace_treaties import parse_peace_treaty_document
-from eu5miner.domains.diplomacy.subject_types import parse_subject_type_document
 from eu5miner.domains.diplomacy import (
+    WarFlowReport,
     build_war_flow_catalog,
     build_war_flow_report,
     collect_casus_belli_references,
     collect_country_interaction_references,
     collect_subject_type_references,
-    WarFlowReport,
 )
+from eu5miner.domains.diplomacy.casus_belli import parse_casus_belli_document
+from eu5miner.domains.diplomacy.peace_treaties import parse_peace_treaty_document
+from eu5miner.domains.diplomacy.subject_types import parse_subject_type_document
 from eu5miner.domains.diplomacy.wargoals import parse_wargoal_document
 from eu5miner.source import GameInstall
 
@@ -32,7 +32,9 @@ def test_build_war_flow_catalog_links_real_subject_chain(game_install: GameInsta
             ),
         ),
         wargoal_documents=(
-            parse_wargoal_document(_read_text(game_install.representative_files()["wargoal_sample"])),
+            parse_wargoal_document(
+                _read_text(game_install.representative_files()["wargoal_sample"])
+            ),
         ),
         peace_treaty_documents=(
             parse_peace_treaty_document(
@@ -74,9 +76,7 @@ def test_collect_casus_belli_references_and_religious_chain(game_install: GameIn
 
     religious_supremacy = peace_treaty_document.get_definition("religious_supremacy")
     assert religious_supremacy is not None
-    assert collect_casus_belli_references(religious_supremacy.body) == (
-        "cb_religious_superiority",
-    )
+    assert collect_casus_belli_references(religious_supremacy.body) == ("cb_religious_superiority",)
     assert collect_subject_type_references(religious_supremacy.body) == ()
 
     catalog = build_war_flow_catalog(
@@ -98,11 +98,10 @@ def test_build_war_flow_catalog_links_inline_documents() -> None:
     casus_belli_document = parse_casus_belli_document(
         "cb_example = { war_goal_type = example_goal }\n"
     )
-    wargoal_document = parse_wargoal_document(
-        "example_goal = { type = superiority }\n"
-    )
+    wargoal_document = parse_wargoal_document("example_goal = { type = superiority }\n")
     peace_treaty_document = parse_peace_treaty_document(
-        "peace_example = { potential = { scope:war = { casus_belli ?= casus_belli:cb_example } } }\n"
+        "peace_example = { potential = { scope:war = { casus_belli ?= "
+        "casus_belli:cb_example } } }\n"
     )
 
     catalog = build_war_flow_catalog(
@@ -113,9 +112,12 @@ def test_build_war_flow_catalog_links_inline_documents() -> None:
     )
 
     assert catalog.get_wargoal_for_casus_belli("cb_example") is not None
-    assert tuple(definition.name for definition in catalog.get_peace_treaties_for_wargoal("example_goal")) == (
-        "peace_example",
-    )
+    assert tuple(
+        definition.name
+        for definition in catalog.get_peace_treaties_for_wargoal(
+            "example_goal"
+        )
+    ) == ("peace_example",)
 
     report = build_war_flow_report(catalog)
     assert tuple(edge.source_name for edge in report.casus_belli_wargoal_links) == ("cb_example",)
@@ -130,7 +132,8 @@ def test_build_war_flow_catalog_links_inline_documents() -> None:
 
 def test_collect_country_interaction_references_from_embedded_string() -> None:
     peace_treaty_document = parse_peace_treaty_document(
-        "peace_example = { effect = { log = \"country_interaction:send_warning|scope:recipient\" } }\n"
+        'peace_example = { effect = { log = "country_interaction:send_warning|'
+        'scope:recipient" } }\n'
     )
 
     assert collect_country_interaction_references(peace_treaty_document.definitions[0].body) == (

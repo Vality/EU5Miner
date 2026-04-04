@@ -230,10 +230,7 @@ def build_linked_location_document(
                 )
 
     all_names = sorted(
-        set(hierarchy_by_name)
-        | set(setup_by_name)
-        | set(country_refs)
-        | set(capital_refs)
+        set(hierarchy_by_name) | set(setup_by_name) | set(country_refs) | set(capital_refs)
     )
 
     return LinkedLocationDocument(

@@ -313,10 +313,7 @@ class GameInstall:
             / "common"
             / "government_reforms"
             / "country_specific.txt",
-            "law_readme": self.phase_dir(ContentPhase.IN_GAME)
-            / "common"
-            / "laws"
-            / "readme.txt",
+            "law_readme": self.phase_dir(ContentPhase.IN_GAME) / "common" / "laws" / "readme.txt",
             "law_sample": self.phase_dir(ContentPhase.IN_GAME)
             / "common"
             / "laws"
@@ -674,12 +671,8 @@ class GameInstall:
             / "countries"
             / "france.txt",
             "gui_sample": self.phase_dir(ContentPhase.IN_GAME) / "gui" / "agenda_view.gui",
-            "gui_types_sample": self.phase_dir(ContentPhase.IN_GAME)
-            / "gui"
-            / "eventwindow.gui",
-            "gui_library_sample": self.phase_dir(ContentPhase.IN_GAME)
-            / "gui"
-            / "ui_library.gui",
+            "gui_types_sample": self.phase_dir(ContentPhase.IN_GAME) / "gui" / "eventwindow.gui",
+            "gui_library_sample": self.phase_dir(ContentPhase.IN_GAME) / "gui" / "ui_library.gui",
             "main_menu_scenarios_sample": self.phase_dir(ContentPhase.MAIN_MENU)
             / "common"
             / "scenarios"

@@ -35,7 +35,10 @@ def test_parse_real_institution_documents(game_install: GameInstall) -> None:
     assert confessionalism.location == "augsburg"
     assert confessionalism.can_spawn is not None
     assert isinstance(confessionalism.promote_chance, SemanticObject)
-    assert confessionalism.spread_from_was_possible_spawn == "institution_spread_from_was_possible_spawn_mid"
+    assert (
+        confessionalism.spread_from_was_possible_spawn
+        == "institution_spread_from_was_possible_spawn_mid"
+    )
 
 
 def test_institution_parses_inline_variant_fields() -> None:

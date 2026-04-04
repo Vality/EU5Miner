@@ -34,7 +34,7 @@ def test_parse_customizable_localization_variant_definition() -> None:
     document = parse_customizable_localization_document(
         "my_custom_loc = {\n"
         "    parent = parent_key\n"
-        "    suffix = \"_suffix\"\n"
+        '    suffix = "_suffix"\n'
         "    fallback = true\n"
         "}\n"
     )
@@ -106,4 +106,3 @@ def test_parse_trigger_localization_inline_definition() -> None:
     assert definition.get_variant("global") == "SAMPLE_TRIGGER"
     assert definition.get_variant("global_not") == "SAMPLE_TRIGGER_NOT"
     assert definition.get_variant("first") == "SAMPLE_TRIGGER_FIRST"
-

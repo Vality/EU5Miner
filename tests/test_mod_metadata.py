@@ -34,7 +34,7 @@ def test_parse_mod_metadata_document_inline() -> None:
         '"supported_game_version": "1.0.*", '
         '"relationships": ['
         '{"type": "requires", "target_id": "core.mod"}'
-        '], '
+        "], "
         '"replace_path": ["game/in_game/common"], '
         '"tags": ["Gameplay"]'
         "}"

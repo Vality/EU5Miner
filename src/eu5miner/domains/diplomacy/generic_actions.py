@@ -4,9 +4,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from eu5miner.domains.interfaces import get_by_name, names_from_named
 from eu5miner.domains._macros import collect_parameters_from_object
 from eu5miner.domains._parse_helpers import parse_bool_or_none
+from eu5miner.domains.interfaces import get_by_name, names_from_named
 from eu5miner.formats.semantic import (
     SemanticDocument,
     SemanticEntry,
@@ -159,9 +159,7 @@ def parse_generic_action_document(text: str) -> GenericActionDocument:
                 show_message_to_target=parse_bool_or_none(
                     body.get_scalar("show_message_to_target")
                 ),
-                should_execute_price=parse_bool_or_none(
-                    body.get_scalar("should_execute_price")
-                ),
+                should_execute_price=parse_bool_or_none(body.get_scalar("should_execute_price")),
                 show_in_gui_list=parse_bool_or_none(body.get_scalar("show_in_gui_list")),
                 ai_will_do=body.get_object("ai_will_do"),
                 player_automated_category=body.get_scalar("player_automated_category"),
@@ -264,9 +262,7 @@ def _parse_columns(trigger_body: SemanticObject) -> tuple[GenericActionColumn, .
                 data=column_body.get_scalar("data"),
                 width=column_body.get_scalar("width"),
                 icon=column_body.get_scalar("icon"),
-                show_icon_in_cells=parse_bool_or_none(
-                    column_body.get_scalar("show_icon_in_cells")
-                ),
+                show_icon_in_cells=parse_bool_or_none(column_body.get_scalar("show_icon_in_cells")),
                 body=column_body,
                 entry=entry,
             )

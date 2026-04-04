@@ -415,7 +415,9 @@ def _build_government_report(representative_files: dict[str, Path]) -> CliSystem
     )
     government_catalog = build_government_catalog(
         government_type_documents=(
-            parse_government_type_document(_read_text(representative_files["government_type_sample"])),
+            parse_government_type_document(
+                _read_text(representative_files["government_type_sample"])
+            ),
         ),
         government_reform_documents=tuple(
             parse_government_reform_document(_read_text(representative_files[key]))
@@ -542,7 +544,9 @@ def _build_religion_report(representative_files: dict[str, Path]) -> CliSystemRe
             ),
         ),
         religious_focus_documents=(
-            parse_religious_focus_document(_read_text(representative_files["religious_focus_sample"])),
+            parse_religious_focus_document(
+                _read_text(representative_files["religious_focus_sample"])
+            ),
         ),
         religious_school_documents=tuple(
             parse_religious_school_document(_read_text(representative_files[key]))
@@ -613,22 +617,28 @@ def _build_interface_report(
         _read_text(representative_files["trigger_localization_sample"])
     )
     laws_bundle = build_localization_bundle(
-        ((
-            "laws_and_policies_l_english.yml",
-            _read_text(representative_files["english_laws_localization"]),
-        ),)
+        (
+            (
+                "laws_and_policies_l_english.yml",
+                _read_text(representative_files["english_laws_localization"]),
+            ),
+        )
     )
     effects_bundle = build_localization_bundle(
-        ((
-            "effects_l_english.yml",
-            _read_text(representative_files["english_effects_localization"]),
-        ),)
+        (
+            (
+                "effects_l_english.yml",
+                _read_text(representative_files["english_effects_localization"]),
+            ),
+        )
     )
     triggers_bundle = build_localization_bundle(
-        ((
-            "triggers_l_english.yml",
-            _read_text(representative_files["english_triggers_localization"]),
-        ),)
+        (
+            (
+                "triggers_l_english.yml",
+                _read_text(representative_files["english_triggers_localization"]),
+            ),
+        )
     )
     gui_documents = tuple(
         parse_gui_document(_read_text(representative_files[key]))
@@ -651,13 +661,9 @@ def _build_interface_report(
         collect_trigger_localization_references(trigger_document),
     )
     gui_typed_definition_count = sum(
-        len(group.definitions)
-        for document in gui_documents
-        for group in document.type_groups
+        len(group.definitions) for document in gui_documents for group in document.type_groups
     )
-    gui_root_definition_count = sum(
-        len(document.root_definitions) for document in gui_documents
-    )
+    gui_root_definition_count = sum(len(document.root_definitions) for document in gui_documents)
 
     return CliSystemReport(
         name="interface",
@@ -715,9 +721,7 @@ def _build_map_report(representative_files: dict[str, Path]) -> CliSystemReport:
     )
     ports_document = parse_map_ports_document(_read_text(representative_files["map_ports"]))
     referenced_file_count = sum(
-        1
-        for value in default_map_document.referenced_files.as_dict().values()
-        if value is not None
+        1 for value in default_map_document.referenced_files.as_dict().values() if value is not None
     )
     linked_with_setup_count = sum(
         1 for definition in linked_document.definitions if definition.has_location_setup

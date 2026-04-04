@@ -49,8 +49,7 @@ def test_parse_real_map_adjacencies_document(game_install: GameInstall) -> None:
 
 def test_parse_map_ports_document_inline() -> None:
     document = parse_map_ports_document(
-        "LandProvince;SeaZone;x;y;\n"
-        "stockholm;stockholms_skargard;8532;6945;x\n"
+        "LandProvince;SeaZone;x;y;\nstockholm;stockholms_skargard;8532;6945;x\n"
     )
 
     port = document.get_port("stockholm")
@@ -77,11 +76,9 @@ def test_parse_real_map_ports_document(game_install: GameInstall) -> None:
 
 def test_map_ports_missing_marker_is_none() -> None:
     document = parse_map_ports_document(
-        "LandProvince;SeaZone;x;y;\n"
-        "stockholm;stockholms_skargard;8532;6945;\n"
+        "LandProvince;SeaZone;x;y;\nstockholm;stockholms_skargard;8532;6945;\n"
     )
 
     port = document.get_port("stockholm")
     assert port is not None
     assert port.marker is None
-

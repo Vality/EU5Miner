@@ -129,10 +129,7 @@ def test_real_trigger_localization_references_resolve(game_install: GameInstall)
 
 def test_missing_localization_references_are_reported() -> None:
     helper_document = parse_effect_localization_document(
-        "sample_effect = {\n"
-        "    global = SAMPLE_EFFECT\n"
-        "    first = SAMPLE_EFFECT_FIRST\n"
-        "}\n"
+        "sample_effect = {\n    global = SAMPLE_EFFECT\n    first = SAMPLE_EFFECT_FIRST\n}\n"
     )
     bundle = build_localization_bundle(
         (
@@ -152,4 +149,3 @@ def test_missing_localization_references_are_reported() -> None:
     assert missing[0].definition_name == "sample_effect"
     assert missing[0].variant_name == "first"
     assert missing[0].localization_key == "SAMPLE_EFFECT_FIRST"
-

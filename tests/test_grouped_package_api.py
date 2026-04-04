@@ -43,7 +43,8 @@ def test_grouped_diplomacy_package_exports_both_helper_layers() -> None:
         "superiority = { type = superiority attacker = { conquer_cost = 1 } }\n"
     )
     peace_treaty_document = parse_peace_treaty_document(
-        "peace_example = { effect = { make_subject_of = { type = subject_type:sample_subject } } }\n"
+        "peace_example = { effect = { make_subject_of = { type = "
+        "subject_type:sample_subject } } }\n"
     )
     subject_type_document = parse_subject_type_document(
         "sample_subject = { level = 1 allow_subjects = no }\n"
@@ -80,7 +81,8 @@ def test_grouped_map_and_localization_packages_support_inline_usage() -> None:
         "world = { region = { area = { province = { stockholm } } } }\n"
     )
     country_document = parse_country_location_document(
-        "countries = { countries = { SWE = { own_control_core = { stockholm } capital = stockholm } } }\n"
+        "countries = { countries = { SWE = { own_control_core = { stockholm } "
+        "capital = stockholm } } }\n"
     )
     setup_document = parse_location_setup_document(
         "locations = { stockholm = { timed_modifiers = { } } }\n"
@@ -93,9 +95,7 @@ def test_grouped_map_and_localization_packages_support_inline_usage() -> None:
     effect_document = parse_effect_localization_document(
         "sample_effect = { global = SAMPLE_EFFECT }\n"
     )
-    bundle = build_localization_bundle(
-        (("sample.yml", 'l_english:\nSAMPLE_EFFECT: "Effect"\n'),)
-    )
+    bundle = build_localization_bundle((("sample.yml", 'l_english:\nSAMPLE_EFFECT: "Effect"\n'),))
 
     assert isinstance(default_map_document, DefaultMapDocument)
     assert linked_document.get_location("stockholm") is not None

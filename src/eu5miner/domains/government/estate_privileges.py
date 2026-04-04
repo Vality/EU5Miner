@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from eu5miner.domains.interfaces import get_by_name, names_from_named
 from eu5miner.domains._parse_helpers import parse_int_or_none
+from eu5miner.domains.interfaces import get_by_name, names_from_named
 from eu5miner.formats.semantic import (
     SemanticDocument,
     SemanticEntry,
@@ -89,7 +89,5 @@ def parse_estate_privilege_document(text: str) -> EstatePrivilegeDocument:
 
 def _collect_objects(body: SemanticObject, key: str) -> tuple[SemanticObject, ...]:
     return tuple(
-        entry.value
-        for entry in body.find_entries(key)
-        if isinstance(entry.value, SemanticObject)
+        entry.value for entry in body.find_entries(key) if isinstance(entry.value, SemanticObject)
     )

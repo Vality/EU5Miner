@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from eu5miner.domains.interfaces import get_by_name, names_from_named
 from eu5miner.domains._parse_helpers import parse_bool_or_none
+from eu5miner.domains.interfaces import get_by_name, names_from_named
 from eu5miner.formats.semantic import (
     SemanticDocument,
     SemanticEntry,
@@ -85,24 +85,16 @@ def parse_goods_document(text: str) -> GoodsDocument:
                 category=body.get_scalar("category"),
                 color=body.get_scalar("color"),
                 is_slaves=parse_bool_or_none(body.get_scalar("is_slaves")),
-                block_rgo_upgrade=parse_bool_or_none(
-                    body.get_scalar("block_rgo_upgrade")
-                ),
+                block_rgo_upgrade=parse_bool_or_none(body.get_scalar("block_rgo_upgrade")),
                 inflation=parse_bool_or_none(body.get_scalar("inflation")),
                 base_production=body.get_scalar("base_production"),
                 food=body.get_scalar("food"),
                 transport_cost=body.get_scalar("transport_cost"),
                 default_market_price=body.get_scalar("default_market_price"),
                 ai_rgo_size_importance=body.get_scalar("ai_rgo_size_importance"),
-                ai_rgo_expansion_priority=body.get_scalar(
-                    "ai_rgo_expansion_priority"
-                ),
-                origin_in_old_world=parse_bool_or_none(
-                    body.get_scalar("origin_in_old_world")
-                ),
-                origin_in_new_world=parse_bool_or_none(
-                    body.get_scalar("origin_in_new_world")
-                ),
+                ai_rgo_expansion_priority=body.get_scalar("ai_rgo_expansion_priority"),
+                origin_in_old_world=parse_bool_or_none(body.get_scalar("origin_in_old_world")),
+                origin_in_new_world=parse_bool_or_none(body.get_scalar("origin_in_new_world")),
                 demand_add=_parse_amount_block(body.get_object("demand_add")),
                 demand_multiply=_parse_amount_block(body.get_object("demand_multiply")),
                 wealth_impact_threshold=_parse_amount_block(

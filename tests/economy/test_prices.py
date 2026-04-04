@@ -58,4 +58,3 @@ def test_price_parses_inline_fields() -> None:
     assert definition.prestige == "10"
     assert definition.min_scale == "5"
     assert definition.max_scale == "100"
-

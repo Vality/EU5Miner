@@ -69,11 +69,7 @@ def test_semantic_document_supports_inline_scalars() -> None:
 
 
 def test_semantic_document_splits_consecutive_scalar_assignments_by_line() -> None:
-    document = parse_semantic_document(
-        "first_value = 1\n"
-        "second_value = 2\n"
-        "third_value = 3\n"
-    )
+    document = parse_semantic_document("first_value = 1\nsecond_value = 2\nthird_value = 3\n")
 
     assert [entry.key for entry in document.entries] == [
         "first_value",
@@ -93,11 +89,7 @@ def test_semantic_document_splits_consecutive_scalar_assignments_by_line() -> No
 
 
 def test_semantic_document_splits_bom_prefixed_consecutive_scalar_assignments() -> None:
-    document = parse_semantic_document(
-        "\ufefffirst_value = 1\n"
-        "second_value = 2\n"
-        "third_value = 3\n"
-    )
+    document = parse_semantic_document("\ufefffirst_value = 1\nsecond_value = 2\nthird_value = 3\n")
 
     assert [entry.key for entry in document.entries] == [
         "first_value",

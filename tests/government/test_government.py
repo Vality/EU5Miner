@@ -4,9 +4,9 @@ from pathlib import Path
 
 import pytest
 
+from eu5miner.domains.government import build_government_catalog
 from eu5miner.domains.government.estate_privileges import parse_estate_privilege_document
 from eu5miner.domains.government.estates import parse_estate_document
-from eu5miner.domains.government import build_government_catalog
 from eu5miner.domains.government.government_reforms import parse_government_reform_document
 from eu5miner.domains.government.government_types import parse_government_type_document
 from eu5miner.domains.government.laws import parse_law_document
@@ -35,7 +35,9 @@ def test_build_government_catalog_links_real_family_definitions(
                 _read_text(game_install.representative_files()["government_reform_sample"])
             ),
             parse_government_reform_document(
-                _read_text(game_install.representative_files()["government_reform_secondary_sample"])
+                _read_text(
+                    game_install.representative_files()["government_reform_secondary_sample"]
+                )
             ),
         ),
         law_documents=(
@@ -97,31 +99,23 @@ def test_build_government_catalog_links_real_family_definitions(
     assert "auxilium_et_consilium" in {
         definition.name for definition in catalog.get_privileges_for_estate("nobles_estate")
     }
-    assert "assembly" in {
-        definition.name for definition in catalog.get_country_parliament_types()
-    }
+    assert "assembly" in {definition.name for definition in catalog.get_country_parliament_types()}
     assert "hre_court_assembly" in {
         definition.name for definition in catalog.get_international_organization_parliament_types()
     }
     assert "pa_add_privilege" in {
-        definition.name for definition in catalog.get_parliament_agendas_for_estate(
-            "nobles_estate"
-        )
+        definition.name for definition in catalog.get_parliament_agendas_for_estate("nobles_estate")
     }
     assert "pa_hre_elevate_prussia_to_kingdom" in {
-        definition.name for definition in catalog.get_parliament_agendas_for_special_status(
-            "elector"
-        )
+        definition.name
+        for definition in catalog.get_parliament_agendas_for_special_status("elector")
     }
     assert "bolster_the_monarchy" in {
-        definition.name for definition in catalog.get_parliament_issues_for_estate(
-            "crown_estate"
-        )
+        definition.name for definition in catalog.get_parliament_issues_for_estate("crown_estate")
     }
     assert "hre_law_debate" in {
-        definition.name for definition in catalog.get_parliament_issues_for_special_status(
-            "emperor"
-        )
+        definition.name
+        for definition in catalog.get_parliament_issues_for_special_status("emperor")
     }
 
     report = catalog.build_report()
@@ -163,26 +157,18 @@ def test_build_government_report_collects_missing_references() -> None:
                 "}\n"
             ),
         ),
-        estate_documents=(
-            parse_estate_document("nobles_estate = { color = pop_nobles }\n"),
-        ),
+        estate_documents=(parse_estate_document("nobles_estate = { color = pop_nobles }\n"),),
         estate_privilege_documents=(
             parse_estate_privilege_document("sample_privilege = { estate = missing_estate }\n"),
         ),
         parliament_agenda_documents=(
             parse_parliament_agenda_document(
-                "sample_agenda = {\n"
-                "    estate = missing_estate\n"
-                "    special_status = elector\n"
-                "}\n"
+                "sample_agenda = {\n    estate = missing_estate\n    special_status = elector\n}\n"
             ),
         ),
         parliament_issue_documents=(
             parse_parliament_issue_document(
-                "sample_issue = {\n"
-                "    estate = missing_estate\n"
-                "    special_status = emperor\n"
-                "}\n"
+                "sample_issue = {\n    estate = missing_estate\n    special_status = emperor\n}\n"
             ),
         ),
     )
@@ -191,12 +177,8 @@ def test_build_government_report_collects_missing_references() -> None:
 
     assert report.missing_government_type_references == ("missing_government",)
     assert report.missing_estate_references == ("missing_estate",)
-    assert tuple(edge.source_name for edge in report.reform_government_links) == (
-        "sample_reform",
-    )
-    assert tuple(edge.source_name for edge in report.law_government_group_links) == (
-        "sample_law",
-    )
+    assert tuple(edge.source_name for edge in report.reform_government_links) == ("sample_reform",)
+    assert tuple(edge.source_name for edge in report.law_government_group_links) == ("sample_law",)
     assert tuple(edge.source_name for edge in report.privilege_estate_links) == (
         "sample_privilege",
     )

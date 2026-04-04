@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from eu5miner.domains.interfaces import get_by_name, names_from_named
 from eu5miner.domains._parse_helpers import parse_bool_or_none
+from eu5miner.domains.interfaces import get_by_name, names_from_named
 from eu5miner.formats.semantic import (
     SemanticDocument,
     SemanticEntry,
@@ -87,9 +87,7 @@ def parse_unit_ability_document(text: str) -> UnitAbilityDocument:
                 army_only=parse_bool_or_none(body.get_scalar("army_only")),
                 navy_only=parse_bool_or_none(body.get_scalar("navy_only")),
                 cancel_on_combat=parse_bool_or_none(body.get_scalar("cancel_on_combat")),
-                cancel_on_combat_end=parse_bool_or_none(
-                    body.get_scalar("cancel_on_combat_end")
-                ),
+                cancel_on_combat_end=parse_bool_or_none(body.get_scalar("cancel_on_combat_end")),
                 cancel_on_move=parse_bool_or_none(body.get_scalar("cancel_on_move")),
                 map=parse_bool_or_none(body.get_scalar("map")),
                 start_effect=body.get_object("start_effect"),

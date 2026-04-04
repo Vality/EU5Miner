@@ -177,10 +177,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     apply_parser = subparsers.add_parser(
         "apply-mod-update",
-        help=(
-            "Apply a mod subtree update, materialize files, and report "
-            "notes and warnings."
-        ),
+        help=("Apply a mod subtree update, materialize files, and report notes and warnings."),
     )
     apply_parser.add_argument(
         "--mod-root",
@@ -385,8 +382,7 @@ def _parse_content_file_mappings(values: list[str]) -> dict[Path, Path]:
         relative_text, separator, source_text = value.partition("=")
         if not separator or not relative_text or not source_text:
             raise ValueError(
-                "Content file mappings must use the form "
-                "relative/path=source-file.txt"
+                "Content file mappings must use the form relative/path=source-file.txt"
             )
         mappings[Path(relative_text)] = Path(source_text)
     return mappings

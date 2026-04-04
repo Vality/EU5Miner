@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from eu5miner.domains.interfaces import get_by_name, names_from_named
 from eu5miner.domains._parse_helpers import parse_bool_or_none, parse_float_or_none
+from eu5miner.domains.interfaces import get_by_name, names_from_named
 from eu5miner.formats.semantic import (
     SemanticDocument,
     SemanticEntry,
@@ -109,9 +109,7 @@ def parse_subject_military_stance_document(text: str) -> SubjectMilitaryStanceDo
                     body.get_scalar("defend_ally_territory_priority")
                 ),
                 merge_units_priority=parse_float_or_none(body.get_scalar("merge_units_priority")),
-                hunt_pirates_priority=parse_float_or_none(
-                    body.get_scalar("hunt_pirates_priority")
-                ),
+                hunt_pirates_priority=parse_float_or_none(body.get_scalar("hunt_pirates_priority")),
                 repatriate_ships_priority=parse_float_or_none(
                     body.get_scalar("repatriate_ships_priority")
                 ),
@@ -136,7 +134,9 @@ def parse_subject_military_stance_document(text: str) -> SubjectMilitaryStanceDo
                 carpet_siege_enemy_locations_priority=parse_float_or_none(
                     body.get_scalar("carpet_siege_enemy_locations_priority")
                 ),
-                blockade_port_priority=parse_float_or_none(body.get_scalar("blockade_port_priority")),
+                blockade_port_priority=parse_float_or_none(
+                    body.get_scalar("blockade_port_priority")
+                ),
                 blockade_strait_priority=parse_float_or_none(
                     body.get_scalar("blockade_strait_priority")
                 ),

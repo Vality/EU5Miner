@@ -65,4 +65,3 @@ def test_parse_setup_country_schema_sample() -> None:
     assert definition.color2 == "hsv360"
     assert definition.description_category == "administrative"
     assert definition.difficulty == 2
-

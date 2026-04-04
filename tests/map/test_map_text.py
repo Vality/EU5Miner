@@ -21,15 +21,15 @@ def test_parse_default_map_document_inline() -> None:
         'setup = "definitions.txt"\n'
         'ports = "ports.csv"\n'
         'location_templates = "location_templates.txt"\n'
-        'equator_y = 3340\n'
-        'wrap_x = yes\n'
-        'sound_toll = { oresund = helsingor }\n'
-        'volcanoes = { klikitat daha }\n'
-        'earthquakes = { lisbon naples }\n'
-        'sea_zones = { baltic north_sea }\n'
-        'lakes = { malaren }\n'
-        'impassable_mountains = { skanderna }\n'
-        'non_ownable = { sahara_corridor }\n'
+        "equator_y = 3340\n"
+        "wrap_x = yes\n"
+        "sound_toll = { oresund = helsingor }\n"
+        "volcanoes = { klikitat daha }\n"
+        "earthquakes = { lisbon naples }\n"
+        "sea_zones = { baltic north_sea }\n"
+        "lakes = { malaren }\n"
+        "impassable_mountains = { skanderna }\n"
+        "non_ownable = { sahara_corridor }\n"
     )
 
     assert document.referenced_files.provinces == '"locations.png"'
@@ -87,4 +87,3 @@ def test_missing_default_map_sections_return_empty_or_none() -> None:
     assert document.sound_tolls == ()
     assert document.volcanoes == ()
     assert document.earthquakes == ()
-

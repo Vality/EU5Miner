@@ -4,13 +4,13 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from eu5miner.domains.interfaces import get_by_name, names_from_named
 from eu5miner.domains._parse_helpers import (
     entry_object,
     entry_scalar_text,
     object_child_keys,
     parse_bool_or_none,
 )
+from eu5miner.domains.interfaces import get_by_name, names_from_named
 from eu5miner.formats.semantic import (
     SemanticDocument,
     SemanticEntry,
@@ -143,9 +143,7 @@ def parse_peace_treaty_document(text: str) -> PeaceTreatyDocument:
                     body.get_scalar("blocks_full_annexation")
                 ),
                 collate_targets=parse_bool_or_none(body.get_scalar("collate_targets")),
-                are_targets_exclusive=parse_bool_or_none(
-                    body.get_scalar("are_targets_exclusive")
-                ),
+                are_targets_exclusive=parse_bool_or_none(body.get_scalar("are_targets_exclusive")),
                 ai_force_add=parse_bool_or_none(body.get_scalar("ai_force_add")),
                 category=body.get_scalar("category"),
                 custom_tags=object_child_keys(body, "custom_tags"),
@@ -244,9 +242,7 @@ def _parse_columns(trigger_body: SemanticObject) -> tuple[PeaceTreatyColumn, ...
                 data=column_body.get_scalar("data"),
                 width=column_body.get_scalar("width"),
                 icon=column_body.get_scalar("icon"),
-                show_icon_in_cells=parse_bool_or_none(
-                    column_body.get_scalar("show_icon_in_cells")
-                ),
+                show_icon_in_cells=parse_bool_or_none(column_body.get_scalar("show_icon_in_cells")),
                 body=column_body,
                 entry=entry,
             )

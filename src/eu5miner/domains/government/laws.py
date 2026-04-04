@@ -5,13 +5,13 @@ from __future__ import annotations
 from collections.abc import Sequence
 from dataclasses import dataclass
 
-from eu5miner.domains.interfaces import flatten_definitions, get_by_name, names_from_named
 from eu5miner.domains._parse_helpers import (
     entry_object,
     entry_scalar_text,
     parse_bool_or_none,
     parse_int_or_none,
 )
+from eu5miner.domains.interfaces import flatten_definitions, get_by_name, names_from_named
 from eu5miner.formats.semantic import (
     SemanticDocument,
     SemanticEntry,
@@ -293,9 +293,7 @@ def _parse_policies(body: SemanticObject) -> tuple[LawPolicyDefinition, ...]:
                 gives_food_access_to_members=parse_bool_or_none(
                     policy_body.get_scalar("gives_food_access_to_members")
                 ),
-                has_dynastic_power=parse_bool_or_none(
-                    policy_body.get_scalar("has_dynastic_power")
-                ),
+                has_dynastic_power=parse_bool_or_none(policy_body.get_scalar("has_dynastic_power")),
                 join_defensive_wars_always=parse_bool_or_none(
                     policy_body.get_scalar("join_defensive_wars_always")
                 ),
@@ -352,9 +350,7 @@ def _parse_policies(body: SemanticObject) -> tuple[LawPolicyDefinition, ...]:
 
 def _collect_objects(body: SemanticObject, key: str) -> tuple[SemanticObject, ...]:
     return tuple(
-        entry.value
-        for entry in body.find_entries(key)
-        if isinstance(entry.value, SemanticObject)
+        entry.value for entry in body.find_entries(key) if isinstance(entry.value, SemanticObject)
     )
 
 

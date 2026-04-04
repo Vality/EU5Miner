@@ -6,7 +6,10 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from eu5miner.domains.interfaces import get_by_name, names_from_named
-from eu5miner.domains.localization.localization_bundles import LocalizationBundle, build_localization_bundle
+from eu5miner.domains.localization.localization_bundles import (
+    LocalizationBundle,
+    build_localization_bundle,
+)
 from eu5miner.formats import semantic
 from eu5miner.source import ContentPhase, GameInstall
 
@@ -122,4 +125,3 @@ def _parse_main_menu_scenario(entry: semantic.SemanticEntry) -> MainMenuScenario
         player_proficiency=entry.value.get_scalar("player_proficiency"),
         entry=entry,
     )
-

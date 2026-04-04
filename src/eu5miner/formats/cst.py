@@ -185,12 +185,10 @@ def tokenize_script_text(text: str) -> list[Token]:
                 index += 1
             if index < length and text[index] == "]":
                 index += 1
-                tokens.append(
-                    Token(TokenKind.BRACKET_EXPRESSION, text[start:index], start, index)
-                )
+                tokens.append(Token(TokenKind.BRACKET_EXPRESSION, text[start:index], start, index))
             else:
                 tokens.append(
-                    Token(TokenKind.OPEN_BRACKET, text[start:start + 1], start, start + 1)
+                    Token(TokenKind.OPEN_BRACKET, text[start : start + 1], start, start + 1)
                 )
             continue
 
@@ -463,4 +461,4 @@ class _CstParser:
     def _has_line_break_between(self, left_index: int, right_index: int) -> bool:
         left_token = self._tokens[left_index]
         right_token = self._tokens[right_index]
-        return "\n" in self._source_text[left_token.end:right_token.start]
+        return "\n" in self._source_text[left_token.end : right_token.start]

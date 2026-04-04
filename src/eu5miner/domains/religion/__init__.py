@@ -231,9 +231,7 @@ def build_religion_report(catalog: ReligionCatalog) -> ReligionReport:
     return catalog.build_report()
 
 
-def _build_edges[
-    DefinitionT
-](
+def _build_edges[DefinitionT](
     definitions: Sequence[DefinitionT],
     collector: Callable[[DefinitionT], tuple[str, ...]],
     resolver: Callable[[str], Any | None],
@@ -242,7 +240,7 @@ def _build_edges[
     missing: set[str] = set()
 
     for definition in definitions:
-        source_name = getattr(definition, "name")
+        source_name = definition.name
         references = tuple(reference for reference in collector(definition) if reference)
         if not references:
             continue
@@ -254,18 +252,18 @@ def _build_edges[
     return tuple(edges), tuple(sorted(missing))
 
 
-def _build_edges_without_resolution[
-    DefinitionT
-](
+def _build_edges_without_resolution[DefinitionT](
     definitions: Sequence[DefinitionT],
     collector: Callable[[DefinitionT], tuple[str, ...]],
 ) -> tuple[ReligionReferenceEdge, ...]:
     edges: list[ReligionReferenceEdge] = []
     for definition in definitions:
-        source_name = getattr(definition, "name")
+        source_name = definition.name
         references = tuple(reference for reference in collector(definition) if reference)
         if references:
-            edges.append(ReligionReferenceEdge(source_name=source_name, referenced_names=references))
+            edges.append(
+                ReligionReferenceEdge(source_name=source_name, referenced_names=references)
+            )
     return tuple(edges)
 
 
@@ -273,11 +271,13 @@ def _object_mentions_religion(body: SemanticObject | None, religion: ReligionDef
     if body is None:
         return False
     scalar_texts = set(_iter_scalar_texts(body))
-    if f"religion:{religion.name}" in scalar_texts:
-        return True
-    if religion.group is not None and f"religion_group:{religion.group}" in scalar_texts:
-        return True
-    return False
+    return (
+        f"religion:{religion.name}" in scalar_texts
+        or (
+            religion.group is not None
+            and f"religion_group:{religion.group}" in scalar_texts
+        )
+    )
 
 
 def _iter_scalar_texts(body: SemanticObject) -> tuple[str, ...]:

@@ -20,9 +20,7 @@ def _read_text(path: Path) -> str:
 
 
 def test_tokenizer_detects_macros_comments_and_operators() -> None:
-    tokens = tokenize_script_text(
-        '# comment\ncountry_rank_is_what = { value ?= $target_rank$ }\n'
-    )
+    tokens = tokenize_script_text("# comment\ncountry_rank_is_what = { value ?= $target_rank$ }\n")
     kinds = [token.kind for token in tokens]
 
     assert TokenKind.COMMENT in kinds
@@ -81,11 +79,7 @@ def test_grouping_supports_scalar_assignments() -> None:
 
 
 def test_grouping_splits_consecutive_scalar_assignments_by_line() -> None:
-    document = parse_cst_document(
-        "first_value = 1\n"
-        "second_value = 2\n"
-        "third_value = 3\n"
-    )
+    document = parse_cst_document("first_value = 1\nsecond_value = 2\nthird_value = 3\n")
 
     assert [entry.head_text for entry in document.entries] == [
         "first_value",
@@ -105,11 +99,7 @@ def test_grouping_splits_consecutive_scalar_assignments_by_line() -> None:
 
 
 def test_grouping_splits_bom_prefixed_consecutive_scalar_assignments() -> None:
-    document = parse_cst_document(
-        "\ufefffirst_value = 1\n"
-        "second_value = 2\n"
-        "third_value = 3\n"
-    )
+    document = parse_cst_document("\ufefffirst_value = 1\nsecond_value = 2\nthird_value = 3\n")
 
     assert [entry.head_text for entry in document.entries] == [
         "first_value",

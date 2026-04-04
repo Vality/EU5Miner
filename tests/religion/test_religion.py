@@ -4,21 +4,20 @@ from pathlib import Path
 
 import pytest
 
-from eu5miner.source import ContentPhase
-from eu5miner.domains.religion.holy_sites import parse_holy_site_document
 from eu5miner.domains.religion import (
     ReligionCatalog,
     ReligionReport,
     build_religion_catalog,
     build_religion_report,
 )
+from eu5miner.domains.religion.holy_sites import parse_holy_site_document
 from eu5miner.domains.religion.religions import parse_religion_document
 from eu5miner.domains.religion.religious_aspects import parse_religious_aspect_document
 from eu5miner.domains.religion.religious_factions import parse_religious_faction_document
 from eu5miner.domains.religion.religious_figures import parse_religious_figure_document
 from eu5miner.domains.religion.religious_focuses import parse_religious_focus_document
 from eu5miner.domains.religion.religious_schools import parse_religious_school_document
-from eu5miner.source import GameInstall
+from eu5miner.source import ContentPhase, GameInstall
 
 
 def _read_text(path: Path) -> str:
@@ -31,7 +30,9 @@ def test_build_religion_catalog_links_real_family_definitions(
 ) -> None:
     catalog = build_religion_catalog(
         religion_documents=(
-            parse_religion_document(_read_text(game_install.representative_files()["religion_sample"])),
+            parse_religion_document(
+                _read_text(game_install.representative_files()["religion_sample"])
+            ),
             parse_religion_document(
                 _read_text(game_install.representative_files()["religion_secondary_sample"])
             ),
@@ -76,7 +77,9 @@ def test_build_religion_catalog_links_real_family_definitions(
             ),
         ),
         holy_site_documents=(
-            parse_holy_site_document(_read_text(game_install.representative_files()["holy_site_sample"])),
+            parse_holy_site_document(
+                _read_text(game_install.representative_files()["holy_site_sample"])
+            ),
             parse_holy_site_document(
                 _read_text(game_install.representative_files()["holy_site_secondary_sample"])
             ),
@@ -141,25 +144,20 @@ def test_build_religion_report_collects_missing_explicit_references() -> None:
         ),
         holy_site_documents=(
             parse_holy_site_document(
-                "sample_site = {\n"
-                "    location = rome\n"
-                "    religions = {\n"
-                "        faith\n"
-                "    }\n"
-                "}\n"
+                "sample_site = {\n    location = rome\n    religions = {\n        faith\n    }\n}\n"
             ),
         ),
     )
 
-    assert tuple(definition.name for definition in catalog.get_religious_aspects_for_religion("faith")) == (
-        "sample_aspect",
-    )
-    assert tuple(definition.name for definition in catalog.get_religious_figures_for_religion("faith")) == (
-        "sample_figure",
-    )
-    assert tuple(definition.name for definition in catalog.get_holy_sites_for_religion("faith")) == (
-        "sample_site",
-    )
+    assert tuple(
+        definition.name for definition in catalog.get_religious_aspects_for_religion("faith")
+    ) == ("sample_aspect",)
+    assert tuple(
+        definition.name for definition in catalog.get_religious_figures_for_religion("faith")
+    ) == ("sample_figure",)
+    assert tuple(
+        definition.name for definition in catalog.get_holy_sites_for_religion("faith")
+    ) == ("sample_site",)
 
     report = catalog.build_report()
     assert report.missing_religious_faction_references == ("missing_faction",)

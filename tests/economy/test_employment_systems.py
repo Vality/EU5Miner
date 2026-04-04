@@ -44,4 +44,3 @@ def test_employment_system_parses_inline_fields() -> None:
     assert definition.country_modifier is not None
     assert definition.priority is not None
     assert definition.ai_will_do is not None
-

@@ -33,4 +33,3 @@ def test_goods_demand_category_parses_inline_definition() -> None:
     definition = document.get_definition("special_demands")
     assert definition is not None
     assert definition.display == "integer"
-

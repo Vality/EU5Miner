@@ -9,45 +9,48 @@ from eu5miner import ContentPhase
 from eu5miner.domains.attribute_columns import parse_attribute_column_document
 from eu5miner.domains.building_categories import parse_building_category_document
 from eu5miner.domains.building_types import parse_building_type_document
-from eu5miner.domains.diplomacy.casus_belli import parse_casus_belli_document
-from eu5miner.domains.diplomacy.character_interactions import parse_character_interaction_document
 from eu5miner.domains.country_description_categories import (
     build_country_description_category_usage_document,
     parse_country_description_category_document,
 )
-from eu5miner.domains.diplomacy.country_interactions import parse_country_interaction_document
 from eu5miner.domains.cultures import parse_culture_document
+from eu5miner.domains.diplomacy import build_war_flow_catalog, build_war_flow_report
+from eu5miner.domains.diplomacy.casus_belli import parse_casus_belli_document
+from eu5miner.domains.diplomacy.character_interactions import parse_character_interaction_document
+from eu5miner.domains.diplomacy.country_interactions import parse_country_interaction_document
 from eu5miner.domains.diplomacy.diplomacy import (
     build_diplomacy_graph_catalog,
     build_diplomacy_graph_report,
 )
+from eu5miner.domains.diplomacy.generic_actions import parse_generic_action_document
+from eu5miner.domains.diplomacy.peace_treaties import parse_peace_treaty_document
+from eu5miner.domains.diplomacy.subject_types import parse_subject_type_document
+from eu5miner.domains.diplomacy.wargoals import parse_wargoal_document
 from eu5miner.domains.disasters import parse_disaster_document
 from eu5miner.domains.economy.employment_systems import parse_employment_system_document
-from eu5miner.domains.government.estate_privileges import parse_estate_privilege_document
-from eu5miner.domains.government.estates import parse_estate_document
+from eu5miner.domains.economy.goods import parse_goods_document
+from eu5miner.domains.economy.goods_demand_categories import parse_goods_demand_category_document
+from eu5miner.domains.economy.goods_demands import parse_goods_demand_document
+from eu5miner.domains.economy.prices import parse_price_document
+from eu5miner.domains.economy.production_methods import parse_production_method_document
 from eu5miner.domains.events import parse_event_document
 from eu5miner.domains.frontend_content import (
     build_phase_localization_bundle,
     parse_main_menu_scenarios_document,
 )
-from eu5miner.domains.diplomacy.generic_actions import parse_generic_action_document
-from eu5miner.domains.economy.goods import parse_goods_document
-from eu5miner.domains.economy.goods_demand_categories import parse_goods_demand_category_document
-from eu5miner.domains.economy.goods_demands import parse_goods_demand_document
 from eu5miner.domains.government import (
     build_government_catalog,
     build_government_report,
 )
+from eu5miner.domains.government.estate_privileges import parse_estate_privilege_document
+from eu5miner.domains.government.estates import parse_estate_document
 from eu5miner.domains.government.government_reforms import parse_government_reform_document
 from eu5miner.domains.government.government_types import parse_government_type_document
-from eu5miner.domains.religion.holy_sites import (
-    build_holy_site_catalog,
-    build_holy_site_report,
-    parse_holy_site_document,
-)
-from eu5miner.domains.religion.holy_site_types import parse_holy_site_type_document
-from eu5miner.domains.institutions import parse_institution_document
 from eu5miner.domains.government.laws import build_law_policy_catalog, parse_law_document
+from eu5miner.domains.government.parliament_agendas import parse_parliament_agenda_document
+from eu5miner.domains.government.parliament_issues import parse_parliament_issue_document
+from eu5miner.domains.government.parliament_types import parse_parliament_type_document
+from eu5miner.domains.institutions import parse_institution_document
 from eu5miner.domains.localization.localization_bundles import (
     build_localization_bundle,
     collect_customizable_localization_references,
@@ -69,19 +72,20 @@ from eu5miner.domains.map.map_csv_helpers import (
     parse_map_ports_document,
 )
 from eu5miner.domains.map.map_text import parse_default_map_document
+from eu5miner.domains.map.setup_countries import parse_setup_country_document
 from eu5miner.domains.missions import parse_mission_document
 from eu5miner.domains.mod_metadata import parse_mod_metadata_document
 from eu5miner.domains.on_actions import (
     build_on_action_catalog_document,
     parse_on_action_document,
 )
-from eu5miner.domains.government.parliament_agendas import parse_parliament_agenda_document
-from eu5miner.domains.government.parliament_issues import parse_parliament_issue_document
-from eu5miner.domains.government.parliament_types import parse_parliament_type_document
-from eu5miner.domains.diplomacy.peace_treaties import parse_peace_treaty_document
-from eu5miner.domains.economy.prices import parse_price_document
-from eu5miner.domains.economy.production_methods import parse_production_method_document
 from eu5miner.domains.religion import build_religion_catalog, build_religion_report
+from eu5miner.domains.religion.holy_site_types import parse_holy_site_type_document
+from eu5miner.domains.religion.holy_sites import (
+    build_holy_site_catalog,
+    build_holy_site_report,
+    parse_holy_site_document,
+)
 from eu5miner.domains.religion.religions import parse_religion_document
 from eu5miner.domains.religion.religious_aspects import parse_religious_aspect_document
 from eu5miner.domains.religion.religious_factions import parse_religious_faction_document
@@ -91,19 +95,14 @@ from eu5miner.domains.religion.religious_schools import parse_religious_school_d
 from eu5miner.domains.script_values import parse_script_value_document
 from eu5miner.domains.scripted_effects import parse_scripted_effect_document
 from eu5miner.domains.scripted_lists import parse_scripted_list_document
-from eu5miner.domains.scripted_modifiers import parse_scripted_modifier_document
 from eu5miner.domains.scripted_relations import parse_scripted_relation_document
 from eu5miner.domains.scripted_triggers import parse_scripted_trigger_document
-from eu5miner.domains.map.setup_countries import parse_setup_country_document
 from eu5miner.domains.situations import parse_situation_document
 from eu5miner.domains.societal_values import parse_societal_value_document
 from eu5miner.domains.subject_military_stances import parse_subject_military_stance_document
-from eu5miner.domains.diplomacy.subject_types import parse_subject_type_document
 from eu5miner.domains.units.unit_abilities import parse_unit_ability_document
 from eu5miner.domains.units.unit_categories import parse_unit_category_document
 from eu5miner.domains.units.unit_types import parse_unit_type_document
-from eu5miner.domains.diplomacy import build_war_flow_catalog, build_war_flow_report
-from eu5miner.domains.diplomacy.wargoals import parse_wargoal_document
 from eu5miner.formats.localization import parse_localization
 from eu5miner.formats.map_csv import parse_semicolon_csv
 from eu5miner.formats.metadata import parse_metadata_json
@@ -469,8 +468,12 @@ def test_broad_real_install_helper_integration_sweep(game_install: GameInstall) 
     on_action_catalog = build_on_action_catalog_document(
         (
             parse_on_action_document(_read_text(representative_files["on_action_sample"])),
-            parse_on_action_document(_read_text(representative_files["on_action_secondary_sample"])),
-            parse_on_action_document(_read_text(representative_files["on_action_hardcoded_sample"])),
+            parse_on_action_document(
+                _read_text(representative_files["on_action_secondary_sample"])
+            ),
+            parse_on_action_document(
+                _read_text(representative_files["on_action_hardcoded_sample"])
+            ),
         )
     )
     assert on_action_catalog.entries
@@ -542,9 +545,7 @@ def test_broad_real_install_helper_integration_sweep(game_install: GameInstall) 
                 _read_text(common_dir / "country_interactions" / "samanta_upgrades.txt")
             ),
             parse_country_interaction_document(
-                _read_text(
-                    common_dir / "country_interactions" / "force_change_court_language.txt"
-                )
+                _read_text(common_dir / "country_interactions" / "force_change_court_language.txt")
             ),
         ),
         character_interaction_documents=(
@@ -564,7 +565,9 @@ def test_broad_real_install_helper_integration_sweep(game_install: GameInstall) 
 
     government_catalog = build_government_catalog(
         government_type_documents=(
-            parse_government_type_document(_read_text(representative_files["government_type_sample"])),
+            parse_government_type_document(
+                _read_text(representative_files["government_type_sample"])
+            ),
         ),
         government_reform_documents=(
             parse_government_reform_document(
@@ -616,12 +619,12 @@ def test_broad_real_install_helper_integration_sweep(game_install: GameInstall) 
     assert government_report.missing_government_type_references == ()
 
     holy_site_catalog = build_holy_site_catalog(
-        (
-            parse_holy_site_type_document(_read_text(representative_files["holy_site_type_sample"])),
-        ),
+        (parse_holy_site_type_document(_read_text(representative_files["holy_site_type_sample"])),),
         (
             parse_holy_site_document(_read_text(representative_files["holy_site_sample"])),
-            parse_holy_site_document(_read_text(representative_files["holy_site_secondary_sample"])),
+            parse_holy_site_document(
+                _read_text(representative_files["holy_site_secondary_sample"])
+            ),
         ),
     )
     holy_site_report = build_holy_site_report(holy_site_catalog)
@@ -647,7 +650,9 @@ def test_broad_real_install_helper_integration_sweep(game_install: GameInstall) 
             ),
         ),
         religious_focus_documents=(
-            parse_religious_focus_document(_read_text(representative_files["religious_focus_sample"])),
+            parse_religious_focus_document(
+                _read_text(representative_files["religious_focus_sample"])
+            ),
         ),
         religious_school_documents=tuple(
             parse_religious_school_document(_read_text(path))
@@ -666,7 +671,9 @@ def test_broad_real_install_helper_integration_sweep(game_install: GameInstall) 
         ),
         holy_site_documents=(
             parse_holy_site_document(_read_text(representative_files["holy_site_sample"])),
-            parse_holy_site_document(_read_text(representative_files["holy_site_secondary_sample"])),
+            parse_holy_site_document(
+                _read_text(representative_files["holy_site_secondary_sample"])
+            ),
         ),
     )
     religion_report = build_religion_report(religion_catalog)
@@ -675,5 +682,3 @@ def test_broad_real_install_helper_integration_sweep(game_install: GameInstall) 
 
     assert parse_semicolon_csv(_read_text(representative_files["map_adjacencies"]))
     assert parse_metadata_json(_read_text(representative_files["dlc_metadata"]))
-
-

@@ -91,7 +91,7 @@ def test_attribute_columns_parse_inline_fields() -> None:
         "        contains_select_target_button = yes\n"
         "        single_widget_for_row = no\n"
         "        sort = {\n"
-        "            sort_by_tooltip_key = \"SORT_TEXT_NAME_TT\"\n"
+        '            sort_by_tooltip_key = "SORT_TEXT_NAME_TT"\n'
         "        }\n"
         "    }\n"
         "}\n"

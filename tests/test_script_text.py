@@ -30,7 +30,7 @@ def test_gui_sample_has_balanced_structure(game_install: GameInstall) -> None:
 
 
 def test_inline_entry_mode_detection() -> None:
-    text = 'INJECT:sample = { value = 1 }\nREPLACE:test = { another = yes }\n'
+    text = "INJECT:sample = { value = 1 }\nREPLACE:test = { another = yes }\n"
     features = analyze_script_text(text)
 
     assert features.balanced_braces

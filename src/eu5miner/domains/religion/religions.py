@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from eu5miner.domains.interfaces import get_by_name, names_from_named
 from eu5miner.domains._parse_helpers import (
     body_value_text,
     collect_scalar_entries,
@@ -14,6 +13,7 @@ from eu5miner.domains._parse_helpers import (
     parse_float_or_none,
     parse_int_or_none,
 )
+from eu5miner.domains.interfaces import get_by_name, names_from_named
 from eu5miner.formats.semantic import (
     SemanticDocument,
     SemanticEntry,
@@ -101,22 +101,14 @@ def parse_religion_document(text: str) -> ReligionDocument:
                 enable=entry.value.get_scalar("enable"),
                 important_country=entry.value.get_scalar("important_country"),
                 tithe=parse_float_or_none(entry.value.get_scalar("tithe")),
-                religious_aspects=parse_int_or_none(
-                    entry.value.get_scalar("religious_aspects")
-                ),
+                religious_aspects=parse_int_or_none(entry.value.get_scalar("religious_aspects")),
                 max_sects=parse_int_or_none(entry.value.get_scalar("max_sects")),
-                ai_wants_convert=parse_bool_or_none(
-                    entry.value.get_scalar("ai_wants_convert")
-                ),
+                ai_wants_convert=parse_bool_or_none(entry.value.get_scalar("ai_wants_convert")),
                 has_religious_influence=parse_bool_or_none(
                     entry.value.get_scalar("has_religious_influence")
                 ),
-                has_canonization=parse_bool_or_none(
-                    entry.value.get_scalar("has_canonization")
-                ),
-                has_religious_head=parse_bool_or_none(
-                    entry.value.get_scalar("has_religious_head")
-                ),
+                has_canonization=parse_bool_or_none(entry.value.get_scalar("has_canonization")),
+                has_religious_head=parse_bool_or_none(entry.value.get_scalar("has_religious_head")),
                 has_cardinals=parse_bool_or_none(entry.value.get_scalar("has_cardinals")),
                 needs_reform=parse_bool_or_none(entry.value.get_scalar("needs_reform")),
                 has_karma=parse_bool_or_none(entry.value.get_scalar("has_karma")),
