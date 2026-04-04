@@ -4,15 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
-from typing import TypeVar
 
-from eu5miner.domains.diplomacy import (
-    WarFlowCatalog,
-    build_war_flow_catalog,
-    collect_casus_belli_references,
-    collect_country_interaction_references,
-    collect_subject_type_references,
-)
 from eu5miner.domains.diplomacy.casus_belli import CasusBelliDefinition, CasusBelliDocument
 from eu5miner.domains.diplomacy.character_interactions import (
     CharacterInteractionDefinition,
@@ -24,11 +16,17 @@ from eu5miner.domains.diplomacy.country_interactions import (
 )
 from eu5miner.domains.diplomacy.peace_treaties import PeaceTreatyDefinition, PeaceTreatyDocument
 from eu5miner.domains.diplomacy.subject_types import SubjectTypeDefinition, SubjectTypeDocument
+from eu5miner.domains.diplomacy.war import (
+    WarFlowCatalog,
+    build_war_flow_catalog,
+    collect_casus_belli_references,
+    collect_country_interaction_references,
+    collect_subject_type_references,
+)
 from eu5miner.domains.diplomacy.wargoals import WargoalDocument
 from eu5miner.domains.interfaces import flatten_definitions, get_by_name
 from eu5miner.formats.semantic import SemanticObject
 
-ResolvedType = TypeVar("ResolvedType")
 EdgeDefinition = (
     PeaceTreatyDefinition | CountryInteractionDefinition | CharacterInteractionDefinition
 )
