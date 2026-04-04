@@ -1,1 +1,0 @@
-Key commands on Windows: `uv run python -m pytest <tests...>` for focused tests, `uv run mypy src` for typing, `uv run pytest` for the broader suite, and `./scripts/setup-centralized-uv.ps1` to bootstrap the OneDrive-safe environment. Useful shell commands here are PowerShell-native: `Get-ChildItem`, `Select-String`, `Get-Content`, `Set-Location`, and `git status` / `git diff`.

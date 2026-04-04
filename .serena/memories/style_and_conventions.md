@@ -1,1 +1,0 @@
-Use frozen dataclasses for typed domain models, small Document wrappers with names()/get_definition(), and parse_* functions that normalize only stable schema while preserving SemanticObject bodies for long-tail fields. Follow existing Python typing closely, keep comments sparse, and prefer minimal focused changes over broad refactors.
