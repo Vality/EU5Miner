@@ -6,7 +6,7 @@ from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from typing import Any
 
-from eu5miner.domains.interfaces import flatten_definitions, get_by_name
+from eu5miner.domains.interfaces import NamedDefinitionLike, flatten_definitions, get_by_name
 from eu5miner.domains.religion.holy_sites import HolySiteDefinition, HolySiteDocument
 from eu5miner.domains.religion.religions import ReligionDefinition, ReligionDocument
 from eu5miner.domains.religion.religious_aspects import (
@@ -231,7 +231,7 @@ def build_religion_report(catalog: ReligionCatalog) -> ReligionReport:
     return catalog.build_report()
 
 
-def _build_edges[DefinitionT](
+def _build_edges[DefinitionT: NamedDefinitionLike](
     definitions: Sequence[DefinitionT],
     collector: Callable[[DefinitionT], tuple[str, ...]],
     resolver: Callable[[str], Any | None],
@@ -252,7 +252,7 @@ def _build_edges[DefinitionT](
     return tuple(edges), tuple(sorted(missing))
 
 
-def _build_edges_without_resolution[DefinitionT](
+def _build_edges_without_resolution[DefinitionT: NamedDefinitionLike](
     definitions: Sequence[DefinitionT],
     collector: Callable[[DefinitionT], tuple[str, ...]],
 ) -> tuple[ReligionReferenceEdge, ...]:

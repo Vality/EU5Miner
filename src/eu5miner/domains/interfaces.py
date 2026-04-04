@@ -62,7 +62,7 @@ def names_from_named(definitions: Sequence[NamedDefinitionLike]) -> tuple[str, .
     return tuple(definition.name for definition in definitions)
 
 
-def get_by_name[NamedDefinitionT](
+def get_by_name[NamedDefinitionT: NamedDefinitionLike](
     definitions: Sequence[NamedDefinitionT],
     name: str,
 ) -> NamedDefinitionT | None:
@@ -76,7 +76,7 @@ def tags_from_tagged(definitions: Sequence[TaggedDefinitionLike]) -> tuple[str, 
     return tuple(definition.tag for definition in definitions)
 
 
-def get_by_tag[TaggedDefinitionT](
+def get_by_tag[TaggedDefinitionT: TaggedDefinitionLike](
     definitions: Sequence[TaggedDefinitionT],
     tag: str,
 ) -> TaggedDefinitionT | None:
@@ -86,7 +86,7 @@ def get_by_tag[TaggedDefinitionT](
     return None
 
 
-def flatten_definitions[NamedDefinitionDocT](
+def flatten_definitions[NamedDefinitionDocT: NamedDefinitionLike](
     documents: Iterable[NamedDefinitionDocumentLike[NamedDefinitionDocT]],
 ) -> tuple[NamedDefinitionDocT, ...]:
     return tuple(definition for document in documents for definition in document.definitions)
