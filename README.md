@@ -199,14 +199,14 @@ The test suite and install-discovery helpers use this precedence for the game in
 
 ## Documentation
 
-Design and research notes are stored in [documents/specification.md](documents/specification.md) and the other files in `documents/`.
+The planning entrypoint is [ROADMAP.md](ROADMAP.md).
 
-Agent-facing resume and steering notes are in [AGENTS.md](AGENTS.md) and [documents/agent-resume-guide.md](documents/agent-resume-guide.md).
+Execution-ready work packages for contributors and cloud agents live in [documents/specs/README.md](documents/specs/README.md).
 
-Developer environment notes for the OneDrive/`uv` workflow are in [documents/development-environment.md](documents/development-environment.md).
+Architecture constraints and layering rules live in [documents/architecture.md](documents/architecture.md).
 
-The planned game-data implementation order is tracked in [documents/data-type-roadmap.md](documents/data-type-roadmap.md).
+Developer environment notes for the OneDrive/`uv` workflow live in [documents/development-environment.md](documents/development-environment.md).
 
-The MCP planning report and packaging recommendation live in [documents/mcp-server-design.md](documents/mcp-server-design.md).
+Historical planning notes remain in older files under `documents/`, but roadmap and spec work should start from the roadmap/spec split rather than the legacy plan documents.
 
 Release history is tracked in [CHANGELOG.md](CHANGELOG.md).

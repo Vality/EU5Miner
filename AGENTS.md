@@ -15,9 +15,9 @@ Agents working here should optimize for:
 Read these documents first:
 
 1. `README.md`
-2. `documents/agent-resume-guide.md`
-3. `documents/architecture.md`
-4. `documents/data-type-roadmap.md`
+2. `ROADMAP.md`
+3. `documents/specs/README.md`
+4. `documents/architecture.md`
 5. `documents/development-environment.md`
 
 ## Project Layout
@@ -95,10 +95,13 @@ The VFS now also has an initial metadata-aware replace-path layer: source metada
 - location/setup cross-linking helpers
 - mod metadata and relationships
 
-Next planned target:
+The current planning entrypoint is `ROADMAP.md`, with execution-ready work packages under `documents/specs/`.
 
-- review and refine the current helper layers now that the library integration pass and broader coverage audit are in place
-- after that helper pass, run another duplication review across the parser and domain layers because the data-type parsing surface has grown substantially
+Current recommended focus:
+
+- complete the library integration pass before large downstream product work
+- widen validation in cloud-agent-friendly ways that do not require a local game install by default
+- keep MCP and GUI implementation in their own repos once the three-repo workspace is in place
 
 The optional broader validation sweep now lives behind `pytest -m broad`; keep it out of the normal fast iteration loop.
 

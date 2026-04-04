@@ -8,8 +8,8 @@ Start with:
 
 1. `README.md`
 2. `AGENTS.md`
-3. `documents/architecture.md`
-4. `documents/data-type-roadmap.md`
+3. `ROADMAP.md`
+4. `documents/specs/README.md`
 5. `documents/development-environment.md`
 
 ## Working Norms
@@ -35,7 +35,7 @@ Notes:
 
 - The optional broader install sweep lives behind `pytest -m broad`.
 - Real-file validation against a local EU5 install is preferred whenever a new domain or helper layer is introduced.
-- The repository still carries some broader Ruff debt, so agent changes should at minimum keep touched files clean even when a full-repo lint pass is not yet green.
+- Most roadmap and spec work should remain executable without a local EU5 install unless the spec explicitly requires one.
 
 ## Release Posture
 
