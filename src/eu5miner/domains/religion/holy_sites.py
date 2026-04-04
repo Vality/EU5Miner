@@ -5,8 +5,13 @@ from __future__ import annotations
 from collections.abc import Sequence
 from dataclasses import dataclass
 
-from eu5miner.domains.interfaces import flatten_definitions, get_by_name, get_scalar_from_body, names_from_named
 from eu5miner.domains._parse_helpers import object_child_keys, parse_int_or_none
+from eu5miner.domains.interfaces import (
+    flatten_definitions,
+    get_by_name,
+    get_scalar_from_body,
+    names_from_named,
+)
 from eu5miner.domains.religion.holy_site_types import HolySiteTypeDefinition, HolySiteTypeDocument
 from eu5miner.formats.semantic import (
     SemanticDocument,
@@ -83,9 +88,7 @@ class HolySiteCatalog:
 
     def get_holy_sites_for_god(self, god_name: str) -> tuple[HolySiteDefinition, ...]:
         return tuple(
-            definition
-            for definition in self.holy_site_definitions
-            if definition.god == god_name
+            definition for definition in self.holy_site_definitions if definition.god == god_name
         )
 
     def get_holy_sites_for_avatar(self, avatar_name: str) -> tuple[HolySiteDefinition, ...]:

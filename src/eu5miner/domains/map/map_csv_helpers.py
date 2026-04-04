@@ -32,8 +32,7 @@ class MapAdjacencyDocument:
 
     def connections(self) -> tuple[tuple[str, str], ...]:
         return tuple(
-            (definition.from_location, definition.to_location)
-            for definition in self.definitions
+            (definition.from_location, definition.to_location) for definition in self.definitions
         )
 
     def get_connection(

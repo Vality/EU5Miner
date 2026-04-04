@@ -63,4 +63,3 @@ def test_unit_category_parses_inline_variant_fields() -> None:
     assert definition.auxiliary is True
     assert definition.combat is not None
     assert definition.get_modifier("attrition_loss") == "0.25"
-

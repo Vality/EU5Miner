@@ -157,4 +157,3 @@ def _collect_variant_references(
             )
 
     return tuple(references)
-

@@ -59,12 +59,10 @@ def test_build_real_country_description_category_usage_document(
 
 def test_build_country_description_category_usage_document_tracks_unknown_categories() -> None:
     category_document = parse_country_description_category_document(
-        "military = {}\n"
-        "administrative = {}\n"
+        "military = {}\nadministrative = {}\n"
     )
     setup_document = parse_setup_country_document(
-        "AAA = { description_category = military }\n"
-        "BBB = { description_category = maritime }\n"
+        "AAA = { description_category = military }\nBBB = { description_category = maritime }\n"
     )
 
     usage_document = build_country_description_category_usage_document(
@@ -87,4 +85,3 @@ def test_build_country_description_category_usage_document_tracks_unknown_catego
     assert bbb is not None
     assert bbb.category is None
     assert bbb.is_defined is False
-

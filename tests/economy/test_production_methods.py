@@ -48,9 +48,7 @@ def test_production_method_parses_inline_fields() -> None:
 
     definition = document.get_definition("sample_method")
     assert definition is not None
-    assert definition.inputs == (
-        definition.inputs[0],
-    )
+    assert definition.inputs == (definition.inputs[0],)
     assert definition.inputs[0].goods == "tools"
     assert definition.inputs[0].amount == "0.2"
     assert definition.produced == "weaponry"
@@ -58,4 +56,3 @@ def test_production_method_parses_inline_fields() -> None:
     assert definition.category == "building_maintenance"
     assert definition.no_upkeep is True
     assert definition.allow is not None
-

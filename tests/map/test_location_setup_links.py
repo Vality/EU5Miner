@@ -55,9 +55,7 @@ def test_parse_country_location_document_inline() -> None:
 
 def test_parse_location_setup_document_inline() -> None:
     document = parse_location_setup_document(
-        "locations = {\n"
-        "    malmo = { timed_modifiers = { } }\n"
-        "}\n"
+        "locations = {\n    malmo = { timed_modifiers = { } }\n}\n"
     )
 
     assert document.get_definition("malmo") is not None
@@ -123,4 +121,3 @@ def test_build_real_linked_location_document(game_install: GameInstall) -> None:
     assert malmo.hierarchy is not None
     assert malmo.location_setup is not None
     assert linked.get_definition("malmo") == malmo
-

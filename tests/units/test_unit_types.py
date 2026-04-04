@@ -88,4 +88,3 @@ def test_unit_type_parses_inline_variant_fields() -> None:
     assert isinstance(definition.limit, SemanticObject)
     assert definition.impact is not None
     assert definition.color == "unit_green"
-

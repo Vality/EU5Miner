@@ -574,8 +574,7 @@ class VirtualFilesystem:
             intended_relative_paths=intended_relative_paths,
         )
         metadata_update_actions = tuple(
-            _metadata_update_for_subtree_action(action)
-            for action in directory_plan.subtree_actions
+            _metadata_update_for_subtree_action(action) for action in directory_plan.subtree_actions
         )
 
         return ModEmissionPlan(

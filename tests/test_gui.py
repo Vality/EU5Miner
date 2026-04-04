@@ -16,16 +16,16 @@ def test_parse_gui_document_inline() -> None:
     document = parse_gui_document(
         "@scale = 42\n"
         "template sample_template {\n"
-        "    text = \"HELLO\"\n"
+        '    text = "HELLO"\n'
         "}\n"
         "types SampleTypes {\n"
         "    type FancyWindow = window {\n"
-        "        name = \"fancy_window\"\n"
+        '        name = "fancy_window"\n'
         "    }\n"
         "}\n"
         "window = {\n"
-        "    name = \"root_window\"\n"
-        "    widgetid = \"root_widget\"\n"
+        '    name = "root_window"\n'
+        '    widgetid = "root_widget"\n'
         "}\n"
     )
 

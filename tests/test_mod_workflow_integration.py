@@ -26,10 +26,12 @@ def test_library_mod_workflow_integration_surface(
         Path("common") / "buildings",
         intended_relative_paths=(surface.override_relative_path, surface.blocked_relative_path),
         content_by_relative_path={
-            surface.override_relative_path: (surface.content_root / surface.override_relative_path)
-            .read_text(encoding="utf-8"),
-            surface.blocked_relative_path: (surface.content_root / surface.blocked_relative_path)
-            .read_text(encoding="utf-8"),
+            surface.override_relative_path: (
+                surface.content_root / surface.override_relative_path
+            ).read_text(encoding="utf-8"),
+            surface.blocked_relative_path: (
+                surface.content_root / surface.blocked_relative_path
+            ).read_text(encoding="utf-8"),
         },
     )
 

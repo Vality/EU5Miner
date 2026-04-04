@@ -70,4 +70,3 @@ def test_goods_demand_parses_inline_fields() -> None:
     assert definition.hidden is True
     assert definition.scalar_demands[0].name == "iron"
     assert definition.scripted_demands[0].name == "wine"
-

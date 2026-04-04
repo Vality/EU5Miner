@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from eu5miner.domains.interfaces import get_by_name, names_from_named
 from eu5miner.domains._parse_helpers import (
     entry_object,
     entry_scalar_text,
@@ -12,6 +11,7 @@ from eu5miner.domains._parse_helpers import (
     parse_float_or_none,
     parse_int_or_none,
 )
+from eu5miner.domains.interfaces import get_by_name, names_from_named
 from eu5miner.formats.semantic import (
     SemanticDocument,
     SemanticEntry,
@@ -148,9 +148,7 @@ def parse_subject_type_document(text: str) -> SubjectTypeDocument:
                 annexation_min_years_before=parse_int_or_none(
                     body.get_scalar("annexation_min_years_before")
                 ),
-                annexation_min_opinion=parse_int_or_none(
-                    body.get_scalar("annexation_min_opinion")
-                ),
+                annexation_min_opinion=parse_int_or_none(body.get_scalar("annexation_min_opinion")),
                 annexation_stall_opinion=parse_int_or_none(
                     body.get_scalar("annexation_stall_opinion")
                 ),
@@ -161,17 +159,13 @@ def parse_subject_type_document(text: str) -> SubjectTypeDocument:
                 diplomatic_capacity_cost_scale=parse_float_or_none(
                     body.get_scalar("diplomatic_capacity_cost_scale")
                 ),
-                strength_vs_overlord=parse_float_or_none(
-                    body.get_scalar("strength_vs_overlord")
-                ),
+                strength_vs_overlord=parse_float_or_none(body.get_scalar("strength_vs_overlord")),
                 merchants_to_overlord_fraction=parse_float_or_none(
                     body.get_scalar("merchants_to_overlord_fraction")
                 ),
                 war_score_cost=_parse_scalar_or_object(body.first_entry("war_score_cost")),
                 base_antagonism=_parse_scalar_or_object(body.first_entry("base_antagonism")),
-                monthly_favor_gain=_parse_scalar_or_object(
-                    body.first_entry("monthly_favor_gain")
-                ),
+                monthly_favor_gain=_parse_scalar_or_object(body.first_entry("monthly_favor_gain")),
                 institution_spread_to_overlord=_parse_scalar_or_object(
                     body.first_entry("institution_spread_to_overlord")
                 ),
@@ -209,23 +203,17 @@ def parse_subject_type_document(text: str) -> SubjectTypeDocument:
                 has_overlords_religion=parse_bool_or_none(
                     body.get_scalar("has_overlords_religion")
                 ),
-                has_limited_diplomacy=parse_bool_or_none(
-                    body.get_scalar("has_limited_diplomacy")
-                ),
+                has_limited_diplomacy=parse_bool_or_none(body.get_scalar("has_limited_diplomacy")),
                 can_change_rank=parse_bool_or_none(body.get_scalar("can_change_rank")),
                 can_change_heir_selection=parse_bool_or_none(
                     body.get_scalar("can_change_heir_selection")
                 ),
                 subject_can_cancel=parse_bool_or_none(body.get_scalar("subject_can_cancel")),
-                overlord_can_cancel=parse_bool_or_none(
-                    body.get_scalar("overlord_can_cancel")
-                ),
+                overlord_can_cancel=parse_bool_or_none(body.get_scalar("overlord_can_cancel")),
                 will_join_independence_wars=parse_bool_or_none(
                     body.get_scalar("will_join_independence_wars")
                 ),
-                fleet_basing_rights=parse_bool_or_none(
-                    body.get_scalar("fleet_basing_rights")
-                ),
+                fleet_basing_rights=parse_bool_or_none(body.get_scalar("fleet_basing_rights")),
                 food_access=parse_bool_or_none(body.get_scalar("food_access")),
                 use_overlord_laws=parse_bool_or_none(body.get_scalar("use_overlord_laws")),
                 annulled_by_peace_treaty=parse_bool_or_none(
@@ -234,12 +222,8 @@ def parse_subject_type_document(text: str) -> SubjectTypeDocument:
                 use_overlord_map_color=parse_bool_or_none(
                     body.get_scalar("use_overlord_map_color")
                 ),
-                use_overlord_map_name=parse_bool_or_none(
-                    body.get_scalar("use_overlord_map_name")
-                ),
-                only_overlord_culture=parse_bool_or_none(
-                    body.get_scalar("only_overlord_culture")
-                ),
+                use_overlord_map_name=parse_bool_or_none(body.get_scalar("use_overlord_map_name")),
+                only_overlord_culture=parse_bool_or_none(body.get_scalar("only_overlord_culture")),
                 only_overlord_or_kindred_culture=parse_bool_or_none(
                     body.get_scalar("only_overlord_or_kindred_culture")
                 ),
@@ -280,9 +264,7 @@ def parse_subject_type_document(text: str) -> SubjectTypeDocument:
                 overlord_inherit_if_no_heir=parse_bool_or_none(
                     body.get_scalar("overlord_inherit_if_no_heir")
                 ),
-                is_colonial_subject=parse_bool_or_none(
-                    body.get_scalar("is_colonial_subject")
-                ),
+                is_colonial_subject=parse_bool_or_none(body.get_scalar("is_colonial_subject")),
                 entry=entry,
             )
         )

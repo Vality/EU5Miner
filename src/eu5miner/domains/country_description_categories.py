@@ -140,4 +140,3 @@ def build_country_description_category_usage_document(
         usages=usages,
         assignments=assignments,
     )
-

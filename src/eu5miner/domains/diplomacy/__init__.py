@@ -6,11 +6,11 @@ import re
 from collections.abc import Sequence
 from dataclasses import dataclass
 
-from eu5miner.domains.interfaces import flatten_definitions, get_by_name
 from eu5miner.domains.diplomacy.casus_belli import CasusBelliDefinition, CasusBelliDocument
 from eu5miner.domains.diplomacy.peace_treaties import PeaceTreatyDefinition, PeaceTreatyDocument
 from eu5miner.domains.diplomacy.subject_types import SubjectTypeDefinition, SubjectTypeDocument
 from eu5miner.domains.diplomacy.wargoals import WargoalDefinition, WargoalDocument
+from eu5miner.domains.interfaces import flatten_definitions, get_by_name
 from eu5miner.formats.semantic import SemanticObject, SemanticScalar
 
 
@@ -235,7 +235,7 @@ def _append_scalar_texts(body: SemanticObject, values: list[str]) -> None:
             _append_scalar_texts(entry.value, values)
 
 
-from eu5miner.domains.diplomacy.diplomacy import (
+from eu5miner.domains.diplomacy.diplomacy import (  # noqa: E402
     DiplomacyGraphCatalog,
     DiplomacyGraphReport,
     DiplomacyReferenceEdge,

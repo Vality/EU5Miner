@@ -4,13 +4,13 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from eu5miner.domains.interfaces import get_by_name, names_from_named
 from eu5miner.domains._parse_helpers import (
     entry_object,
     entry_scalar_text,
     parse_bool_or_none,
     parse_int_or_none,
 )
+from eu5miner.domains.interfaces import get_by_name, names_from_named
 from eu5miner.formats.semantic import (
     SemanticDocument,
     SemanticEntry,
@@ -167,9 +167,7 @@ def parse_country_interaction_document(text: str) -> CountryInteractionDocument:
                 show_message_to_target=parse_bool_or_none(
                     body.get_scalar("show_message_to_target")
                 ),
-                should_execute_price=parse_bool_or_none(
-                    body.get_scalar("should_execute_price")
-                ),
+                should_execute_price=parse_bool_or_none(body.get_scalar("should_execute_price")),
                 show_in_gui_list=parse_bool_or_none(body.get_scalar("show_in_gui_list")),
                 ai_will_do=_parse_scalar_or_object(body.first_entry("ai_will_do")),
                 ai_prerequisite=body.get_object("ai_prerequisite"),
@@ -265,9 +263,7 @@ def _parse_columns(trigger_body: SemanticObject) -> tuple[CountryInteractionColu
                 data=column_body.get_scalar("data"),
                 width=column_body.get_scalar("width"),
                 icon=column_body.get_scalar("icon"),
-                show_icon_in_cells=parse_bool_or_none(
-                    column_body.get_scalar("show_icon_in_cells")
-                ),
+                show_icon_in_cells=parse_bool_or_none(column_body.get_scalar("show_icon_in_cells")),
                 body=column_body,
                 entry=entry,
             )

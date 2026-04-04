@@ -6,7 +6,6 @@ from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from typing import Any
 
-from eu5miner.domains.interfaces import flatten_definitions, get_by_name
 from eu5miner.domains.government.estate_privileges import (
     EstatePrivilegeDefinition,
     EstatePrivilegeDocument,
@@ -16,7 +15,10 @@ from eu5miner.domains.government.government_reforms import (
     GovernmentReformDefinition,
     GovernmentReformDocument,
 )
-from eu5miner.domains.government.government_types import GovernmentTypeDefinition, GovernmentTypeDocument
+from eu5miner.domains.government.government_types import (
+    GovernmentTypeDefinition,
+    GovernmentTypeDocument,
+)
 from eu5miner.domains.government.laws import (
     LawDefinition,
     LawDocument,
@@ -36,6 +38,8 @@ from eu5miner.domains.government.parliament_types import (
     ParliamentTypeDefinition,
     ParliamentTypeDocument,
 )
+from eu5miner.domains.interfaces import flatten_definitions, get_by_name
+
 
 @dataclass(frozen=True)
 class GovernmentReferenceEdge:
@@ -101,7 +105,9 @@ class GovernmentCatalog:
             return None
         return self.get_estate(definition.default_character_estate)
 
-    def get_reforms_for_government(self, government_name: str) -> tuple[GovernmentReformDefinition, ...]:
+    def get_reforms_for_government(
+        self, government_name: str
+    ) -> tuple[GovernmentReformDefinition, ...]:
         return tuple(
             definition
             for definition in self.government_reform_definitions
@@ -217,14 +223,18 @@ class GovernmentCatalog:
     def build_report(self) -> GovernmentReport:
         default_estate_links, missing_default_estates = _build_edges(
             self.government_type_definitions,
-            lambda definition: (definition.default_character_estate,)
-            if definition.default_character_estate is not None
-            else (),
+            lambda definition: (
+                (definition.default_character_estate,)
+                if definition.default_character_estate is not None
+                else ()
+            ),
             self.get_estate,
         )
         reform_links, missing_reform_governments = _build_edges(
             self.government_reform_definitions,
-            lambda definition: (definition.government,) if definition.government is not None else (),
+            lambda definition: (
+                (definition.government,) if definition.government is not None else ()
+            ),
             self.get_government_type,
         )
         law_links, missing_law_governments = _build_edges(
@@ -321,7 +331,7 @@ def _build_edges(
             continue
         edges.append(
             GovernmentReferenceEdge(
-                source_name=str(getattr(definition, "name")),
+                source_name=str(definition.name),
                 referenced_names=references,
             )
         )

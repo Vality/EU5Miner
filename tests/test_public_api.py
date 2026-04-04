@@ -20,9 +20,9 @@ from eu5miner.domains import (
     EstatePrivilegeDocument,
     GovernmentCatalog,
     GovernmentReferenceEdge,
-    GovernmentReport,
     GovernmentReformDefinition,
     GovernmentReformDocument,
+    GovernmentReport,
     GovernmentTypeDefinition,
     GovernmentTypeDocument,
     HolySiteCatalog,
@@ -43,6 +43,15 @@ from eu5miner.domains import (
     MarketReport,
     NamedDefinitionDocumentLike,
     NamedDefinitionLike,
+    ParliamentAgendaDefinition,
+    ParliamentAgendaDocument,
+    ParliamentIssueDefinition,
+    ParliamentIssueDocument,
+    ParliamentTypeDefinition,
+    ParliamentTypeDocument,
+    ReligionCatalog,
+    ReligionReferenceEdge,
+    ReligionReport,
     ReligiousAspectDefinition,
     ReligiousAspectDocument,
     ReligiousAspectOpinion,
@@ -54,21 +63,12 @@ from eu5miner.domains import (
     ReligiousFocusDocument,
     ReligiousSchoolDefinition,
     ReligiousSchoolDocument,
-    ReligionCatalog,
-    ReligionReferenceEdge,
-    ReligionReport,
-    SocietalValueDefinition,
-    SocietalValueDocument,
     SetupCountryDefinition,
     SetupCountryDocument,
+    SocietalValueDefinition,
+    SocietalValueDocument,
     TaggedDefinitionDocumentLike,
     TaggedDefinitionLike,
-    ParliamentAgendaDefinition,
-    ParliamentAgendaDocument,
-    ParliamentIssueDefinition,
-    ParliamentIssueDocument,
-    ParliamentTypeDefinition,
-    ParliamentTypeDocument,
     UnitAbilityDefinition,
     UnitAbilityDocument,
     UnitCategoryDefinition,
@@ -80,6 +80,7 @@ from eu5miner.domains import (
     WarFlowCatalog,
     WarFlowReport,
     WarReferenceEdge,
+    build_country_description_category_usage_document,
     build_diplomacy_graph_catalog,
     build_diplomacy_graph_report,
     build_government_catalog,
@@ -87,15 +88,14 @@ from eu5miner.domains import (
     build_holy_site_catalog,
     build_holy_site_report,
     build_law_policy_catalog,
+    build_linked_location_document,
     build_market_catalog,
     build_market_report,
+    build_on_action_catalog_document,
     build_religion_catalog,
     build_religion_report,
     build_war_flow_catalog,
     build_war_flow_report,
-    build_country_description_category_usage_document,
-    build_linked_location_document,
-    build_on_action_catalog_document,
     collect_casus_belli_references,
     collect_country_interaction_references,
     collect_subject_type_references,
@@ -119,11 +119,11 @@ from eu5miner.domains import (
     parse_estate_privilege_document,
     parse_event_document,
     parse_generic_action_document,
-    parse_government_reform_document,
-    parse_government_type_document,
     parse_goods_demand_category_document,
     parse_goods_demand_document,
     parse_goods_document,
+    parse_government_reform_document,
+    parse_government_type_document,
     parse_holy_site_document,
     parse_holy_site_type_document,
     parse_institution_document,
@@ -131,32 +131,32 @@ from eu5miner.domains import (
     parse_mod_metadata_document,
     parse_on_action_document,
     parse_on_action_documentation,
-    parse_peace_treaty_document,
     parse_parliament_agenda_document,
     parse_parliament_issue_document,
     parse_parliament_type_document,
+    parse_peace_treaty_document,
     parse_price_document,
     parse_production_method_document,
+    parse_religion_document,
     parse_religious_aspect_document,
     parse_religious_faction_document,
     parse_religious_figure_document,
     parse_religious_focus_document,
-    parse_religion_document,
     parse_religious_school_document,
     parse_script_value_document,
     parse_scripted_list_document,
     parse_scripted_modifier_document,
     parse_scripted_relation_document,
     parse_scripted_trigger_document,
+    parse_setup_country_document,
     parse_societal_value_document,
     parse_subject_military_stance_document,
     parse_subject_type_document,
-    parse_setup_country_document,
-    tags_from_tagged,
     parse_unit_ability_document,
     parse_unit_category_document,
     parse_unit_type_document,
     parse_wargoal_document,
+    tags_from_tagged,
 )
 from eu5miner.formats.semantic import SemanticScalar
 
@@ -185,9 +185,7 @@ def test_domains_package_exports_curated_entrypoints() -> None:
         "From Code: Yes\n"
         "Expected Scope: country\n"
     )
-    building_category_document = parse_building_category_document(
-        "trade_category = {}\n"
-    )
+    building_category_document = parse_building_category_document("trade_category = {}\n")
     casus_belli_document = parse_casus_belli_document(
         "sample_cb = { war_goal_type = superiority trade = yes }\n"
     )
@@ -203,9 +201,7 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     country_interaction_document = parse_country_interaction_document(
         "sample_country_interaction = { type = diplomacy category = CATEGORY_ACTIONS }\n"
     )
-    goods_document = parse_goods_document(
-        "iron = { method = mining category = raw_material }\n"
-    )
+    goods_document = parse_goods_document("iron = { method = mining category = raw_material }\n")
     goods_demand_category_document = parse_goods_demand_category_document(
         "building_construction = { display = integer }\n"
     )
@@ -230,10 +226,12 @@ def test_domains_package_exports_curated_entrypoints() -> None:
         "sample_parliament = { type = country modifier = { add = 1 } }\n"
     )
     parliament_agenda_document = parse_parliament_agenda_document(
-        "sample_agenda = { type = country estate = nobles_estate chance = 10 on_accept = { add = 1 } }\n"
+        "sample_agenda = { type = country estate = nobles_estate "
+        "chance = 10 on_accept = { add = 1 } }\n"
     )
     parliament_issue_document = parse_parliament_issue_document(
-        "sample_issue = { type = country estate = crown_estate chance = 0 on_debate_passed = { add = 1 } }\n"
+        "sample_issue = { type = country estate = crown_estate "
+        "chance = 0 on_debate_passed = { add = 1 } }\n"
     )
     generic_action_document = parse_generic_action_document(
         "create_market = {\n"
@@ -250,10 +248,12 @@ def test_domains_package_exports_curated_entrypoints() -> None:
         "sample_reform = { government = monarchy years = 2 country_modifier = { add = 1 } }\n"
     )
     institution_document = parse_institution_document(
-        "renaissance = { age = age_2_renaissance can_spawn = { always = yes } promote_chance = { add = 1 } }\n"
+        "renaissance = { age = age_2_renaissance can_spawn = { always = yes } "
+        "promote_chance = { add = 1 } }\n"
     )
     societal_value_document = parse_societal_value_document(
-        "tradition_vs_change = { left_modifier = { add = 1 } right_modifier = { add = 2 } opinion_importance_multiplier = 0.5 }\n"
+        "tradition_vs_change = { left_modifier = { add = 1 } right_modifier = { add = 2 } "
+        "opinion_importance_multiplier = 0.5 }\n"
     )
     law_document = parse_law_document(
         "sample_law = {\n"
@@ -265,7 +265,9 @@ def test_domains_package_exports_curated_entrypoints() -> None:
         "}\n"
     )
     peace_treaty_document = parse_peace_treaty_document(
-        "peace_example = { potential = { scope:war = { casus_belli ?= casus_belli:sample_cb } } effect = { make_subject_of = { type = subject_type:sample_subject } } }\n"
+        "peace_example = { potential = { scope:war = { casus_belli ?= "
+        "casus_belli:sample_cb } } effect = { make_subject_of = { "
+        "type = subject_type:sample_subject } } }\n"
     )
     religion_document = parse_religion_document("faith = { group = example tags = { tag } }\n")
     list_document = parse_scripted_list_document(
@@ -284,16 +286,20 @@ def test_domains_package_exports_curated_entrypoints() -> None:
         "sample_site = { location = rome type = temple importance = 4 religions = { catholic } }\n"
     )
     religious_aspect_document = parse_religious_aspect_document(
-        "sample_aspect = { religion = catholic enabled = { always = yes } modifier = { add = 1 } opinions = { sample_aspect = 10 } }\n"
+        "sample_aspect = { religion = catholic enabled = { always = yes } "
+        "modifier = { add = 1 } opinions = { sample_aspect = 10 } }\n"
     )
     religious_faction_document = parse_religious_faction_document(
-        "sample_faction = { visible = { always = yes } enabled = { always = yes } actions = { action_a action_b } }\n"
+        "sample_faction = { visible = { always = yes } enabled = { always = yes } "
+        "actions = { action_a action_b } }\n"
     )
     religious_focus_document = parse_religious_focus_document(
-        "sample_focus = { monthly_progress = { add = 1 } modifier_on_completion = { add = 1 } }\n"
+        "sample_focus = { monthly_progress = { add = 1 } "
+        "modifier_on_completion = { add = 1 } }\n"
     )
     religious_school_document = parse_religious_school_document(
-        "sample_school = { color = rgb { 1 2 3 } enabled_for_country = { always = yes } modifier = { add = 1 } }\n"
+        "sample_school = { color = rgb { 1 2 3 } enabled_for_country = { always = yes } "
+        "modifier = { add = 1 } }\n"
     )
     religious_figure_document = parse_religious_figure_document(
         "sample_figure = { enabled_for_religion = { group = religion_group:christian } }\n"
@@ -365,7 +371,7 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     )
     war_report = build_war_flow_report(war_catalog)
     script_value_document = parse_script_value_document("my_value = { value = 5 }\n")
-    default_map_document = parse_default_map_document("definitions = \"definitions.txt\"\n")
+    default_map_document = parse_default_map_document('definitions = "definitions.txt"\n')
 
     assert trigger_document.names() == ("test_trigger",)
     assert setup_document.definitions[0].tag == "FRA"
@@ -423,7 +429,10 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     assert collect_subject_type_references(peace_treaty_document.definitions[0].body) == (
         "sample_subject",
     )
-    assert collect_country_interaction_references(country_interaction_document.definitions[0].body) == ()
+    assert (
+        collect_country_interaction_references(country_interaction_document.definitions[0].body)
+        == ()
+    )
     assert default_map_document.referenced_files.as_dict() == {
         "provinces": None,
         "rivers": None,
@@ -457,7 +466,9 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     assert isinstance(estate_document.definitions[0], NamedDefinitionLike)
     assert flatten_definitions((estate_document,)) == estate_document.definitions
     assert names_from_named(estate_document.definitions) == ("sample_estate",)
-    assert get_by_name(estate_document.definitions, "sample_estate") is estate_document.definitions[0]
+    assert (
+        get_by_name(estate_document.definitions, "sample_estate") is estate_document.definitions[0]
+    )
     assert isinstance(price_document.definitions[0], BodyBackedDefinitionLike)
     assert get_scalar_from_body(price_document.definitions[0], "gold") == "10"
     assert isinstance(setup_document, TaggedDefinitionDocumentLike)
