@@ -16,17 +16,31 @@ When handing work to an agent, copy:
 4. the acceptance criteria
 5. the validation commands
 
-## Current Specs
+## Current Status
 
-- `library-integration-pass.md`: tighten the stable library surface and reduce cross-domain API drift
-- `validation-expansion.md`: broaden confidence without requiring real-install access for most work
-- `repo-topology-and-scaffolding.md`: standardize the three-repo workspace and shared repo structure
-- `eu5miner-mcp-foundation.md`: first MCP repo foundation over the core library
-- `eu5miner-gui-foundation.md`: first GUI repo foundation over the core library
+Most top-level specs in this folder now describe work that has already landed as the preview baseline.
+
+Use them in two ways:
+
+- as reference when polishing or extending the shipped preview seams
+- as a record of what is already complete, so new work does not restart foundation slices
+
+## Reference Specs For Ongoing Core Polish
+
+- `library-integration-pass.md`: mostly landed; use for targeted API, docs, and stable-surface cleanup that follows from real downstream usage
+- `validation-expansion.md`: mostly landed; use for additional synthetic coverage, validation discipline, and CI-safe hardening around existing seams
+
+## Landed Baseline Specs
+
+- `repo-topology-and-scaffolding.md`: the three-repo workspace and shared scaffolding baseline are in place
+- `eu5miner-gui-foundation.md`: the downstream GUI foundation has landed in the dedicated repo
+- `eu5miner-mcp-foundation.md`: the downstream MCP foundation has landed in the dedicated repo
+
+No new core top-level spec is needed until a concrete next slice is larger than routine preview hardening.
 
 ## Agent Rules
 
 - Prefer work that can validate with `pytest`, `ruff`, `mypy`, and `uv build` in CI.
 - Treat real-install validation as a follow-up or explicit manual check unless the spec requires it.
-- Do not widen public API seams casually; the integration-pass spec controls that work.
-- For preview multi-repo work, assume downstream GUI and MCP repos consume `eu5miner` from the GitHub `main` branch for bootstrap CI until packaged releases exist, but do not treat that as permission to depend on internal library modules.
+- Do not widen public API seams casually; use the integration and validation specs as guardrails for follow-up core polish.
+- For downstream follow-on work, prefer the repo-local roadmap and spec docs in `EU5MinerGUI` or `EU5MinerMCP` instead of reopening completed foundation work here.

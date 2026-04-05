@@ -15,7 +15,7 @@ Detailed implementation guidance lives in `documents/specs/`.
 The roadmap stays intentionally high level.
 
 - `ROADMAP.md`: sequencing, release posture, and cross-repo order of operations
-- `documents/specs/`: execution-ready work packages for agents and contributors
+- `documents/specs/`: execution-ready work packages and reference specs
 - `documents/architecture.md`: design constraints and layering rules
 - `documents/development-environment.md`: local environment notes and validation commands
 
@@ -29,106 +29,94 @@ The roadmap stays intentionally high level.
 
 During the preview phase, the downstream `EU5MinerGUI` and `EU5MinerMCP` repos should treat the core library as their source of truth and should remain thin product layers over the curated `eu5miner` seams.
 
-- For bootstrap CI and coordinated preview work, the default downstream dependency posture is to consume `eu5miner` from the GitHub `main` branch until packaged releases exist.
-- That temporary dependency posture does not make `main` a stable free-for-all API surface; parser, VFS, and domain-model logic still belong in the core repo.
-- Downstream repos should prefer the documented stable seams such as the root package, grouped domain packages, and other explicitly curated entrypoints instead of reaching into internal modules.
-- If coordinated work across repos needs a new seam, add or refine it deliberately in the core library first, then update GUI or MCP to consume it. Do not widen the downstream stable boundary casually just because all three repos are moving together.
+- Downstream repos should prefer documented stable seams such as the root package, grouped domain packages, `eu5miner.inspection`, and `eu5miner.mods` instead of reaching into internal modules.
+- If coordinated work across repos needs a new seam, add or refine it deliberately in the core library first, then update GUI or MCP to consume it.
+- Preview coordination across repos does not make the whole core package a stable free-for-all API surface.
 
-## Baseline
+## Current Baseline
 
-The core library now has:
+The completed preview baseline now includes:
 
-- install discovery and merged VFS support
-- CST and semantic parsing helpers
-- broad typed domain adapter coverage
-- a thin CLI over the stable library seams
-- initial mod planning and apply workflows
-- CI, Dependabot, and cloud-agent scaffolding
+- the core integration pass, validation expansion, and three-repo alignment work
+- install discovery, merged VFS support, CST and semantic parsing helpers, and broad typed domain coverage in the core library
+- a stable read-only inspection facade and thin CLI over the intended library seams
+- initial mod planning and apply workflows in the core library
+- a structured read-only browser model in `EU5MinerGUI`
+- a typed MCP shell in `EU5MinerMCP` with `inspect-install`, `list-files`, `list-systems`, `report-system`, `plan-mod-update`, and `apply-mod-update`
 
-That means the next highest-value work is no longer "add another parser family by default". It is to stabilize the integrated surface and then use it from downstream products.
+The next work should build on those shipped seams instead of repeating foundation or repo-setup slices.
 
-## Roadmap Order
+## Completed Preview Slices
 
-### 1. Library Integration And API Polish
+1. Library integration and API polish baseline
+2. Validation expansion baseline
+3. Three-repo workspace and shared scaffolding baseline
+4. First GUI foundation plus structured read-only browsing
+5. First MCP foundation plus initial inspect, file, system, and mod workflow tools
 
-Goal: tighten the curated library surface so downstream repos can depend on it with confidence.
+## Next Recommended Slices
 
-When to do this:
+### 1. Core Preview Hardening From Downstream Usage
 
-- before substantial MCP or GUI feature work
-- before another minor version bump
+Goal: use real downstream consumption in GUI and MCP to tighten the preview library surface, docs, examples, and synthetic validation where rough edges still show.
 
-Spec:
+Use this slice for:
+
+- targeted API polish on already-curated seams
+- higher-level tests around inspection and mod workflows
+- documentation updates that keep the stable surface explicit
+
+Reference specs:
 
 - `documents/specs/library-integration-pass.md`
-
-### 2. Validation Expansion And Hardening
-
-Goal: make the preview line more reliable without forcing cloud agents to need a local EU5 install.
-
-When to do this:
-
-- immediately after or alongside the integration pass
-- before widening downstream automation
-
-Spec:
-
 - `documents/specs/validation-expansion.md`
 
-### 3. Multi-Repo Workspace Alignment
+### 2. GUI Read-Only Browsing Refinement
 
-Goal: standardize the library, GUI, and MCP repos so work can be split safely across cloud agents.
+Goal: iterate on the existing browser model rather than rebuild the shell.
 
-When to do this:
+Use this slice for:
 
-- after the current documentation and planning model is in place
-- before large parallel issue dispatch across repos
+- clearer browse flows around overview and report pages
+- better presentation of partial-install and unavailable-report states
+- thin GUI-side integration work that stays over `eu5miner.inspection`
 
-Spec:
+### 3. MCP Server Contract Consolidation
 
-- `documents/specs/repo-topology-and-scaffolding.md`
+Goal: tighten the current tool surface before promising larger MCP scope.
 
-### 4. MCP Product Foundation
+Use this slice for:
 
-Goal: build the first read-only MCP service as a thin adapter over stable library APIs.
+- clearer tool descriptors and request or response shaping
+- stronger separation between local shell behavior and future transport work
+- targeted additions only when backed by stable core seams
 
-When to do this:
+### 4. Cross-Repo Preview Release Alignment
 
-- after the library integration pass has identified the stable seams
-- in the dedicated MCP repo, not inside the core library package
+Goal: keep the three preview repos aligned as the next release is cut.
 
-Spec:
+Use this slice for:
 
-- `documents/specs/eu5miner-mcp-foundation.md`
-
-### 5. GUI Product Foundation
-
-Goal: build the first read-only GUI shell for browsing parsed data and system reports.
-
-When to do this:
-
-- after the library integration pass has stabilized grouped package entrypoints and helper reports
-- in the dedicated GUI repo, not inside the core library package
-
-Spec:
-
-- `documents/specs/eu5miner-gui-foundation.md`
+- dependency and changelog alignment
+- roadmap and README consistency across repos
+- release-ready validation and documentation polish
 
 ## Decision Rules
 
 Use these rules when choosing the next task:
 
-1. If the task affects stable imports, grouped package entrypoints, or helper naming, it belongs under the library integration pass.
-2. If the task is mostly synthetic tests, fixture design, CI, or validation policy, it belongs under validation expansion.
-3. If the task is repo scaffolding, workspace structure, or shared automation, it belongs under multi-repo alignment.
-4. If the task needs an install-backed product surface or user interface, it should happen in MCP or GUI only after the library surface is stable enough.
+1. If the task affects stable imports, grouped package entrypoints, inspection helpers, or mod workflow seams, it belongs in the core repo.
+2. If the task is mostly synthetic tests, fixture design, or validation policy for existing seams, it belongs under preview hardening in the core repo.
+3. If the task is about browse flow, report presentation, or install/session UX over existing library APIs, it belongs in the GUI repo.
+4. If the task is about MCP tool contracts, server boundaries, or transport readiness over existing library APIs, it belongs in the MCP repo.
+5. If coordinated work needs a new downstream seam, land that seam in the core library first and only then consume it downstream.
 
 ## Current Recommendation
 
 The immediate sequence should be:
 
-1. finish the documentation/spec refactor so planning stops being split across multiple legacy files
-2. complete the library integration pass and API polish
-3. expand validation in a cloud-agent-friendly way
-4. stand up the three-repo workspace and shared repo scaffolding
-5. start the first MCP and GUI foundation slices in parallel
+1. treat the current foundation specs as completed baseline and reference material
+2. use downstream usage to harden the preview library surface and release docs
+3. scope one focused GUI browse-refinement slice
+4. scope one focused MCP contract-consolidation slice
+5. cut the next preview release only after the cross-repo docs and dependency posture are aligned
