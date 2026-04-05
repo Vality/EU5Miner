@@ -42,13 +42,20 @@ If you need a one-off local setup instead, install development dependencies with
 uv sync --extra dev
 ```
 
-Run the initial checks:
+Run the required baseline validation:
 
 ```powershell
 $env:UV_PROJECT_ENVIRONMENT = "$env:USERPROFILE\.venvs\EU5Miner"
 uv run pytest
 uv run ruff check .
 uv run mypy src
+uv build
+```
+
+Run the broader optional sweep explicitly when you want wider install-backed coverage:
+
+```powershell
+uv run python -m pytest -m broad
 ```
 
 If `uv run` still fights filesystem behavior in the synced folder, the project-local fallback remains:

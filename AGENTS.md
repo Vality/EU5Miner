@@ -103,7 +103,7 @@ Current recommended focus:
 - widen validation in cloud-agent-friendly ways that do not require a local game install by default
 - keep MCP and GUI implementation in their own repos once the three-repo workspace is in place
 
-The optional broader validation sweep now lives behind `pytest -m broad`; keep it out of the normal fast iteration loop.
+The optional broader validation sweep now lives behind `uv run python -m pytest -m broad`; keep it out of the normal fast iteration loop.
 
 ## EU5 Install Facts
 
@@ -232,12 +232,19 @@ $env:UV_PROJECT_ENVIRONMENT = Join-Path $env:USERPROFILE '.venvs\EU5Miner'
 
 ## Validation Commands
 
-Use these before closing substantial work:
+Use these required baseline checks before closing substantial work:
 
 ```powershell
 uv run pytest
 uv run ruff check .
 uv run mypy src
+uv build
+```
+
+Run the broader optional sweep explicitly when you need wider install-backed coverage:
+
+```powershell
+uv run python -m pytest -m broad
 ```
 
 For focused domain work, run the relevant test module first.

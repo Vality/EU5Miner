@@ -23,17 +23,18 @@ Start with:
 
 ## Validation
 
-Run these before closing substantial work:
+Run these required baseline checks before closing substantial work:
 
 ```powershell
 uv run pytest
 uv run ruff check .
 uv run mypy src
+uv build
 ```
 
 Notes:
 
-- The optional broader install sweep lives behind `pytest -m broad`.
+- The optional broader install sweep lives behind `uv run python -m pytest -m broad`.
 - Real-file validation against a local EU5 install is preferred whenever a new domain or helper layer is introduced.
 - Most roadmap and spec work should remain executable without a local EU5 install unless the spec explicitly requires one.
 

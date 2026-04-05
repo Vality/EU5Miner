@@ -88,6 +88,17 @@ As the CST and writer arrive, the suite should add:
 - Keep the test corpus centered on the major moddable text file families.
 - Skip real-install tests cleanly if the install is unavailable.
 
+## Required Baseline Validation
+
+Use this install-independent baseline for the normal contributor and cloud-agent loop:
+
+```powershell
+uv run pytest
+uv run ruff check .
+uv run mypy src
+uv build
+```
+
 ## Optional Broad Sweep
 
 - Keep one marker-backed broad sweep for wider real-install coverage and cross-helper integration.

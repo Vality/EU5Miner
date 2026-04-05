@@ -54,11 +54,18 @@ Real-install coverage can be expanded later, but most work under this spec shoul
 
 ## Validation
 
+Required baseline validation:
+
 ```powershell
 uv run pytest
 uv run ruff check .
 uv run mypy src
 uv build
+```
+
+Optional broader sweep:
+
+```powershell
 uv run python -m pytest -m broad
 ```
 
