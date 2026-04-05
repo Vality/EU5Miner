@@ -7,10 +7,17 @@ The current state is intentionally thin: this repo is being prepared for paralle
 ## Status
 
 - The repo is scaffolded as a standalone Python application.
-- The first milestone is a launchable placeholder shell that proves the dependency and validation pipeline.
+- The first milestone is a launchable read-only shell that proves the dependency and validation pipeline.
 - Substantial parsing and domain logic should continue to live in the `eu5miner` library, not here.
 
 For now the dependency resolves directly from the `EU5Miner` GitHub repo so CI can run before a package-registry release exists.
+
+The current shell stays thin over `eu5miner.inspection`: it can list the stable supported systems without a local install, and when given an install root it can render an install summary plus a selected stable system report such as `map`.
+
+```powershell
+eu5miner-gui
+eu5miner-gui --install-root C:\EU5 --system map
+```
 
 ## Development
 
