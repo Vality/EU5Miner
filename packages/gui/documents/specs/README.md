@@ -10,10 +10,9 @@ The two specs in this folder describe the baseline that has already landed for t
 
 - `read-only-shell.md`: completed foundation for the launchable app shell and CLI entrypoint
 - `read-only-data-browser.md`: completed baseline for the structured overview and per-system report browser model
+- `entity-browser-pages.md`: completed browse refinement for covered entity list/detail pages over `eu5miner.inspection`
 
-No new follow-on GUI spec is checked in yet.
-
-The next spec for this repo should define one concrete read-only browse-refinement slice over the current browser model rather than reopening shell or scaffolding work.
+The next spec for this repo should refine presentation or navigation over the existing browser model rather than reopening shell or scaffolding work.
 
 ## Rules
 

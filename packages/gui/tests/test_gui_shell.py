@@ -15,7 +15,12 @@ def test_build_shell_message_lists_supported_systems_without_install() -> None:
     assert "Available pages:" in message
     assert "== Install overview ==" in message
     assert "Supported systems:" in message
+    assert "Browsable entity systems:" in message
     assert "- map: Map text, map CSV, and linked setup-location coverage." in message
+    assert (
+        "- economy: good - Browse goods definitions with market-facing fields and related "
+        "good links." in message
+    )
     assert "Install summary:" in message
     assert "- Not loaded." in message
 
@@ -23,12 +28,12 @@ def test_build_shell_message_lists_supported_systems_without_install() -> None:
 def test_build_browser_model_with_selected_system_builds_overview_and_report_pages(
     tmp_path: Path,
 ) -> None:
-    install_root = _make_test_install(tmp_path / "install")
+    install_root = _make_report_install(tmp_path / "install")
 
     model = build_browser_model(install_root, selected_system="map")
 
-    assert model.selected_page_key == "map"
-    assert model.page_keys() == ("overview", "map")
+    assert model.selected_page_key == "report:map"
+    assert model.page_keys() == ("overview", "report:map")
     assert model.pages[1].title == "map system report"
     assert model.pages[1].status == "ready"
     assert model.pages[1].sections[1].lines[0] == "default.map referenced files: 2"
@@ -39,26 +44,124 @@ def test_build_browser_model_with_selected_system_builds_overview_and_report_pag
 
 
 def test_build_browser_model_with_all_systems_loads_all_report_pages(tmp_path: Path) -> None:
-    install_root = _make_test_install(tmp_path / "install")
+    install_root = _make_report_install(tmp_path / "install")
 
     model = build_browser_model(install_root, include_all_systems=True)
 
     assert model.selected_page_key == "overview"
     assert model.page_keys() == (
         "overview",
-        "economy",
-        "diplomacy",
-        "government",
-        "religion",
-        "interface",
-        "map",
+        "report:economy",
+        "report:diplomacy",
+        "report:government",
+        "report:religion",
+        "report:interface",
+        "report:map",
+        "entities:economy",
+        "entities:government",
+        "entities:religion",
+        "entities:map",
     )
-    assert model.pages[0].sections[0].lines[2] == "Ready report pages: map"
-    assert model.pages[0].sections[0].lines[3] == (
-        "Unavailable report pages: economy, diplomacy, government, religion, interface"
+    assert "Ready report pages: report:map" in model.pages[0].sections[0].lines
+    assert (
+        "Unavailable report pages: report:economy, report:diplomacy, report:government, "
+        "report:religion, report:interface"
+    ) in model.pages[0].sections[0].lines
+    assert "Ready entity list pages: entities:map" in model.pages[0].sections[0].lines
+    assert (
+        "Unavailable entity list pages: entities:economy, entities:government, "
+        "entities:religion"
     )
     assert model.pages[1].status == "unavailable"
     assert model.pages[-1].status == "ready"
+
+
+def test_build_browser_model_with_selected_entity_system_builds_list_page(tmp_path: Path) -> None:
+    install_root = _make_entity_browsing_install(tmp_path / "install")
+
+    model = build_browser_model(install_root, selected_entity_system="religion")
+
+    assert model.selected_page_key == "entities:religion"
+    assert model.page_keys() == ("overview", "entities:religion")
+    assert model.pages[1].title == "religion entities"
+    assert model.pages[1].status == "ready"
+    assert model.pages[1].sections[0].lines == (
+        "Primary entity kind: religion",
+        "Entity count: 2",
+    )
+    assert any(
+        line.startswith("catholic [christian]:") for line in model.pages[1].sections[1].lines
+    )
+
+
+def test_build_browser_model_requires_entity_system_for_entity_name(tmp_path: Path) -> None:
+    install_root = _make_entity_browsing_install(tmp_path / "install")
+
+    try:
+        build_browser_model(install_root, selected_entity_name="stockholm")
+    except ValueError as exc:
+        assert str(exc) == "An entity name requires a selected entity system."
+    else:
+        raise AssertionError("Expected ValueError for missing selected_entity_system")
+
+
+def test_build_browser_model_with_selected_entity_name_builds_detail_page(
+    tmp_path: Path,
+) -> None:
+    install_root = _make_entity_browsing_install(tmp_path / "install")
+
+    model = build_browser_model(
+        install_root,
+        selected_entity_system="map",
+        selected_entity_name="stockholm",
+    )
+
+    assert model.selected_page_key == "entity:map:stockholm"
+    assert model.page_keys() == (
+        "overview",
+        "entities:map",
+        "entity:map:stockholm",
+    )
+    assert model.pages[2].title == "stockholm location"
+    assert "hierarchy_path: world, region, area, province" in model.pages[2].sections[1].lines
+    assert "country_reference -> map/country: SWE" in model.pages[2].sections[2].lines
+
+
+def test_build_browser_model_entity_pages_cover_curated_systems(tmp_path: Path) -> None:
+    install_root = _make_entity_browsing_install(tmp_path / "install")
+
+    expectations = {
+        "economy": (
+            "iron [raw_material]: method=mining; default_market_price=3",
+            "default_market_price: 3",
+            "demand_add -> economy/good: grain",
+        ),
+        "government": (
+            "monarchy [legitimacy]: default_estate=sample_estate; heir_selections=1",
+            "government_power: legitimacy",
+            "default_estate -> government/estate: sample_estate",
+        ),
+        "religion": (
+            "catholic [christian]: focuses=1",
+            "group: christian",
+            "religious_focus -> religion/religious_focus: sample_focus",
+        ),
+        "map": (
+            "stockholm [province]: capital_of=SWE; setup=yes",
+            "has_location_setup: yes",
+            "capital_of -> map/country: SWE",
+        ),
+    }
+
+    for system, (summary_line, field_line, reference_line) in expectations.items():
+        model = build_browser_model(
+            install_root,
+            selected_entity_system=system,
+            selected_entity_name=_first_entity_name_for(system),
+        )
+        assert summary_line in model.pages[1].sections[1].lines
+        assert field_line in model.pages[2].sections[1].lines
+        assert reference_line in model.pages[2].sections[2].lines
 
 
 def test_cli_main_returns_zero(capsys) -> None:
@@ -76,13 +179,13 @@ def test_package_main_returns_zero(capsys) -> None:
 
 
 def test_cli_selected_system_report_from_synthetic_install(tmp_path: Path, capsys) -> None:
-    install_root = _make_test_install(tmp_path / "install")
+    install_root = _make_report_install(tmp_path / "install")
 
     exit_code = main(["--install-root", str(install_root), "--system", "map"])
 
     captured = capsys.readouterr()
     assert exit_code == 0
-    assert "Selected page: map" in captured.out
+    assert "Selected page: report:map" in captured.out
     assert "== map system report ==" in captured.out
     assert "Representative files:" in captured.out
     assert "- map_default" in captured.out
@@ -91,15 +194,16 @@ def test_cli_selected_system_report_from_synthetic_install(tmp_path: Path, capsy
 
 
 def test_cli_all_systems_from_synthetic_install(tmp_path: Path, capsys) -> None:
-    install_root = _make_test_install(tmp_path / "install")
+    install_root = _make_report_install(tmp_path / "install")
 
     exit_code = main(["--install-root", str(install_root), "--all-systems"])
 
     captured = capsys.readouterr()
     assert exit_code == 0
     assert "Selected page: overview" in captured.out
-    assert "- economy: economy system report (unavailable)" in captured.out
-    assert "- map: map system report" in captured.out
+    assert "- report:economy: economy system report (unavailable)" in captured.out
+    assert "- report:map: map system report" in captured.out
+    assert "- entities:map: map entities" in captured.out
     assert "== economy system report ==" in captured.out
     assert "- Unavailable from selected install." in captured.out
     assert "== diplomacy system report ==" in captured.out
@@ -107,9 +211,33 @@ def test_cli_all_systems_from_synthetic_install(tmp_path: Path, capsys) -> None:
     assert "== religion system report ==" in captured.out
     assert "== interface system report ==" in captured.out
     assert "== map system report ==" in captured.out
+    assert "== map entities ==" in captured.out
 
 
-def _make_test_install(install_root: Path) -> Path:
+def test_cli_selected_entity_detail_from_synthetic_install(tmp_path: Path, capsys) -> None:
+    install_root = _make_entity_browsing_install(tmp_path / "install")
+
+    exit_code = main(
+        [
+            "--install-root",
+            str(install_root),
+            "--entity-system",
+            "government",
+            "--entity",
+            "monarchy",
+        ]
+    )
+
+    captured = capsys.readouterr()
+    assert exit_code == 0
+    assert "Selected page: entity:government:monarchy" in captured.out
+    assert "== government entities ==" in captured.out
+    assert "== monarchy government_type ==" in captured.out
+    assert "- government_power: legitimacy" in captured.out
+    assert "- default_estate -> government/estate: sample_estate" in captured.out
+
+
+def _make_report_install(install_root: Path) -> Path:
     game_dir = install_root / "game"
     for phase_name in ("loading_screen", "main_menu", "in_game"):
         (game_dir / phase_name).mkdir(parents=True, exist_ok=True)
@@ -160,6 +288,145 @@ def _make_test_install(install_root: Path) -> Path:
         "}\n",
     )
     return install_root
+
+
+def _make_entity_browsing_install(install_root: Path) -> Path:
+    game_dir = install_root / "game"
+    for phase_name in ("loading_screen", "main_menu", "in_game"):
+        (game_dir / phase_name).mkdir(parents=True, exist_ok=True)
+    (game_dir / "dlc").mkdir(parents=True, exist_ok=True)
+    (game_dir / "mod").mkdir(parents=True, exist_ok=True)
+
+    for relative_path, text in _entity_fixture_texts().items():
+        _write_text(game_dir / relative_path, text)
+
+    return install_root
+
+
+def _entity_fixture_texts() -> dict[Path, str]:
+    return {
+        Path("in_game/common/goods/00_goods.txt"): (
+            "iron = {\n"
+            "    method = mining\n"
+            "    category = raw_material\n"
+            "    default_market_price = 3\n"
+            "    demand_add = { grain = 0.5 }\n"
+            "}\n"
+            "grain = { method = farming category = food }\n"
+        ),
+        Path("in_game/common/prices/00_prices.txt"): "build_road = { iron = 10 }\n",
+        Path("in_game/common/generic_actions/00_actions.txt"): (
+            "create_market = {\n"
+            "    type = owncountry\n"
+            "    select_trigger = { looking_for_a = market }\n"
+            "}\n"
+        ),
+        Path("in_game/common/attribute_columns/00_columns.txt"): (
+            "market = { name = { widget = default_text_column } }\n"
+        ),
+        Path("in_game/common/government_types/00_government_types.txt"): (
+            "monarchy = {\n"
+            "    heir_selection = cognatic\n"
+            "    government_power = legitimacy\n"
+            "    default_character_estate = sample_estate\n"
+            "}\n"
+        ),
+        Path("in_game/common/government_reforms/00_reforms.txt"): (
+            "sample_reform = { government = monarchy years = 2 country_modifier = { add = 1 } }\n"
+        ),
+        Path("in_game/common/laws/00_laws.txt"): (
+            "sample_law = {\n"
+            "    law_category = administrative\n"
+            "    law_gov_group = monarchy\n"
+            "    policy_a = { years = 2 country_modifier = { add = 1 } "
+            "estate_preferences = { sample_estate } }\n"
+            "}\n"
+        ),
+        Path("in_game/common/estates/00_estates.txt"): (
+            "sample_estate = { color = pop_nobles power_per_pop = 25 tax_per_pop = 100 "
+            "ruler = yes }\n"
+        ),
+        Path("in_game/common/estate_privileges/00_privileges.txt"): (
+            "sample_privilege = { estate = sample_estate country_modifier = { add = 1 } }\n"
+        ),
+        Path("in_game/common/parliament_types/00_parliament_types.txt"): (
+            "sample_parliament = { type = country modifier = { add = 1 } }\n"
+        ),
+        Path("in_game/common/parliament_agendas/00_agendas.txt"): (
+            "sample_agenda = { type = country estate = sample_estate chance = 10 "
+            "on_accept = { add = 1 } }\n"
+        ),
+        Path("in_game/common/parliament_issues/00_issues.txt"): (
+            "sample_issue = { type = country estate = sample_estate chance = 0 "
+            "on_debate_passed = { add = 1 } }\n"
+        ),
+        Path("in_game/common/religions/00_religions.txt"): (
+            "catholic = {\n"
+            "    group = christian\n"
+            "    factions = { sample_faction }\n"
+            "    religious_focuses = { sample_focus }\n"
+            "    religious_school = sample_school\n"
+            "    religious_aspects = { sample_aspect }\n"
+            "    tags = { catholic_gfx }\n"
+            "}\n"
+            "orthodox = { group = christian }\n"
+        ),
+        Path("in_game/common/religious_aspects/00_aspects.txt"): (
+            "sample_aspect = { religion = catholic enabled = { always = yes } modifier = "
+            "{ add = 1 } opinions = { sample_aspect = 10 } }\n"
+        ),
+        Path("in_game/common/religious_factions/00_factions.txt"): (
+            "sample_faction = { visible = { always = yes } enabled = { always = yes } "
+            "actions = { action_a action_b } }\n"
+        ),
+        Path("in_game/common/religious_focuses/00_focuses.txt"): (
+            "sample_focus = { monthly_progress = { add = 1 } modifier_on_completion = "
+            "{ add = 1 } }\n"
+        ),
+        Path("in_game/common/religious_schools/00_schools.txt"): (
+            "sample_school = { color = rgb { 1 2 3 } enabled_for_country = { always = "
+            "yes } modifier = { add = 1 } }\n"
+        ),
+        Path("in_game/common/religious_figures/00_figures.txt"): (
+            "sample_figure = { enabled_for_religion = { group = religion_group:christian } }\n"
+        ),
+        Path("in_game/common/holy_sites/00_holy_sites.txt"): (
+            "sample_site = { location = rome type = temple importance = 4 religions = "
+            "{ catholic } }\n"
+        ),
+        Path("in_game/map_data/definitions.txt"): (
+            "world = {\n"
+            "    region = {\n"
+            "        area = {\n"
+            "            province = { stockholm }\n"
+            "        }\n"
+            "    }\n"
+            "}\n"
+        ),
+        Path("main_menu/setup/start/10_countries.txt"): (
+            "countries = {\n"
+            "    countries = {\n"
+            "        SWE = {\n"
+            "            own_control_core = { stockholm }\n"
+            "            capital = stockholm\n"
+            "        }\n"
+            "    }\n"
+            "}\n"
+        ),
+        Path("main_menu/setup/start/21_locations.txt"): (
+            "locations = {\n    stockholm = { timed_modifiers = { } }\n}\n"
+        ),
+    }
+
+
+def _first_entity_name_for(system: str) -> str:
+    names = {
+        "economy": "iron",
+        "government": "monarchy",
+        "religion": "catholic",
+        "map": "stockholm",
+    }
+    return names[system]
 
 
 def _write_text(path: Path, text: str) -> None:
