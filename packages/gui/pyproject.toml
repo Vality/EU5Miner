@@ -29,6 +29,9 @@ eu5miner-gui = "eu5miner_gui.cli:main"
 [tool.hatch.build.targets.wheel]
 packages = ["src/eu5miner_gui"]
 
+[tool.hatch.build.targets.wheel.force-include]
+"src/eu5miner_gui/__main__.py" = "__main__.py"
+
 [tool.hatch.metadata]
 allow-direct-references = true
 

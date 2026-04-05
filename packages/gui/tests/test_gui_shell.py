@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from eu5miner_gui.__main__ import main as package_main
 from eu5miner_gui.app import build_shell_message
 from eu5miner_gui.cli import main
 
@@ -17,6 +18,13 @@ def test_build_shell_message_lists_supported_systems_without_install() -> None:
 
 def test_cli_main_returns_zero(capsys) -> None:
     assert main([]) == 0
+    captured = capsys.readouterr()
+    assert "EU5MinerGUI read-only shell ready." in captured.out
+    assert "Supported systems:" in captured.out
+
+
+def test_package_main_returns_zero(capsys) -> None:
+    assert package_main([]) == 0
     captured = capsys.readouterr()
     assert "EU5MinerGUI read-only shell ready." in captured.out
     assert "Supported systems:" in captured.out
