@@ -2,6 +2,10 @@
 
 EU5Miner is a text-first Python library for reading, indexing, and planning edits to Europa Universalis V data and mod files.
 
+This is an unofficial community project. It is not affiliated with, endorsed by, or sponsored by Paradox Interactive or the Europa Universalis V development team.
+
+The repository and published package do not include game assets. Real-file validation and many install-backed workflows expect a locally available EU5 installation.
+
 Release `0.5.0` is the first public preview release.
 
 The current release focuses on the major moddable text-based file families:
@@ -21,6 +25,7 @@ The `0.5.x` line should be treated as a public preview.
 - The root package, grouped domain packages, and the `eu5miner.mods` facade are intended for real use.
 - The CLI is intended as a thin convenience surface over the same library APIs.
 - Additional helper layers, future editing surfaces, and the planned MCP and GUI packages are still expected to evolve before `1.0`.
+- API coverage is intentionally incomplete relative to the full game data surface; missing families and API adjustments should still be expected during the preview line.
 
 In practice, this release is suitable for install inspection, virtual filesystem queries, representative parsing, typed domain reads, and the current mod update planning and application workflow. It is not yet a promise that every exported helper will remain unchanged across future minor releases.
 
