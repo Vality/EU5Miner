@@ -52,21 +52,61 @@ def main(argv: Sequence[str] | None = None) -> int:
         ),
     )
     parser.add_argument(
+        "--page",
+        default=None,
+        help=(
+            "Explicit page key to focus, such as overview, report:map, "
+            "entities:religion, or entity:map:stockholm."
+        ),
+    )
+    parser.add_argument(
+        "--list-pages",
+        action="store_true",
+        help="Render only the page index for the current browser session.",
+    )
+    parser.add_argument(
+        "--page-filter",
+        default=None,
+        help=(
+            "Case-insensitive substring filter over loaded page keys, titles, "
+            "descriptions, and section lines."
+        ),
+    )
+    parser.add_argument(
+        "--show-all-pages",
+        action="store_true",
+        help="Render all matched pages instead of only the selected page.",
+    )
+    parser.add_argument(
         "--language",
         default="english",
         help="Localization language used by language-backed system reports.",
     )
     args = parser.parse_args(list(argv) if argv is not None else None)
-    if args.entity is not None and args.entity_system is None:
-        parser.error("--entity requires --entity-system")
-    print(
-        launch_app(
-            args.install_root,
-            selected_system=args.system,
-            selected_entity_system=args.entity_system,
-            selected_entity_name=args.entity,
-            include_all_systems=args.all_systems,
-            language=args.language,
+    if args.list_pages and args.show_all_pages:
+        parser.error("--list-pages cannot be combined with --show-all-pages")
+
+    try:
+        print(
+            launch_app(
+                args.install_root,
+                selected_system=args.system,
+                selected_entity_system=args.entity_system,
+                selected_entity_name=args.entity,
+                include_all_systems=args.all_systems,
+                language=args.language,
+                page_key=args.page,
+                page_filter=args.page_filter,
+                list_pages_only=args.list_pages,
+                show_all_pages=args.show_all_pages,
+            )
         )
-    )
+    except (KeyError, ValueError) as exc:
+        parser.error(_format_cli_error(exc))
     return 0
+
+
+def _format_cli_error(error: Exception) -> str:
+    if isinstance(error, KeyError) and len(error.args) == 1:
+        return str(error.args[0])
+    return str(error)

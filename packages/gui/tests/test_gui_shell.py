@@ -13,6 +13,7 @@ def test_build_shell_message_lists_supported_systems_without_install() -> None:
 
     assert "EU5MinerGUI read-only browser ready." in message
     assert "Available pages:" in message
+    assert "* overview: Install overview" in message
     assert "== Install overview ==" in message
     assert "Supported systems:" in message
     assert "Browsable entity systems:" in message
@@ -186,6 +187,7 @@ def test_cli_selected_system_report_from_synthetic_install(tmp_path: Path, capsy
     captured = capsys.readouterr()
     assert exit_code == 0
     assert "Selected page: report:map" in captured.out
+    assert "* report:map: map system report" in captured.out
     assert "== map system report ==" in captured.out
     assert "Representative files:" in captured.out
     assert "- map_default" in captured.out
@@ -201,17 +203,14 @@ def test_cli_all_systems_from_synthetic_install(tmp_path: Path, capsys) -> None:
     captured = capsys.readouterr()
     assert exit_code == 0
     assert "Selected page: overview" in captured.out
+    assert "* overview: Install overview" in captured.out
     assert "- report:economy: economy system report (unavailable)" in captured.out
     assert "- report:map: map system report" in captured.out
     assert "- entities:map: map entities" in captured.out
-    assert "== economy system report ==" in captured.out
-    assert "- Unavailable from selected install." in captured.out
-    assert "== diplomacy system report ==" in captured.out
-    assert "== government system report ==" in captured.out
-    assert "== religion system report ==" in captured.out
-    assert "== interface system report ==" in captured.out
-    assert "== map system report ==" in captured.out
-    assert "== map entities ==" in captured.out
+    assert "== Install overview ==" in captured.out
+    assert "== economy system report ==" not in captured.out
+    assert "== map system report ==" not in captured.out
+    assert "== map entities ==" not in captured.out
 
 
 def test_cli_selected_entity_detail_from_synthetic_install(tmp_path: Path, capsys) -> None:
@@ -231,10 +230,100 @@ def test_cli_selected_entity_detail_from_synthetic_install(tmp_path: Path, capsy
     captured = capsys.readouterr()
     assert exit_code == 0
     assert "Selected page: entity:government:monarchy" in captured.out
-    assert "== government entities ==" in captured.out
+    assert "- entities:government: government entities" in captured.out
     assert "== monarchy government_type ==" in captured.out
     assert "- government_power: legitimacy" in captured.out
     assert "- default_estate -> government/estate: sample_estate" in captured.out
+
+
+def test_build_shell_message_page_key_selects_one_page_from_all_systems(tmp_path: Path) -> None:
+    install_root = _make_report_install(tmp_path / "install")
+
+    message = build_shell_message(
+        install_root,
+        include_all_systems=True,
+        page_key="report:map",
+    )
+
+    assert "Selected page: report:map" in message
+    assert "* report:map: map system report" in message
+    assert "== map system report ==" in message
+    assert "== Install overview ==" not in message
+    assert "== economy system report ==" not in message
+    assert "== map entities ==" not in message
+
+
+def test_build_shell_message_filter_limits_visible_pages(tmp_path: Path) -> None:
+    install_root = _make_entity_browsing_install(tmp_path / "install")
+
+    message = build_shell_message(
+        install_root,
+        selected_entity_system="religion",
+        page_filter="catholic",
+    )
+
+    assert "Selected page: entities:religion" in message
+    assert "Page filter: catholic" in message
+    assert "Available pages (1 of 2 loaded):" in message
+    assert "* entities:religion: religion entities" in message
+    assert "== religion entities ==" in message
+    assert "== Install overview ==" not in message
+
+
+def test_build_shell_message_list_pages_only_hides_page_content(tmp_path: Path) -> None:
+    install_root = _make_report_install(tmp_path / "install")
+
+    message = build_shell_message(
+        install_root,
+        include_all_systems=True,
+        list_pages_only=True,
+    )
+
+    assert "Available pages:" in message
+    assert "Index mode: page content hidden." in message
+    assert "== Install overview ==" not in message
+    assert "== map system report ==" not in message
+
+
+def test_cli_page_key_can_open_entity_detail_without_explicit_entity_flags(
+    tmp_path: Path,
+    capsys,
+) -> None:
+    install_root = _make_entity_browsing_install(tmp_path / "install")
+
+    exit_code = main(
+        [
+            "--install-root",
+            str(install_root),
+            "--page",
+            "entity:government:monarchy",
+        ]
+    )
+
+    captured = capsys.readouterr()
+    assert exit_code == 0
+    assert "Selected page: entity:government:monarchy" in captured.out
+    assert "* entity:government:monarchy: monarchy government_type" in captured.out
+    assert "== monarchy government_type ==" in captured.out
+
+
+def test_cli_show_all_pages_restores_full_page_dump(tmp_path: Path, capsys) -> None:
+    install_root = _make_report_install(tmp_path / "install")
+
+    exit_code = main(
+        ["--install-root", str(install_root), "--all-systems", "--show-all-pages"]
+    )
+
+    captured = capsys.readouterr()
+    assert exit_code == 0
+    assert "== Install overview ==" in captured.out
+    assert "== economy system report ==" in captured.out
+    assert "== diplomacy system report ==" in captured.out
+    assert "== government system report ==" in captured.out
+    assert "== religion system report ==" in captured.out
+    assert "== interface system report ==" in captured.out
+    assert "== map system report ==" in captured.out
+    assert "== map entities ==" in captured.out
 
 
 def _make_report_install(install_root: Path) -> Path:

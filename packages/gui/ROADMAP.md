@@ -10,6 +10,7 @@ The current preview baseline now includes:
 - a launchable CLI and app shell
 - a structured read-only browser model with an overview page and per-system report pages
 - browsing for one selected system or all supported systems from a chosen install
+- explicit page-key focus, page index mode, and lightweight filtering over loaded browser pages
 - graceful unavailable-page handling for partial or synthetic installs
 
 That means the next work should refine the shipped read-only browser, not restart shell or scaffolding work.

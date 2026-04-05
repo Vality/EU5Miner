@@ -25,6 +25,18 @@ class BrowserPage:
 
 
 @dataclass(frozen=True)
+class BrowserPageSelection:
+    page_key: str
+    selected_system: str | None = None
+    selected_entity_system: str | None = None
+    selected_entity_name: str | None = None
+
+    @property
+    def requires_install(self) -> bool:
+        return self.page_key != "overview"
+
+
+@dataclass(frozen=True)
 class BrowserModel:
     supported_systems: tuple[inspection.SystemInfo, ...]
     entity_systems: tuple[inspection.EntitySystemInfo, ...]
@@ -33,6 +45,46 @@ class BrowserModel:
 
     def page_keys(self) -> tuple[str, ...]:
         return tuple(page.key for page in self.pages)
+
+    def get_page(self, key: str) -> BrowserPage | None:
+        for page in self.pages:
+            if page.key == key:
+                return page
+        return None
+
+
+def parse_browser_page_selection(page_key: str) -> BrowserPageSelection:
+    normalized_page_key = page_key.strip()
+    if not normalized_page_key:
+        raise KeyError("Page key cannot be empty.")
+
+    if normalized_page_key == "overview":
+        return BrowserPageSelection(page_key="overview")
+
+    page_parts = normalized_page_key.split(":")
+    if len(page_parts) == 2 and page_parts[0] == "report" and page_parts[1]:
+        return BrowserPageSelection(
+            page_key=normalized_page_key,
+            selected_system=page_parts[1],
+        )
+    if len(page_parts) == 2 and page_parts[0] == "entities" and page_parts[1]:
+        return BrowserPageSelection(
+            page_key=normalized_page_key,
+            selected_entity_system=page_parts[1],
+        )
+    if len(page_parts) >= 3 and page_parts[0] == "entity" and page_parts[1]:
+        entity_name = ":".join(page_parts[2:]).strip()
+        if entity_name:
+            return BrowserPageSelection(
+                page_key=normalized_page_key,
+                selected_entity_system=page_parts[1],
+                selected_entity_name=entity_name,
+            )
+
+    raise KeyError(
+        "Unknown page key format. Valid examples: overview, report:map, "
+        "entities:religion, entity:map:stockholm"
+    )
 
 
 def build_browser_model(
@@ -148,19 +200,59 @@ def build_browser_model(
     )
 
 
-def render_browser_model(model: BrowserModel) -> str:
+def render_browser_model(
+    model: BrowserModel,
+    *,
+    page_key: str | None = None,
+    page_filter: str | None = None,
+    list_pages_only: bool = False,
+    show_all_pages: bool = False,
+) -> str:
+    normalized_page_filter = _normalize_optional_text(page_filter)
+    visible_pages = _filter_pages(model.pages, normalized_page_filter)
+    selected_page = _resolve_rendered_page(
+        model,
+        visible_pages,
+        page_key=page_key,
+        page_filter=normalized_page_filter,
+    )
+    selected_page_label = selected_page.key if selected_page is not None else "none"
+    page_index_title = "Available pages:"
+    if normalized_page_filter is not None:
+        page_index_title = (
+            f"Available pages ({len(visible_pages)} of {len(model.pages)} loaded):"
+        )
+
     lines = [
         "EU5MinerGUI read-only browser ready.",
         "Stable inspection facade available.",
-        f"Selected page: {model.selected_page_key}",
-        "Available pages:",
-        *(
-            f"- {page.key}: {page.title}{_format_page_status_suffix(page)}"
-            for page in model.pages
-        ),
+        f"Selected page: {selected_page_label}",
     ]
+    if normalized_page_filter is not None:
+        lines.append(f"Page filter: {normalized_page_filter}")
+    lines.extend(
+        (
+            page_index_title,
+            *(
+                f"{'*' if selected_page is not None and page.key == selected_page.key else '-'} "
+                f"{page.key}: {page.title}{_format_page_status_suffix(page)}"
+                for page in visible_pages
+            ),
+        )
+    )
 
-    for page in model.pages:
+    if not visible_pages:
+        lines.extend(("", "No pages matched the current filter."))
+        return "\n".join(lines)
+
+    if list_pages_only:
+        lines.extend(("", "Index mode: page content hidden."))
+        return "\n".join(lines)
+
+    pages_to_render = visible_pages if show_all_pages else (selected_page,)
+    for page in pages_to_render:
+        if page is None:
+            continue
         lines.extend(("", f"== {page.title} ==", page.description))
         for section in page.sections:
             lines.append(f"{section.title}:")
@@ -588,6 +680,64 @@ def _format_source_summary(source: inspection.InstallSourceSummary) -> str:
 
 def _format_page_name_list(page_names: tuple[str, ...]) -> str:
     return ", ".join(page_names) if page_names else "none"
+
+
+def _normalize_optional_text(value: str | None) -> str | None:
+    if value is None:
+        return None
+    normalized_value = value.strip()
+    return normalized_value or None
+
+
+def _filter_pages(
+    pages: tuple[BrowserPage, ...],
+    page_filter: str | None,
+) -> tuple[BrowserPage, ...]:
+    if page_filter is None:
+        return pages
+
+    normalized_filter = page_filter.casefold()
+    return tuple(page for page in pages if _page_matches_filter(page, normalized_filter))
+
+
+def _page_matches_filter(page: BrowserPage, normalized_filter: str) -> bool:
+    page_text = [page.key, page.title, page.description]
+    for section in page.sections:
+        page_text.append(section.title)
+        page_text.extend(section.lines)
+    return any(normalized_filter in line.casefold() for line in page_text)
+
+
+def _resolve_rendered_page(
+    model: BrowserModel,
+    visible_pages: tuple[BrowserPage, ...],
+    *,
+    page_key: str | None,
+    page_filter: str | None,
+) -> BrowserPage | None:
+    visible_page_keys = {page.key for page in visible_pages}
+
+    if page_key is not None:
+        requested_page = model.get_page(page_key)
+        if requested_page is None:
+            raise KeyError(
+                f"Unknown page key '{page_key}'. Available pages: "
+                f"{', '.join(model.page_keys())}"
+            )
+        if requested_page.key not in visible_page_keys:
+            if page_filter is None:
+                raise KeyError(f"Page key '{page_key}' is not loaded in the current session.")
+            raise KeyError(
+                f"Page key '{page_key}' does not match page filter '{page_filter}'."
+            )
+        return requested_page
+
+    default_page = model.get_page(model.selected_page_key)
+    if default_page is not None and default_page.key in visible_page_keys:
+        return default_page
+    if visible_pages:
+        return visible_pages[0]
+    return None
 
 
 def _resolve_selected_page_key(
