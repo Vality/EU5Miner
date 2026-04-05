@@ -8,9 +8,12 @@ import pytest
 from eu5miner.inspection import (
     format_install_summary,
     format_system_report,
+    get_system_entity,
     get_system_report,
     inspect_install,
+    list_entity_systems,
     list_supported_systems,
+    list_system_entities,
     summarize_install,
 )
 from eu5miner.source import ContentPhase, GameInstall
@@ -54,12 +57,31 @@ def test_list_supported_systems_returns_expected_names() -> None:
     assert names == ("economy", "diplomacy", "government", "religion", "interface", "map")
 
 
+def test_list_entity_systems_returns_expected_names_and_primary_kinds() -> None:
+    systems = tuple((system.name, system.primary_entity_kind) for system in list_entity_systems())
+
+    assert systems == (
+        ("economy", "good"),
+        ("government", "government_type"),
+        ("religion", "religion"),
+        ("map", "location"),
+    )
+
+
 def test_get_system_report_rejects_unknown_system(tmp_path: Path) -> None:
     install_root = _make_test_install(tmp_path / "install")
     install = GameInstall.discover(install_root)
 
     with pytest.raises(KeyError, match="Unknown system 'unknown'"):
         get_system_report(install, "unknown")
+
+
+def test_list_system_entities_rejects_unknown_system(tmp_path: Path) -> None:
+    install_root = _make_test_install(tmp_path / "install")
+    install = GameInstall.discover(install_root)
+
+    with pytest.raises(KeyError, match="Unknown entity system 'unknown'"):
+        list_system_entities(install, "unknown")
 
 
 @pytest.mark.parametrize(
@@ -94,6 +116,47 @@ def test_get_system_report_and_formatting_are_install_independent(
     assert "Representative files:" in formatted
     assert "Summary:" in formatted
     assert expected_summary_fragment in formatted
+
+
+@pytest.mark.parametrize(
+    ("system", "entity_name", "entity_kind", "group_name", "field_name"),
+    [
+        ("economy", "iron", "good", "raw_material", "default_market_price"),
+        ("government", "monarchy", "government_type", "legitimacy", "government_power"),
+        ("religion", "catholic", "religion", "christian", "group"),
+        ("map", "stockholm", "location", "province", "hierarchy_path"),
+    ],
+)
+def test_entity_browsing_is_install_independent_for_curated_subset(
+    tmp_path: Path,
+    system: str,
+    entity_name: str,
+    entity_kind: str,
+    group_name: str,
+    field_name: str,
+) -> None:
+    install = _make_synthetic_report_install(tmp_path / system, system)
+
+    summaries = list_system_entities(install, system)
+    detail = get_system_entity(install, system, entity_name)
+
+    assert any(
+        summary.name == entity_name
+        and summary.entity_kind == entity_kind
+        and summary.group == group_name
+        for summary in summaries
+    )
+    assert detail.summary.system == system
+    assert detail.summary.name == entity_name
+    assert detail.summary.entity_kind == entity_kind
+    assert any(field.name == field_name for field in detail.fields)
+
+
+def test_get_system_entity_rejects_unknown_name(tmp_path: Path) -> None:
+    install = _make_synthetic_report_install(tmp_path / "economy", "economy")
+
+    with pytest.raises(KeyError, match="Unknown entity 'missing_good' for system 'economy'"):
+        get_system_entity(install, "economy", "missing_good")
 
 
 def _make_test_install(install_root: Path) -> Path:

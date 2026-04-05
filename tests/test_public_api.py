@@ -162,6 +162,11 @@ from eu5miner.domains import (
 )
 from eu5miner.formats.semantic import SemanticScalar
 from eu5miner.inspection import (
+    EntityDetail,
+    EntityField,
+    EntityReference,
+    EntitySummary,
+    EntitySystemInfo,
     InstallPhaseRoot,
     InstallSourceSummary,
     InstallSummary,
@@ -169,9 +174,12 @@ from eu5miner.inspection import (
     SystemReport,
     format_install_summary,
     format_system_report,
+    get_system_entity,
     get_system_report,
     inspect_install,
+    list_entity_systems,
     list_supported_systems,
+    list_system_entities,
     summarize_install,
 )
 
@@ -199,6 +207,11 @@ EXPECTED_ROOT_EXPORTS = {
 }
 
 EXPECTED_INSPECTION_EXPORTS = {
+    "EntityDetail",
+    "EntityField",
+    "EntityReference",
+    "EntitySummary",
+    "EntitySystemInfo",
     "InstallPhaseRoot",
     "InstallSourceSummary",
     "InstallSummary",
@@ -206,8 +219,11 @@ EXPECTED_INSPECTION_EXPORTS = {
     "SystemReport",
     "format_install_summary",
     "format_system_report",
+    "get_system_entity",
     "get_system_report",
     "inspect_install",
+    "list_entity_systems",
+    "list_system_entities",
     "list_supported_systems",
     "summarize_install",
 }
@@ -236,6 +252,11 @@ def test_root_package_keeps_domain_helpers_out_of_root_surface() -> None:
 
 def test_inspection_module_exports_stable_read_only_facade() -> None:
     assert set(inspection_api.__all__) == EXPECTED_INSPECTION_EXPORTS
+    assert EntitySystemInfo.__name__ == "EntitySystemInfo"
+    assert EntitySummary.__name__ == "EntitySummary"
+    assert EntityField.__name__ == "EntityField"
+    assert EntityReference.__name__ == "EntityReference"
+    assert EntityDetail.__name__ == "EntityDetail"
     assert InstallPhaseRoot.__name__ == "InstallPhaseRoot"
     assert InstallSourceSummary.__name__ == "InstallSourceSummary"
     assert InstallSummary.__name__ == "InstallSummary"
@@ -244,7 +265,10 @@ def test_inspection_module_exports_stable_read_only_facade() -> None:
     assert callable(inspect_install)
     assert callable(summarize_install)
     assert callable(format_install_summary)
+    assert callable(list_entity_systems)
+    assert callable(list_system_entities)
     assert callable(list_supported_systems)
+    assert callable(get_system_entity)
     assert callable(get_system_report)
     assert callable(format_system_report)
 

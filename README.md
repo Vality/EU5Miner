@@ -117,15 +117,18 @@ update = plan_mod_update(
 
 The root package does not also re-export install inspection helpers or domain parsing helpers. Keep those imports explicit so downstream code can depend on the intended stable seams.
 
-For downstream GUI and MCP consumers that need a stable read-only seam for install discovery and high-level system summaries, use `eu5miner.inspection` instead of reaching into CLI helpers:
+For downstream GUI and MCP consumers that need a stable read-only seam for install discovery, high-level system summaries, and initial entity browsing, use `eu5miner.inspection` instead of reaching into CLI helpers:
 
 ```python
 from eu5miner import GameInstall
 from eu5miner.inspection import (
+	get_system_entity,
 	format_install_summary,
 	format_system_report,
 	get_system_report,
 	inspect_install,
+	list_entity_systems,
+	list_system_entities,
 	list_supported_systems,
 )
 
@@ -138,9 +141,20 @@ economy_report = get_system_report(
 	"economy",
 )
 print(format_system_report(economy_report))
+
+entity_systems = list_entity_systems()
+economy_entities = list_system_entities(
+	GameInstall.discover(summary.root),
+	"economy",
+)
+iron = get_system_entity(
+	GameInstall.discover(summary.root),
+	"economy",
+	"iron",
+)
 ```
 
-This inspection facade is the stable public entrypoint for install summaries, available system listing, and install-backed system report retrieval. The CLI remains a thin wrapper over that library surface.
+This inspection facade is the stable public entrypoint for install summaries, available system listing, install-backed system report retrieval, and a deliberately narrow entity-browsing seam. The first browseable subset is intentionally limited to one primary entity family per system: `economy` goods, `government` government types, `religion` religions, and `map` linked locations. That keeps the preview API useful for GUI and MCP read-only flows without overcommitting to a generic graph API across every catalog family yet. The CLI remains a thin wrapper over the same library surface.
 
 For domain adapters and higher-level helpers, prefer grouped package entrypoints when you are working within one concept area. They are the clearest stable seam for downstream library consumers:
 

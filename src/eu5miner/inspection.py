@@ -1,8 +1,8 @@
-"""Stable read-only facade for install inspection and system reports."""
+"""Stable read-only facade for install inspection, reports, and entity browsing."""
 
 from __future__ import annotations
 
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -87,6 +87,8 @@ from eu5miner.domains.units import (
 from eu5miner.source import ContentPhase, GameInstall
 from eu5miner.vfs import SourceKind, VirtualFilesystem
 
+BrowseValue = str | int | float | bool | tuple[str, ...]
+
 
 @dataclass(frozen=True)
 class InstallPhaseRoot:
@@ -127,6 +129,43 @@ class SystemReport:
     summary_lines: tuple[str, ...]
 
 
+@dataclass(frozen=True)
+class EntitySystemInfo:
+    name: str
+    description: str
+    primary_entity_kind: str
+
+
+@dataclass(frozen=True)
+class EntitySummary:
+    system: str
+    entity_kind: str
+    name: str
+    group: str | None
+    description: str | None
+
+
+@dataclass(frozen=True)
+class EntityField:
+    name: str
+    value: BrowseValue
+
+
+@dataclass(frozen=True)
+class EntityReference:
+    role: str
+    system: str
+    entity_kind: str
+    target_name: str
+
+
+@dataclass(frozen=True)
+class EntityDetail:
+    summary: EntitySummary
+    fields: tuple[EntityField, ...]
+    references: tuple[EntityReference, ...]
+
+
 _SUPPORTED_SYSTEMS: tuple[SystemInfo, ...] = (
     SystemInfo(
         name="economy",
@@ -151,6 +190,32 @@ _SUPPORTED_SYSTEMS: tuple[SystemInfo, ...] = (
     SystemInfo(
         name="map",
         description="Map text, map CSV, and linked setup-location coverage.",
+    ),
+)
+
+_BROWSABLE_SYSTEMS: tuple[EntitySystemInfo, ...] = (
+    EntitySystemInfo(
+        name="economy",
+        description="Browse goods definitions with market-facing fields and related good links.",
+        primary_entity_kind="good",
+    ),
+    EntitySystemInfo(
+        name="government",
+        description="Browse government types with linked reforms, laws, and default estates.",
+        primary_entity_kind="government_type",
+    ),
+    EntitySystemInfo(
+        name="religion",
+        description=(
+            "Browse religions with linked aspects, factions, focuses, schools, "
+            "figures, and holy sites."
+        ),
+        primary_entity_kind="religion",
+    ),
+    EntitySystemInfo(
+        name="map",
+        description="Browse linked locations merged from map hierarchy and main-menu setup data.",
+        primary_entity_kind="location",
     ),
 )
 
@@ -214,6 +279,34 @@ def format_install_summary(summary: InstallSummary) -> str:
 
 def list_supported_systems() -> tuple[SystemInfo, ...]:
     return _SUPPORTED_SYSTEMS
+
+
+def list_entity_systems() -> tuple[EntitySystemInfo, ...]:
+    return _BROWSABLE_SYSTEMS
+
+
+def list_system_entities(
+    install: GameInstall,
+    system: str,
+    *,
+    mod_roots: Sequence[Path] | None = None,
+) -> tuple[EntitySummary, ...]:
+    details = _load_system_entity_details(install, system, mod_roots)
+    return tuple(detail.summary for detail in details)
+
+
+def get_system_entity(
+    install: GameInstall,
+    system: str,
+    name: str,
+    *,
+    mod_roots: Sequence[Path] | None = None,
+) -> EntityDetail:
+    for detail in _load_system_entity_details(install, system, mod_roots):
+        if detail.summary.name == name:
+            return detail
+
+    raise KeyError(f"Unknown entity '{name}' for system '{system}'")
 
 
 def get_system_report(
@@ -835,6 +928,532 @@ def _description_for(system: str) -> str:
     raise KeyError(system)
 
 
+def _entity_description_for(system: str) -> str:
+    for info in _BROWSABLE_SYSTEMS:
+        if info.name == system:
+            return info.description
+    valid_systems = ", ".join(info.name for info in _BROWSABLE_SYSTEMS)
+    raise KeyError(f"Unknown entity system '{system}'. Valid systems: {valid_systems}")
+
+
+def _load_system_entity_details(
+    install: GameInstall,
+    system: str,
+    mod_roots: Sequence[Path] | None,
+) -> tuple[EntityDetail, ...]:
+    _entity_description_for(system)
+    vfs = VirtualFilesystem.from_install(
+        install,
+        mod_roots=list(mod_roots) if mod_roots is not None else None,
+    )
+
+    if system == "economy":
+        return _build_economy_entities(vfs)
+    if system == "government":
+        return _build_government_entities(vfs)
+    if system == "religion":
+        return _build_religion_entities(vfs)
+    if system == "map":
+        return _build_map_entities(vfs)
+
+    raise AssertionError(system)
+
+
+def _build_economy_entities(vfs: VirtualFilesystem) -> tuple[EntityDetail, ...]:
+    goods_documents = _load_documents(
+        vfs,
+        ContentPhase.IN_GAME,
+        Path("common") / "goods",
+        parse_goods_document,
+    )
+    price_documents = _load_documents(
+        vfs,
+        ContentPhase.IN_GAME,
+        Path("common") / "prices",
+        parse_price_document,
+    )
+    generic_action_documents = _load_documents(
+        vfs,
+        ContentPhase.IN_GAME,
+        Path("common") / "generic_actions",
+        parse_generic_action_document,
+    )
+    attribute_column_documents = _load_documents(
+        vfs,
+        ContentPhase.IN_GAME,
+        Path("common") / "attribute_columns",
+        parse_attribute_column_document,
+    )
+    catalog = build_market_catalog(
+        goods_documents=goods_documents,
+        price_documents=price_documents,
+        generic_action_documents=generic_action_documents,
+        attribute_column_documents=attribute_column_documents,
+    )
+
+    details: list[EntityDetail] = []
+    for definition in sorted(catalog.goods_definitions, key=lambda item: item.name):
+        summary = EntitySummary(
+            system="economy",
+            entity_kind="good",
+            name=definition.name,
+            group=definition.category,
+            description=_join_summary_parts(
+                f"method={definition.method}" if definition.method is not None else None,
+                (
+                    f"default_market_price={definition.default_market_price}"
+                    if definition.default_market_price is not None
+                    else None
+                ),
+            ),
+        )
+        details.append(
+            EntityDetail(
+                summary=summary,
+                fields=_compact_fields(
+                    ("method", definition.method),
+                    ("category", definition.category),
+                    ("default_market_price", definition.default_market_price),
+                    ("base_production", definition.base_production),
+                    ("food", definition.food),
+                    ("transport_cost", definition.transport_cost),
+                    ("is_slaves", definition.is_slaves),
+                    ("inflation", definition.inflation),
+                    ("custom_tags", definition.custom_tags),
+                ),
+                references=tuple(
+                    [
+                        EntityReference(
+                            role="demand_add",
+                            system="economy",
+                            entity_kind="good",
+                            target_name=amount.name,
+                        )
+                        for amount in definition.demand_add
+                    ]
+                    + [
+                        EntityReference(
+                            role="demand_multiply",
+                            system="economy",
+                            entity_kind="good",
+                            target_name=amount.name,
+                        )
+                        for amount in definition.demand_multiply
+                    ]
+                    + [
+                        EntityReference(
+                            role="wealth_impact_threshold",
+                            system="economy",
+                            entity_kind="good",
+                            target_name=amount.name,
+                        )
+                        for amount in definition.wealth_impact_threshold
+                    ]
+                ),
+            )
+        )
+
+    return tuple(details)
+
+
+def _build_government_entities(vfs: VirtualFilesystem) -> tuple[EntityDetail, ...]:
+    catalog = build_government_catalog(
+        government_type_documents=_load_documents(
+            vfs,
+            ContentPhase.IN_GAME,
+            Path("common") / "government_types",
+            parse_government_type_document,
+        ),
+        government_reform_documents=_load_documents(
+            vfs,
+            ContentPhase.IN_GAME,
+            Path("common") / "government_reforms",
+            parse_government_reform_document,
+        ),
+        law_documents=_load_documents(
+            vfs,
+            ContentPhase.IN_GAME,
+            Path("common") / "laws",
+            parse_law_document,
+        ),
+        estate_documents=_load_documents(
+            vfs,
+            ContentPhase.IN_GAME,
+            Path("common") / "estates",
+            parse_estate_document,
+        ),
+        estate_privilege_documents=_load_documents(
+            vfs,
+            ContentPhase.IN_GAME,
+            Path("common") / "estate_privileges",
+            parse_estate_privilege_document,
+        ),
+        parliament_type_documents=_load_documents(
+            vfs,
+            ContentPhase.IN_GAME,
+            Path("common") / "parliament_types",
+            parse_parliament_type_document,
+        ),
+        parliament_agenda_documents=_load_documents(
+            vfs,
+            ContentPhase.IN_GAME,
+            Path("common") / "parliament_agendas",
+            parse_parliament_agenda_document,
+        ),
+        parliament_issue_documents=_load_documents(
+            vfs,
+            ContentPhase.IN_GAME,
+            Path("common") / "parliament_issues",
+            parse_parliament_issue_document,
+        ),
+    )
+
+    details: list[EntityDetail] = []
+    for definition in sorted(catalog.government_type_definitions, key=lambda item: item.name):
+        summary = EntitySummary(
+            system="government",
+            entity_kind="government_type",
+            name=definition.name,
+            group=definition.government_power,
+            description=_join_summary_parts(
+                (
+                    f"default_estate={definition.default_character_estate}"
+                    if definition.default_character_estate is not None
+                    else None
+                ),
+                (
+                    f"heir_selections={len(definition.heir_selections)}"
+                    if definition.heir_selections
+                    else None
+                ),
+            ),
+        )
+        details.append(
+            EntityDetail(
+                summary=summary,
+                fields=_compact_fields(
+                    ("government_power", definition.government_power),
+                    ("heir_selections", definition.heir_selections),
+                    ("default_character_estate", definition.default_character_estate),
+                    ("use_regnal_number", definition.use_regnal_number),
+                    ("generate_consorts", definition.generate_consorts),
+                    (
+                        "revolutionary_country_antagonism",
+                        definition.revolutionary_country_antagonism,
+                    ),
+                ),
+                references=tuple(
+                    (
+                        [
+                            EntityReference(
+                                role="default_estate",
+                                system="government",
+                                entity_kind="estate",
+                                target_name=definition.default_character_estate,
+                            )
+                        ]
+                        if definition.default_character_estate is not None
+                        else []
+                    )
+                    + [
+                        EntityReference(
+                            role="reform",
+                            system="government",
+                            entity_kind="government_reform",
+                            target_name=reform.name,
+                        )
+                        for reform in catalog.get_reforms_for_government(definition.name)
+                    ]
+                    + [
+                        EntityReference(
+                            role="law",
+                            system="government",
+                            entity_kind="law",
+                            target_name=law.name,
+                        )
+                        for law in catalog.get_laws_for_government(definition.name)
+                    ]
+                ),
+            )
+        )
+
+    return tuple(details)
+
+
+def _build_religion_entities(vfs: VirtualFilesystem) -> tuple[EntityDetail, ...]:
+    catalog = build_religion_catalog(
+        religion_documents=_load_documents(
+            vfs,
+            ContentPhase.IN_GAME,
+            Path("common") / "religions",
+            parse_religion_document,
+        ),
+        religious_aspect_documents=_load_documents(
+            vfs,
+            ContentPhase.IN_GAME,
+            Path("common") / "religious_aspects",
+            parse_religious_aspect_document,
+        ),
+        religious_faction_documents=_load_documents(
+            vfs,
+            ContentPhase.IN_GAME,
+            Path("common") / "religious_factions",
+            parse_religious_faction_document,
+        ),
+        religious_focus_documents=_load_documents(
+            vfs,
+            ContentPhase.IN_GAME,
+            Path("common") / "religious_focuses",
+            parse_religious_focus_document,
+        ),
+        religious_school_documents=_load_documents(
+            vfs,
+            ContentPhase.IN_GAME,
+            Path("common") / "religious_schools",
+            parse_religious_school_document,
+        ),
+        religious_figure_documents=_load_documents(
+            vfs,
+            ContentPhase.IN_GAME,
+            Path("common") / "religious_figures",
+            parse_religious_figure_document,
+        ),
+        holy_site_documents=_load_documents(
+            vfs,
+            ContentPhase.IN_GAME,
+            Path("common") / "holy_sites",
+            parse_holy_site_document,
+        ),
+    )
+
+    details: list[EntityDetail] = []
+    for definition in sorted(catalog.religion_definitions, key=lambda item: item.name):
+        summary = EntitySummary(
+            system="religion",
+            entity_kind="religion",
+            name=definition.name,
+            group=definition.group,
+            description=_join_summary_parts(
+                (
+                    f"focuses={len(catalog.get_religious_focuses_for_religion(definition.name))}"
+                    if catalog.get_religious_focuses_for_religion(definition.name)
+                    else None
+                ),
+                (
+                    f"holy_sites={len(catalog.get_holy_sites_for_religion(definition.name))}"
+                    if catalog.get_holy_sites_for_religion(definition.name)
+                    else None
+                ),
+            ),
+        )
+        details.append(
+            EntityDetail(
+                summary=summary,
+                fields=_compact_fields(
+                    ("group", definition.group),
+                    ("language", definition.language),
+                    ("enable", definition.enable),
+                    ("religious_focuses", definition.religious_focuses),
+                    ("religious_schools", definition.religious_schools),
+                    ("factions", definition.factions),
+                    ("tags", definition.tags),
+                    ("custom_tags", definition.custom_tags),
+                ),
+                references=tuple(
+                    [
+                        EntityReference(
+                            role="religious_aspect",
+                            system="religion",
+                            entity_kind="religious_aspect",
+                            target_name=aspect.name,
+                        )
+                        for aspect in catalog.get_religious_aspects_for_religion(definition.name)
+                    ]
+                    + [
+                        EntityReference(
+                            role="religious_faction",
+                            system="religion",
+                            entity_kind="religious_faction",
+                            target_name=faction.name,
+                        )
+                        for faction in catalog.get_religious_factions_for_religion(definition.name)
+                    ]
+                    + [
+                        EntityReference(
+                            role="religious_focus",
+                            system="religion",
+                            entity_kind="religious_focus",
+                            target_name=focus.name,
+                        )
+                        for focus in catalog.get_religious_focuses_for_religion(definition.name)
+                    ]
+                    + [
+                        EntityReference(
+                            role="religious_school",
+                            system="religion",
+                            entity_kind="religious_school",
+                            target_name=school.name,
+                        )
+                        for school in catalog.get_religious_schools_for_religion(definition.name)
+                    ]
+                    + [
+                        EntityReference(
+                            role="religious_figure",
+                            system="religion",
+                            entity_kind="religious_figure",
+                            target_name=figure.name,
+                        )
+                        for figure in catalog.get_religious_figures_for_religion(definition.name)
+                    ]
+                    + [
+                        EntityReference(
+                            role="holy_site",
+                            system="religion",
+                            entity_kind="holy_site",
+                            target_name=site.name,
+                        )
+                        for site in catalog.get_holy_sites_for_religion(definition.name)
+                    ]
+                ),
+            )
+        )
+
+    return tuple(details)
+
+
+def _build_map_entities(vfs: VirtualFilesystem) -> tuple[EntityDetail, ...]:
+    hierarchy_document = _load_single_document(
+        vfs,
+        ContentPhase.IN_GAME,
+        Path("map_data") / "definitions.txt",
+        parse_location_hierarchy_document,
+    )
+    country_document = _load_single_document(
+        vfs,
+        ContentPhase.MAIN_MENU,
+        Path("setup") / "start" / "10_countries.txt",
+        parse_country_location_document,
+    )
+    setup_document = _load_single_document(
+        vfs,
+        ContentPhase.MAIN_MENU,
+        Path("setup") / "start" / "21_locations.txt",
+        parse_location_setup_document,
+    )
+    if hierarchy_document is None or country_document is None or setup_document is None:
+        return ()
+
+    linked_document = build_linked_location_document(
+        hierarchy_document,
+        country_document,
+        setup_document,
+    )
+    details: list[EntityDetail] = []
+    for definition in sorted(linked_document.definitions, key=lambda item: item.name):
+        summary = EntitySummary(
+            system="map",
+            entity_kind="location",
+            name=definition.name,
+            group=definition.hierarchy.leaf_group if definition.hierarchy is not None else None,
+            description=_join_summary_parts(
+                (
+                    f"capital_of={','.join(definition.capital_of)}"
+                    if definition.capital_of
+                    else None
+                ),
+                "setup=yes" if definition.has_location_setup else None,
+            ),
+        )
+        details.append(
+            EntityDetail(
+                summary=summary,
+                fields=_compact_fields(
+                    (
+                        "hierarchy_path",
+                        (
+                            definition.hierarchy.hierarchy_path
+                            if definition.hierarchy is not None
+                            else ()
+                        ),
+                    ),
+                    ("capital_of", definition.capital_of),
+                    (
+                        "country_tags",
+                        tuple(reference.country_tag for reference in definition.country_references),
+                    ),
+                    ("has_location_setup", definition.has_location_setup),
+                ),
+                references=tuple(
+                    [
+                        EntityReference(
+                            role="country_reference",
+                            system="map",
+                            entity_kind="country",
+                            target_name=reference.country_tag,
+                        )
+                        for reference in definition.country_references
+                    ]
+                    + [
+                        EntityReference(
+                            role="capital_of",
+                            system="map",
+                            entity_kind="country",
+                            target_name=tag,
+                        )
+                        for tag in definition.capital_of
+                    ]
+                ),
+            )
+        )
+
+    return tuple(details)
+
+
+def _load_documents[DocumentT](
+    vfs: VirtualFilesystem,
+    phase: ContentPhase,
+    relative_subpath: Path,
+    parser: Callable[[str], DocumentT],
+) -> tuple[DocumentT, ...]:
+    return tuple(
+        parser(_read_text(merged_file.winner.absolute_path))
+        for merged_file in vfs.merge_phase(phase, relative_subpath)
+        if merged_file.relative_path.suffix.lower() == ".txt"
+    )
+
+
+def _load_single_document[DocumentT](
+    vfs: VirtualFilesystem,
+    phase: ContentPhase,
+    relative_path: Path,
+    parser: Callable[[str], DocumentT],
+) -> DocumentT | None:
+    merged_file = vfs.get_merged_file(phase, relative_path)
+    if merged_file is None:
+        return None
+    return parser(_read_text(merged_file.winner.absolute_path))
+
+
+def _compact_fields(
+    *pairs: tuple[str, BrowseValue | None],
+) -> tuple[EntityField, ...]:
+    fields: list[EntityField] = []
+    for name, value in pairs:
+        if value is None:
+            continue
+        if isinstance(value, tuple) and not value:
+            continue
+        fields.append(EntityField(name=name, value=value))
+    return tuple(fields)
+
+
+def _join_summary_parts(*parts: str | None) -> str | None:
+    filtered = tuple(part for part in parts if part)
+    if not filtered:
+        return None
+    return "; ".join(filtered)
+
+
 def _preview(values: tuple[str, ...], *, limit: int = 5) -> str:
     if not values:
         return "(none)"
@@ -850,6 +1469,11 @@ def _read_text(path: Path) -> str:
 
 
 __all__ = [
+    "EntityDetail",
+    "EntityField",
+    "EntityReference",
+    "EntitySummary",
+    "EntitySystemInfo",
     "InstallPhaseRoot",
     "InstallSourceSummary",
     "InstallSummary",
@@ -857,8 +1481,11 @@ __all__ = [
     "SystemReport",
     "format_install_summary",
     "format_system_report",
+    "get_system_entity",
     "get_system_report",
     "inspect_install",
+    "list_entity_systems",
+    "list_system_entities",
     "list_supported_systems",
     "summarize_install",
 ]
