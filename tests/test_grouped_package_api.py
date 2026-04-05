@@ -64,11 +64,36 @@ from eu5miner.domains.units import UnitCategoryDocument, parse_unit_category_doc
 
 def test_grouped_packages_publish_package_level_entrypoints() -> None:
     assert "parse_casus_belli_document" in diplomacy_api.__all__
+    assert "parse_character_interaction_document" in diplomacy_api.__all__
+    assert "parse_country_interaction_document" in diplomacy_api.__all__
+    assert "parse_generic_action_document" in diplomacy_api.__all__
+    assert "parse_peace_treaty_document" in diplomacy_api.__all__
+    assert "parse_subject_type_document" in diplomacy_api.__all__
+    assert "parse_wargoal_document" in diplomacy_api.__all__
     assert "parse_goods_document" in economy_api.__all__
+    assert "parse_goods_demand_category_document" in economy_api.__all__
+    assert "parse_goods_demand_document" in economy_api.__all__
+    assert "parse_employment_system_document" in economy_api.__all__
+    assert "parse_price_document" in economy_api.__all__
+    assert "parse_production_method_document" in economy_api.__all__
     assert "parse_government_type_document" in government_api.__all__
+    assert "parse_government_reform_document" in government_api.__all__
+    assert "parse_law_document" in government_api.__all__
+    assert "parse_estate_document" in government_api.__all__
+    assert "parse_estate_privilege_document" in government_api.__all__
+    assert "parse_parliament_type_document" in government_api.__all__
+    assert "parse_parliament_agenda_document" in government_api.__all__
+    assert "parse_parliament_issue_document" in government_api.__all__
     assert "parse_effect_localization_document" in localization_api.__all__
     assert "parse_default_map_document" in map_api.__all__
+    assert "parse_holy_site_type_document" in religion_api.__all__
+    assert "parse_holy_site_document" in religion_api.__all__
     assert "parse_religion_document" in religion_api.__all__
+    assert "parse_religious_aspect_document" in religion_api.__all__
+    assert "parse_religious_faction_document" in religion_api.__all__
+    assert "parse_religious_figure_document" in religion_api.__all__
+    assert "parse_religious_focus_document" in religion_api.__all__
+    assert "parse_religious_school_document" in religion_api.__all__
     assert "parse_unit_category_document" in units_api.__all__
 
 

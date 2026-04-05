@@ -12,38 +12,40 @@ from eu5miner.domains.diplomacy import (
     build_diplomacy_graph_report,
     build_war_flow_catalog,
     build_war_flow_report,
-)
-from eu5miner.domains.diplomacy.casus_belli import parse_casus_belli_document
-from eu5miner.domains.diplomacy.character_interactions import (
+    parse_casus_belli_document,
     parse_character_interaction_document,
+    parse_country_interaction_document,
+    parse_generic_action_document,
+    parse_peace_treaty_document,
+    parse_subject_type_document,
+    parse_wargoal_document,
 )
-from eu5miner.domains.diplomacy.country_interactions import parse_country_interaction_document
-from eu5miner.domains.diplomacy.generic_actions import parse_generic_action_document
-from eu5miner.domains.diplomacy.peace_treaties import parse_peace_treaty_document
-from eu5miner.domains.diplomacy.subject_types import parse_subject_type_document
-from eu5miner.domains.diplomacy.wargoals import parse_wargoal_document
-from eu5miner.domains.economy import build_market_catalog, build_market_report
-from eu5miner.domains.economy.employment_systems import parse_employment_system_document
-from eu5miner.domains.economy.goods import parse_goods_document
-from eu5miner.domains.economy.goods_demand_categories import (
+from eu5miner.domains.economy import (
+    build_market_catalog,
+    build_market_report,
+    parse_employment_system_document,
     parse_goods_demand_category_document,
+    parse_goods_demand_document,
+    parse_goods_document,
+    parse_price_document,
+    parse_production_method_document,
 )
-from eu5miner.domains.economy.goods_demands import parse_goods_demand_document
-from eu5miner.domains.economy.prices import parse_price_document
-from eu5miner.domains.economy.production_methods import parse_production_method_document
 from eu5miner.domains.frontend_content import (
     build_phase_localization_bundle,
     parse_main_menu_scenarios_document,
 )
-from eu5miner.domains.government import build_government_catalog, build_government_report
-from eu5miner.domains.government.estate_privileges import parse_estate_privilege_document
-from eu5miner.domains.government.estates import parse_estate_document
-from eu5miner.domains.government.government_reforms import parse_government_reform_document
-from eu5miner.domains.government.government_types import parse_government_type_document
-from eu5miner.domains.government.laws import parse_law_document
-from eu5miner.domains.government.parliament_agendas import parse_parliament_agenda_document
-from eu5miner.domains.government.parliament_issues import parse_parliament_issue_document
-from eu5miner.domains.government.parliament_types import parse_parliament_type_document
+from eu5miner.domains.government import (
+    build_government_catalog,
+    build_government_report,
+    parse_estate_document,
+    parse_estate_privilege_document,
+    parse_government_reform_document,
+    parse_government_type_document,
+    parse_law_document,
+    parse_parliament_agenda_document,
+    parse_parliament_issue_document,
+    parse_parliament_type_document,
+)
 from eu5miner.domains.gui import parse_gui_document
 from eu5miner.domains.institutions import parse_institution_document
 from eu5miner.domains.localization import (
@@ -65,15 +67,18 @@ from eu5miner.domains.map import (
     parse_map_adjacencies_document,
     parse_map_ports_document,
 )
-from eu5miner.domains.religion import build_religion_catalog, build_religion_report
-from eu5miner.domains.religion.holy_site_types import parse_holy_site_type_document
-from eu5miner.domains.religion.holy_sites import parse_holy_site_document
-from eu5miner.domains.religion.religions import parse_religion_document
-from eu5miner.domains.religion.religious_aspects import parse_religious_aspect_document
-from eu5miner.domains.religion.religious_factions import parse_religious_faction_document
-from eu5miner.domains.religion.religious_figures import parse_religious_figure_document
-from eu5miner.domains.religion.religious_focuses import parse_religious_focus_document
-from eu5miner.domains.religion.religious_schools import parse_religious_school_document
+from eu5miner.domains.religion import (
+    build_religion_catalog,
+    build_religion_report,
+    parse_holy_site_document,
+    parse_holy_site_type_document,
+    parse_religion_document,
+    parse_religious_aspect_document,
+    parse_religious_faction_document,
+    parse_religious_figure_document,
+    parse_religious_focus_document,
+    parse_religious_school_document,
+)
 from eu5miner.domains.units import (
     parse_unit_ability_document,
     parse_unit_category_document,
