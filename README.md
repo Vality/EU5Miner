@@ -87,7 +87,7 @@ The mod workflow commands print a structured report to stdout, `note:` advisorie
 
 ## Library
 
-The root package exposes install discovery, VFS primitives, and the public mod workflow facade:
+The root package intentionally stays narrow. It exposes install discovery, VFS primitives, and the public mod workflow facade:
 
 ```python
 from pathlib import Path
@@ -109,6 +109,8 @@ update = plan_mod_update(
 	content_by_relative_path={Path("common") / "buildings" / "a.txt": "building = {}\n"},
 )
 ```
+
+The root package does not also re-export install inspection helpers or domain parsing helpers. Keep those imports explicit so downstream code can depend on the intended stable seams.
 
 For downstream GUI and MCP consumers that need a stable read-only seam for install discovery and high-level system summaries, use `eu5miner.inspection` instead of reaching into CLI helpers:
 
@@ -135,94 +137,88 @@ print(format_system_report(economy_report))
 
 This inspection facade is the stable public entrypoint for install summaries, available system listing, and install-backed system report retrieval. The CLI remains a thin wrapper over that library surface.
 
-Implemented domain adapters are re-exported from `eu5miner.domains` so callers do not need to import individual domain modules directly:
-
-```python
-from eu5miner.domains import (
-	build_on_action_catalog_document,
-	build_country_description_category_usage_document,
-	parse_building_category_document,
-	parse_building_type_document,
-	parse_goods_demand_category_document,
-	parse_goods_demand_document,
-	parse_goods_document,
-	parse_employment_system_document,
-	parse_on_action_document,
-	parse_on_action_documentation,
-	parse_price_document,
-	parse_production_method_document,
-	parse_country_description_category_document,
-	parse_culture_document,
-	parse_religion_document,
-	parse_scripted_list_document,
-	parse_scripted_relation_document,
-	parse_scripted_modifier_document,
-	parse_script_value_document,
-	parse_scripted_trigger_document,
-	parse_setup_country_document,
-)
-
-on_action_document = parse_on_action_document("on_example = { events = { flavor_test.1 } }\n")
-on_action_docs = parse_on_action_documentation(
-	"On Action Documentation:\n\n"
-	"--------------------\n\n"
-	"on_example:\n"
-	"From Code: Yes\n"
-	"Expected Scope: country\n"
-)
-building_category_document = parse_building_category_document("trade_category = {}\n")
-building_type_document = parse_building_type_document(
-	"granary = { category = infrastructure_category pop_type = peasants }\n"
-)
-goods_document = parse_goods_document("iron = { method = mining category = raw_material }\n")
-goods_demand_category_document = parse_goods_demand_category_document(
-	"building_construction = { display = integer }\n"
-)
-goods_demand_document = parse_goods_demand_document(
-	"sample_demand = { iron = 0.5 category = special_demands }\n"
-)
-production_method_document = parse_production_method_document(
-	"maintenance = { tools = 0.1 category = building_maintenance }\n"
-)
-price_document = parse_price_document("build_road = { gold = 10 }\n")
-employment_system_document = parse_employment_system_document(
-	"equality = { priority = { value = 1 } }\n"
-)
-category_document = parse_country_description_category_document("military = {}\n")
-culture_document = parse_culture_document("example_culture = { culture_groups = { group_a } }\n")
-religion_document = parse_religion_document("example_faith = { group = abrahamic }\n")
-list_document = parse_scripted_list_document("adult = { base = character conditions = { is_adult = yes } }\n")
-relation_document = parse_scripted_relation_document("my_relation = { type = diplomacy relation_type = mutual }\n")
-modifier_document = parse_scripted_modifier_document("my_modifier = { modifier = { add = 1 } }\n")
-script_value_document = parse_script_value_document("minor_stress_gain = 10\n")
-trigger_document = parse_scripted_trigger_document("test_trigger = { always = yes }\n")
-country_document = parse_setup_country_document("FRA = { tier = kingdom }\n")
-
-on_action_catalog = build_on_action_catalog_document([on_action_document], on_action_docs)
-
-category_usage = build_country_description_category_usage_document(
-	category_document,
-	country_document,
-)
-```
-
-For mod update workflows in the preview release, `eu5miner.mods` remains the stable higher-level seam, while the CLI stays a thin wrapper over the same plan/apply/report operations.
-
-Grouped domain packages are the preferred stable seam when you want to stay inside one concept area instead of importing from the fully curated top-level surface. For grouped families, prefer package-level imports such as `eu5miner.domains.diplomacy` over internal implementation modules like `eu5miner.domains.diplomacy.casus_belli`:
+For domain adapters and higher-level helpers, prefer grouped package entrypoints when you are working within one concept area. They are the clearest stable seam for downstream library consumers:
 
 ```python
 from eu5miner.domains.diplomacy import (
 	build_diplomacy_graph_catalog,
+	build_war_flow_catalog,
 	parse_casus_belli_document,
+	parse_country_interaction_document,
+	parse_peace_treaty_document,
+	parse_subject_type_document,
 	parse_wargoal_document,
 )
-from eu5miner.domains.economy import build_market_catalog, parse_goods_document, parse_price_document
+from eu5miner.domains.economy import (
+	build_market_catalog,
+	parse_goods_document,
+	parse_price_document,
+)
 from eu5miner.domains.government import build_government_catalog, parse_government_type_document
 from eu5miner.domains.localization import build_localization_bundle
 from eu5miner.domains.map import build_linked_location_document, parse_default_map_document
+from eu5miner.domains.on_actions import build_on_action_catalog_document, parse_on_action_document
 from eu5miner.domains.religion import build_religion_catalog, parse_religion_document
-from eu5miner.domains.units import parse_unit_type_document
+
+casus_belli_document = parse_casus_belli_document(
+	"sample_cb = { war_goal_type = superiority }\n"
+)
+wargoal_document = parse_wargoal_document(
+	"superiority = { type = superiority attacker = { conquer_cost = 1 } }\n"
+)
+peace_treaty_document = parse_peace_treaty_document(
+	"peace_example = { effect = { make_subject_of = { type = subject_type:sample_subject } } }\n"
+)
+subject_type_document = parse_subject_type_document(
+	"sample_subject = { level = 1 allow_subjects = no }\n"
+)
+country_interaction_document = parse_country_interaction_document(
+	"sample_country_interaction = { type = diplomacy }\n"
+)
+
+war_catalog = build_war_flow_catalog(
+	casus_belli_documents=(casus_belli_document,),
+	wargoal_documents=(wargoal_document,),
+	peace_treaty_documents=(peace_treaty_document,),
+	subject_type_documents=(subject_type_document,),
+)
+diplomacy_catalog = build_diplomacy_graph_catalog(
+	casus_belli_documents=(casus_belli_document,),
+	wargoal_documents=(wargoal_document,),
+	peace_treaty_documents=(peace_treaty_document,),
+	subject_type_documents=(subject_type_document,),
+	country_interaction_documents=(country_interaction_document,),
+)
+
+goods_document = parse_goods_document("iron = { method = mining category = raw_material }\n")
+price_document = parse_price_document("build_road = { gold = 10 }\n")
+market_catalog = build_market_catalog(
+	goods_documents=(goods_document,),
+	price_documents=(price_document,),
+)
+
+government_type_document = parse_government_type_document(
+	"monarchy = { heir_selection = cognatic government_power = legitimacy }\n"
+)
+government_catalog = build_government_catalog(
+	government_type_documents=(government_type_document,),
+)
+
+religion_document = parse_religion_document("example_faith = { group = abrahamic }\n")
+religion_catalog = build_religion_catalog(religion_documents=(religion_document,))
+
+default_map_document = parse_default_map_document('definitions = "definitions.txt"\n')
+localization_bundle = build_localization_bundle(
+	(("sample.yml", 'l_english:\nSAMPLE_KEY: "Sample"\n'),)
+)
+
+on_action_document = parse_on_action_document("on_example = { events = { flavor_test.1 } }\n")
+on_action_catalog = build_on_action_catalog_document([on_action_document])
 ```
+
+For mod update workflows in the preview release, `eu5miner.mods` remains the stable higher-level seam, while the CLI stays a thin wrapper over the same plan/apply/report operations.
+
+The broad `eu5miner.domains` convenience export remains available for callers that genuinely want one import hub across many domains, but grouped packages are the preferred stable seam when the concept area is clear. Avoid reaching into internal implementation modules such as `eu5miner.domains.diplomacy.casus_belli` or `eu5miner.domains.map.map_text` from downstream code.
 
 ## Testing
 

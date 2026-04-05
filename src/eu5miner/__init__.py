@@ -1,4 +1,8 @@
-"""EU5Miner public package exports."""
+"""Curated stable root exports for install discovery, VFS access, and mod workflows.
+
+Import read-only install summaries from ``eu5miner.inspection`` and concept-local
+helpers from grouped packages under ``eu5miner.domains``.
+"""
 
 from eu5miner.mods import (
     AppliedModUpdate,

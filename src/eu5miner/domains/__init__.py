@@ -1,4 +1,8 @@
-"""Curated public exports for implemented domain adapters and helpers."""
+"""Broad convenience re-exports for implemented domain adapters and helpers.
+
+Prefer grouped packages such as ``eu5miner.domains.diplomacy`` or
+``eu5miner.domains.economy`` when a concept-local stable seam is clear.
+"""
 
 from eu5miner.domains.attribute_columns import (
     AttributeColumnDefinition,

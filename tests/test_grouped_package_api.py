@@ -61,40 +61,233 @@ from eu5miner.domains.religion import (
 )
 from eu5miner.domains.units import UnitCategoryDocument, parse_unit_category_document
 
+EXPECTED_DIPLOMACY_EXPORTS = {
+    "CasusBelliDefinition",
+    "CasusBelliDocument",
+    "CharacterInteractionColumn",
+    "CharacterInteractionDefinition",
+    "CharacterInteractionDocument",
+    "CharacterInteractionSelectTrigger",
+    "CountryInteractionColumn",
+    "CountryInteractionDefinition",
+    "CountryInteractionDocument",
+    "CountryInteractionSelectTrigger",
+    "DiplomacyGraphCatalog",
+    "DiplomacyGraphReport",
+    "DiplomacyReferenceEdge",
+    "GenericActionColumn",
+    "GenericActionDefinition",
+    "GenericActionDocument",
+    "GenericActionSelectTrigger",
+    "PeaceTreatyColumn",
+    "PeaceTreatyDefinition",
+    "PeaceTreatyDocument",
+    "PeaceTreatySelectTrigger",
+    "SubjectTypeDefinition",
+    "SubjectTypeDocument",
+    "WarFlowCatalog",
+    "WarFlowReport",
+    "WarReferenceEdge",
+    "WargoalDefinition",
+    "WargoalDocument",
+    "WargoalParticipantDefinition",
+    "build_diplomacy_graph_catalog",
+    "build_diplomacy_graph_report",
+    "build_war_flow_catalog",
+    "build_war_flow_report",
+    "collect_casus_belli_references",
+    "collect_country_interaction_references",
+    "collect_subject_type_references",
+    "parse_casus_belli_document",
+    "parse_character_interaction_document",
+    "parse_country_interaction_document",
+    "parse_generic_action_document",
+    "parse_peace_treaty_document",
+    "parse_subject_type_document",
+    "parse_wargoal_document",
+}
+
+EXPECTED_ECONOMY_EXPORTS = {
+    "EmploymentSystemDefinition",
+    "EmploymentSystemDocument",
+    "GoodsAmount",
+    "GoodsDefinition",
+    "GoodsDemandAmount",
+    "GoodsDemandCategoryDefinition",
+    "GoodsDemandCategoryDocument",
+    "GoodsDemandDefinition",
+    "GoodsDemandDocument",
+    "GoodsDocument",
+    "MarketCatalog",
+    "MarketReferenceEdge",
+    "MarketReport",
+    "PriceDefinition",
+    "PriceDocument",
+    "ProductionMethodDefinition",
+    "ProductionMethodDocument",
+    "ProductionMethodInput",
+    "ScriptedGoodsDemand",
+    "build_market_catalog",
+    "build_market_report",
+    "parse_employment_system_document",
+    "parse_goods_demand_category_document",
+    "parse_goods_demand_document",
+    "parse_goods_document",
+    "parse_price_document",
+    "parse_production_method_document",
+}
+
+EXPECTED_GOVERNMENT_EXPORTS = {
+    "EstateDefinition",
+    "EstateDocument",
+    "EstatePrivilegeDefinition",
+    "EstatePrivilegeDocument",
+    "GovernmentCatalog",
+    "GovernmentReferenceEdge",
+    "GovernmentReformDefinition",
+    "GovernmentReformDocument",
+    "GovernmentReport",
+    "GovernmentTypeDefinition",
+    "GovernmentTypeDocument",
+    "LawDefinition",
+    "LawDocument",
+    "LawPolicyCatalog",
+    "LawPolicyDefinition",
+    "ParliamentAgendaDefinition",
+    "ParliamentAgendaDocument",
+    "ParliamentIssueDefinition",
+    "ParliamentIssueDocument",
+    "ParliamentTypeDefinition",
+    "ParliamentTypeDocument",
+    "build_government_catalog",
+    "build_government_report",
+    "build_law_policy_catalog",
+    "parse_estate_document",
+    "parse_estate_privilege_document",
+    "parse_government_reform_document",
+    "parse_government_type_document",
+    "parse_law_document",
+    "parse_parliament_agenda_document",
+    "parse_parliament_issue_document",
+    "parse_parliament_type_document",
+}
+
+EXPECTED_LOCALIZATION_EXPORTS = {
+    "CustomizableLocalizationDefinition",
+    "CustomizableLocalizationDocument",
+    "CustomizableLocalizationText",
+    "EffectLocalizationDefinition",
+    "EffectLocalizationDocument",
+    "LocalizationBundle",
+    "LocalizationBundleEntry",
+    "LocalizationReference",
+    "LocalizationVariant",
+    "TriggerLocalizationDefinition",
+    "TriggerLocalizationDocument",
+    "build_localization_bundle",
+    "collect_customizable_localization_references",
+    "collect_effect_localization_references",
+    "collect_trigger_localization_references",
+    "find_missing_localization_references",
+    "parse_customizable_localization_document",
+    "parse_effect_localization_document",
+    "parse_trigger_localization_document",
+}
+
+EXPECTED_MAP_EXPORTS = {
+    "CountryLocationDefinition",
+    "CountryLocationDocument",
+    "CountryLocationGroup",
+    "DefaultMapDocument",
+    "DefaultMapReferencedFiles",
+    "LinkedLocationDefinition",
+    "LinkedLocationDocument",
+    "LocationCountryReference",
+    "LocationHierarchyDefinition",
+    "LocationHierarchyDocument",
+    "LocationSetupDefinition",
+    "LocationSetupDocument",
+    "MapAdjacencyDefinition",
+    "MapAdjacencyDocument",
+    "MapPortDefinition",
+    "MapPortDocument",
+    "SetupCountryDefinition",
+    "SetupCountryDocument",
+    "SoundTollDefinition",
+    "build_linked_location_document",
+    "parse_country_location_document",
+    "parse_default_map_document",
+    "parse_location_hierarchy_document",
+    "parse_location_setup_document",
+    "parse_map_adjacencies_document",
+    "parse_map_ports_document",
+    "parse_setup_country_document",
+}
+
+EXPECTED_RELIGION_EXPORTS = {
+    "HolySiteCatalog",
+    "HolySiteDefinition",
+    "HolySiteDocument",
+    "HolySiteReferenceEdge",
+    "HolySiteReport",
+    "HolySiteTypeDefinition",
+    "HolySiteTypeDocument",
+    "ReligionCatalog",
+    "ReligionDefinition",
+    "ReligionDocument",
+    "ReligionOpinion",
+    "ReligionReferenceEdge",
+    "ReligionReport",
+    "ReligiousAspectDefinition",
+    "ReligiousAspectDocument",
+    "ReligiousAspectOpinion",
+    "ReligiousFactionDefinition",
+    "ReligiousFactionDocument",
+    "ReligiousFigureDefinition",
+    "ReligiousFigureDocument",
+    "ReligiousFocusDefinition",
+    "ReligiousFocusDocument",
+    "ReligiousSchoolDefinition",
+    "ReligiousSchoolDocument",
+    "build_holy_site_catalog",
+    "build_holy_site_report",
+    "build_religion_catalog",
+    "build_religion_report",
+    "parse_holy_site_document",
+    "parse_holy_site_type_document",
+    "parse_religion_document",
+    "parse_religious_aspect_document",
+    "parse_religious_faction_document",
+    "parse_religious_figure_document",
+    "parse_religious_focus_document",
+    "parse_religious_school_document",
+}
+
+EXPECTED_UNITS_EXPORTS = {
+    "UnitAbilityDefinition",
+    "UnitAbilityDocument",
+    "UnitCategoryDefinition",
+    "UnitCategoryDocument",
+    "UnitMercenariesPerLocation",
+    "UnitModifierBearingLike",
+    "UnitModifierValue",
+    "UnitTypeDefinition",
+    "UnitTypeDocument",
+    "get_unit_modifier",
+    "parse_unit_ability_document",
+    "parse_unit_category_document",
+    "parse_unit_type_document",
+}
+
 
 def test_grouped_packages_publish_package_level_entrypoints() -> None:
-    assert "parse_casus_belli_document" in diplomacy_api.__all__
-    assert "parse_character_interaction_document" in diplomacy_api.__all__
-    assert "parse_country_interaction_document" in diplomacy_api.__all__
-    assert "parse_generic_action_document" in diplomacy_api.__all__
-    assert "parse_peace_treaty_document" in diplomacy_api.__all__
-    assert "parse_subject_type_document" in diplomacy_api.__all__
-    assert "parse_wargoal_document" in diplomacy_api.__all__
-    assert "parse_goods_document" in economy_api.__all__
-    assert "parse_goods_demand_category_document" in economy_api.__all__
-    assert "parse_goods_demand_document" in economy_api.__all__
-    assert "parse_employment_system_document" in economy_api.__all__
-    assert "parse_price_document" in economy_api.__all__
-    assert "parse_production_method_document" in economy_api.__all__
-    assert "parse_government_type_document" in government_api.__all__
-    assert "parse_government_reform_document" in government_api.__all__
-    assert "parse_law_document" in government_api.__all__
-    assert "parse_estate_document" in government_api.__all__
-    assert "parse_estate_privilege_document" in government_api.__all__
-    assert "parse_parliament_type_document" in government_api.__all__
-    assert "parse_parliament_agenda_document" in government_api.__all__
-    assert "parse_parliament_issue_document" in government_api.__all__
-    assert "parse_effect_localization_document" in localization_api.__all__
-    assert "parse_default_map_document" in map_api.__all__
-    assert "parse_holy_site_type_document" in religion_api.__all__
-    assert "parse_holy_site_document" in religion_api.__all__
-    assert "parse_religion_document" in religion_api.__all__
-    assert "parse_religious_aspect_document" in religion_api.__all__
-    assert "parse_religious_faction_document" in religion_api.__all__
-    assert "parse_religious_figure_document" in religion_api.__all__
-    assert "parse_religious_focus_document" in religion_api.__all__
-    assert "parse_religious_school_document" in religion_api.__all__
-    assert "parse_unit_category_document" in units_api.__all__
+    assert set(diplomacy_api.__all__) == EXPECTED_DIPLOMACY_EXPORTS
+    assert set(economy_api.__all__) == EXPECTED_ECONOMY_EXPORTS
+    assert set(government_api.__all__) == EXPECTED_GOVERNMENT_EXPORTS
+    assert set(localization_api.__all__) == EXPECTED_LOCALIZATION_EXPORTS
+    assert set(map_api.__all__) == EXPECTED_MAP_EXPORTS
+    assert set(religion_api.__all__) == EXPECTED_RELIGION_EXPORTS
+    assert set(units_api.__all__) == EXPECTED_UNITS_EXPORTS
 
 
 def test_grouped_diplomacy_package_exports_both_helper_layers() -> None:

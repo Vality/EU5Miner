@@ -229,6 +229,9 @@ def test_root_package_keeps_domain_helpers_out_of_root_surface() -> None:
     assert not hasattr(eu5miner, "build_market_catalog")
     assert not hasattr(eu5miner, "parse_goods_document")
     assert not hasattr(eu5miner, "parse_religion_document")
+    assert not hasattr(eu5miner, "inspect_install")
+    assert not hasattr(eu5miner, "get_system_report")
+    assert not hasattr(eu5miner, "format_install_summary")
 
 
 def test_inspection_module_exports_stable_read_only_facade() -> None:
