@@ -43,6 +43,9 @@ The goal is parallel development with cloud agents, consistent CI or Dependabot 
 - use the same Python build system and validation shape across repos
 - keep repo-specific docs and specs, not one giant shared document copied verbatim everywhere
 - let each repo depend on the library through a clear package dependency while preserving local parallel development
+- during the preview phase, let GUI and MCP bootstrap CI against `eu5miner` from the GitHub `main` branch until packaged releases exist
+- treat that dependency as a coordination mechanism, not as license to consume internal parser, VFS, or domain modules directly
+- when coordinated work needs a new downstream seam, land the core-library API change first and then consume it from thin GUI or MCP adapters instead of widening the stable boundary ad hoc
 
 ## Expected Deliverables
 
@@ -57,3 +60,4 @@ The goal is parallel development with cloud agents, consistent CI or Dependabot 
 - each repo can run its own baseline validation in CI
 - each repo has clear agent-facing docs and a roadmap/spec split
 - the workspace structure supports parallel issue dispatch across repos
+- the preview-phase downstream dependency posture is explicit enough that coordinated multi-repo work does not rely on undocumented stable seams

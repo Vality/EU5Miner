@@ -29,3 +29,4 @@ When handing work to an agent, copy:
 - Prefer work that can validate with `pytest`, `ruff`, `mypy`, and `uv build` in CI.
 - Treat real-install validation as a follow-up or explicit manual check unless the spec requires it.
 - Do not widen public API seams casually; the integration-pass spec controls that work.
+- For preview multi-repo work, assume downstream GUI and MCP repos consume `eu5miner` from the GitHub `main` branch for bootstrap CI until packaged releases exist, but do not treat that as permission to depend on internal library modules.

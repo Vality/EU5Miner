@@ -25,6 +25,15 @@ The roadmap stays intentionally high level.
 - Patch releases are appropriate for validation fixes, packaging fixes, CI or automation changes, and refactors that do not add new user-facing capability.
 - Minor releases should be reserved for a completed roadmap slice that changes what users can materially do with the library or downstream products.
 
+## Preview Downstream Dependency Posture
+
+During the preview phase, the downstream `EU5MinerGUI` and `EU5MinerMCP` repos should treat the core library as their source of truth and should remain thin product layers over the curated `eu5miner` seams.
+
+- For bootstrap CI and coordinated preview work, the default downstream dependency posture is to consume `eu5miner` from the GitHub `main` branch until packaged releases exist.
+- That temporary dependency posture does not make `main` a stable free-for-all API surface; parser, VFS, and domain-model logic still belong in the core repo.
+- Downstream repos should prefer the documented stable seams such as the root package, grouped domain packages, and other explicitly curated entrypoints instead of reaching into internal modules.
+- If coordinated work across repos needs a new seam, add or refine it deliberately in the core library first, then update GUI or MCP to consume it. Do not widen the downstream stable boundary casually just because all three repos are moving together.
+
 ## Baseline
 
 The core library now has:
