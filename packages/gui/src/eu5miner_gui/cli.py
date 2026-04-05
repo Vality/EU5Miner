@@ -29,6 +29,11 @@ def main(argv: Sequence[str] | None = None) -> int:
         help="Optional supported system to summarize via eu5miner.inspection.",
     )
     parser.add_argument(
+        "--all-systems",
+        action="store_true",
+        help="Load report pages for all supported systems from the selected install.",
+    )
+    parser.add_argument(
         "--language",
         default="english",
         help="Localization language used by language-backed system reports.",
@@ -38,6 +43,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         launch_app(
             args.install_root,
             selected_system=args.system,
+            include_all_systems=args.all_systems,
             language=args.language,
         )
     )

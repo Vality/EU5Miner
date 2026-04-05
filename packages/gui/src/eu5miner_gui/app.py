@@ -1,11 +1,12 @@
-"""Read-only GUI shell over the stable core inspection facade."""
+"""Read-only browser shell over the stable core inspection facade."""
 
 from __future__ import annotations
 
 from pathlib import Path
 
 import eu5miner.inspection as inspection
-from eu5miner import GameInstall
+
+from eu5miner_gui.browser import build_browser_model, render_browser_model
 
 
 def list_supported_system_names() -> tuple[str, ...]:
@@ -16,46 +17,29 @@ def build_shell_message(
     install_root: str | Path | None = None,
     *,
     selected_system: str | None = None,
+    include_all_systems: bool = False,
     language: str = "english",
 ) -> str:
-    lines = [
-        "EU5MinerGUI read-only shell ready.",
-        "Stable inspection facade available.",
-        "Supported systems:",
-        *(
-            f"- {system.name}: {system.description}"
-            for system in inspection.list_supported_systems()
-        ),
-    ]
-
-    if install_root is None:
-        lines.append("Install summary: not loaded.")
-        if selected_system is not None:
-            lines.append("Selected system report: unavailable without an install root.")
-        return "\n".join(lines)
-
-    summary = inspection.inspect_install(install_root)
-    lines.extend(("", inspection.format_install_summary(summary)))
-
-    if selected_system is not None:
-        report = inspection.get_system_report(
-            GameInstall.discover(summary.root),
-            selected_system,
+    return render_browser_model(
+        build_browser_model(
+            install_root,
+            selected_system=selected_system,
+            include_all_systems=include_all_systems,
             language=language,
         )
-        lines.extend(("", inspection.format_system_report(report)))
-
-    return "\n".join(lines)
+    )
 
 
 def launch_app(
     install_root: str | Path | None = None,
     *,
     selected_system: str | None = None,
+    include_all_systems: bool = False,
     language: str = "english",
 ) -> str:
     return build_shell_message(
         install_root,
         selected_system=selected_system,
+        include_all_systems=include_all_systems,
         language=language,
     )
