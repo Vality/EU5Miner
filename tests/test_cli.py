@@ -6,10 +6,20 @@ import pytest
 
 from eu5miner.cli import main
 from eu5miner.source import GameInstall
+from tests.integration_support import SyntheticCliSmokeSurface, build_synthetic_install
 
 
-def test_inspect_install_cli_smoke(game_install: GameInstall, capsys) -> None:
-    exit_code = main(["--install-root", str(game_install.root), "inspect-install"])
+def test_inspect_install_cli_smoke(
+    synthetic_cli_smoke_surface: SyntheticCliSmokeSurface,
+    capsys,
+) -> None:
+    exit_code = main(
+        [
+            "--install-root",
+            str(synthetic_cli_smoke_surface.install_root),
+            "inspect-install",
+        ]
+    )
 
     captured = capsys.readouterr()
     assert exit_code == 0
@@ -27,11 +37,14 @@ def test_list_systems_cli_smoke(capsys) -> None:
     assert "diplomacy" in captured.out
 
 
-def test_list_files_cli_smoke(game_install: GameInstall, capsys) -> None:
+def test_list_files_cli_smoke(
+    synthetic_cli_smoke_surface: SyntheticCliSmokeSurface,
+    capsys,
+) -> None:
     exit_code = main(
         [
             "--install-root",
-            str(game_install.root),
+            str(synthetic_cli_smoke_surface.install_root),
             "list-files",
             "--phase",
             "in_game",
@@ -45,17 +58,18 @@ def test_list_files_cli_smoke(game_install: GameInstall, capsys) -> None:
     captured = capsys.readouterr()
     assert exit_code == 0
     assert "Merged files for phase=in_game" in captured.out
-    assert ".gui" in captured.out
+    assert str(synthetic_cli_smoke_surface.gui_relative_path) in captured.out
 
 
-def test_analyze_script_cli_smoke(game_install: GameInstall, capsys) -> None:
+def test_analyze_script_cli_smoke(
+    synthetic_cli_smoke_surface: SyntheticCliSmokeSurface,
+    capsys,
+) -> None:
     exit_code = main(
         [
-            "--install-root",
-            str(game_install.root),
             "analyze-script",
-            "--representative",
-            "scripted_trigger",
+            "--file",
+            str(synthetic_cli_smoke_surface.script_file),
         ]
     )
 
@@ -89,7 +103,7 @@ def test_report_system_cli_smoke(game_install: GameInstall, system: str, capsys)
 
 
 def test_plan_mod_update_cli_reports_dry_run_summary(tmp_path: Path, capsys) -> None:
-    install_root = _make_test_install(tmp_path / "install")
+    install_root = build_synthetic_install(tmp_path / "install").root
     mod_root = tmp_path / "my_mod"
 
     exit_code = main(
@@ -117,7 +131,7 @@ def test_plan_mod_update_cli_reports_dry_run_summary(tmp_path: Path, capsys) -> 
 
 
 def test_plan_mod_update_cli_accepts_content_root(tmp_path: Path, capsys) -> None:
-    install_root = _make_test_install(tmp_path / "install")
+    install_root = build_synthetic_install(tmp_path / "install").root
     mod_root = tmp_path / "my_mod"
     content_root = tmp_path / "content_root"
 
@@ -149,7 +163,7 @@ def test_plan_mod_update_cli_accepts_content_root(tmp_path: Path, capsys) -> Non
 
 
 def test_plan_mod_update_cli_emits_replace_path_notes(tmp_path: Path, capsys) -> None:
-    install_root = _make_test_install(tmp_path / "install")
+    install_root = build_synthetic_install(tmp_path / "install").root
     mod_root = tmp_path / "my_mod"
     vanilla_file = install_root / "game" / "in_game" / "common" / "buildings" / "a.txt"
     vanilla_file.parent.mkdir(parents=True, exist_ok=True)
@@ -179,7 +193,7 @@ def test_plan_mod_update_cli_emits_replace_path_notes(tmp_path: Path, capsys) ->
 
 
 def test_plan_mod_update_cli_emits_shadowing_warnings(tmp_path: Path, capsys) -> None:
-    install_root = _make_test_install(tmp_path / "install")
+    install_root = build_synthetic_install(tmp_path / "install").root
     mod_root = tmp_path / "my_mod"
     later_mod_root = tmp_path / "zzz_late_mod"
 
@@ -216,7 +230,7 @@ def test_apply_mod_update_cli_materializes_content_and_emits_notes(
     tmp_path: Path,
     capsys,
 ) -> None:
-    install_root = _make_test_install(tmp_path / "install")
+    install_root = build_synthetic_install(tmp_path / "install").root
     mod_root = tmp_path / "my_mod"
     vanilla_file = install_root / "game" / "in_game" / "common" / "buildings" / "a.txt"
     content_file = tmp_path / "payload.txt"
@@ -253,7 +267,7 @@ def test_apply_mod_update_cli_materializes_content_and_emits_notes(
 
 
 def test_apply_mod_update_cli_accepts_content_root(tmp_path: Path, capsys) -> None:
-    install_root = _make_test_install(tmp_path / "install")
+    install_root = build_synthetic_install(tmp_path / "install").root
     mod_root = tmp_path / "my_mod"
     content_root = tmp_path / "content_root"
     content_file = content_root / "common" / "buildings" / "a.txt"
@@ -286,7 +300,7 @@ def test_apply_mod_update_cli_accepts_content_root(tmp_path: Path, capsys) -> No
 
 
 def test_apply_mod_update_cli_reports_bad_content_mapping(tmp_path: Path, capsys) -> None:
-    install_root = _make_test_install(tmp_path / "install")
+    install_root = build_synthetic_install(tmp_path / "install").root
     mod_root = tmp_path / "my_mod"
 
     exit_code = main(
@@ -312,7 +326,7 @@ def test_apply_mod_update_cli_reports_bad_content_mapping(tmp_path: Path, capsys
 
 
 def test_apply_mod_update_cli_requires_some_content_or_intent(tmp_path: Path, capsys) -> None:
-    install_root = _make_test_install(tmp_path / "install")
+    install_root = build_synthetic_install(tmp_path / "install").root
     mod_root = tmp_path / "my_mod"
 
     exit_code = main(
@@ -338,7 +352,7 @@ def test_apply_mod_update_cli_requires_some_content_or_intent(tmp_path: Path, ca
 
 
 def test_apply_mod_update_cli_respects_no_overwrite(tmp_path: Path, capsys) -> None:
-    install_root = _make_test_install(tmp_path / "install")
+    install_root = build_synthetic_install(tmp_path / "install").root
     mod_root = tmp_path / "my_mod"
     content_file = tmp_path / "payload.txt"
     target_file = mod_root / "in_game" / "common" / "buildings" / "a.txt"
@@ -369,12 +383,3 @@ def test_apply_mod_update_cli_respects_no_overwrite(tmp_path: Path, capsys) -> N
     assert exit_code == 1
     assert "error: Refusing to overwrite existing file:" in captured.err
     assert target_file.read_text(encoding="utf-8") == "old\n"
-
-
-def _make_test_install(install_root: Path) -> Path:
-    game_dir = install_root / "game"
-    for phase_name in ("loading_screen", "main_menu", "in_game"):
-        (game_dir / phase_name).mkdir(parents=True, exist_ok=True)
-    (game_dir / "dlc").mkdir(parents=True, exist_ok=True)
-    (game_dir / "mod").mkdir(parents=True, exist_ok=True)
-    return install_root
