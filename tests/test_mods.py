@@ -194,3 +194,40 @@ def test_apply_mod_update_preserves_warnings_for_blocked_outputs(tmp_path: Path)
     assert "warnings: 1" in report
     assert "Warnings:" in report
     assert "common/buildings/a.txt will be shadowed" in report
+
+
+def test_apply_mod_update_reports_updated_and_unchanged_write_counts(tmp_path: Path) -> None:
+    mod_root = tmp_path / "my_mod"
+    target_path = mod_root / "in_game" / "common" / "buildings" / "new.txt"
+
+    _write_file(mod_root / ".metadata" / "metadata.json", "{}\n")
+    _write_file(target_path, "old\n")
+
+    vfs = VirtualFilesystem([ContentSource("my_mod", SourceKind.MOD, mod_root, 100)])
+    planned = plan_mod_update(
+        vfs,
+        "my_mod",
+        ContentPhase.IN_GAME,
+        Path("common") / "buildings",
+        intended_relative_paths=(Path("common") / "buildings" / "new.txt",),
+        content_by_relative_path={Path("common") / "buildings" / "new.txt": "new\n"},
+    )
+
+    applied = apply_mod_update(planned)
+
+    assert planned.metadata_write.existed is True
+    assert planned.content_writes[0].existed is True
+    assert applied.created_directories == ()
+    assert applied.created_write_count == 0
+    assert applied.updated_write_count == 1
+    assert applied.unchanged_write_count == 1
+    assert applied.metadata_write.path.read_text(encoding="utf-8") == "{}\n"
+    assert applied.content_writes[0].path.read_text(encoding="utf-8") == "new\n"
+
+    report = format_mod_update_report(applied)
+
+    assert "created writes: 0" in report
+    assert "updated writes: 1" in report
+    assert "unchanged writes: 1" in report
+    assert "updated:" in report
+    assert "unchanged:" in report
