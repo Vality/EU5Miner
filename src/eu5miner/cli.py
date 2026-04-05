@@ -7,9 +7,15 @@ import sys
 from collections.abc import Mapping, Sequence
 from pathlib import Path
 
-from eu5miner.cli_reports import build_system_report, format_system_report, list_systems
 from eu5miner.formats.cst import parse_cst_document
 from eu5miner.formats.script_text import ScriptFeatures, analyze_script_text
+from eu5miner.inspection import (
+    format_install_summary,
+    format_system_report,
+    get_system_report,
+    inspect_install,
+    list_supported_systems,
+)
 from eu5miner.mods import (
     AppliedModUpdate,
     PlannedModUpdate,
@@ -114,7 +120,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     report_parser.add_argument(
         "--system",
-        choices=[info.name for info in list_systems()],
+        choices=[info.name for info in list_supported_systems()],
         required=True,
         help="Major system to summarize.",
     )
@@ -241,19 +247,7 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def _run_inspect_install(args: argparse.Namespace) -> int:
-    install = GameInstall.discover(args.install_root)
-    vfs = VirtualFilesystem.from_install(install)
-
-    print(f"Install root: {install.root}")
-    print(f"Game dir: {install.game_dir}")
-    print(f"DLC dir: {install.dlc_dir}")
-    print(f"Mod dir: {install.mod_dir}")
-    print("Phase roots:")
-    for phase in ContentPhase:
-        print(f"- {phase.value}: {install.phase_dir(phase)}")
-    print("Sources:")
-    for source in vfs.sources:
-        print(f"- {source.kind.value}:{source.name} priority={source.priority} root={source.root}")
+    print(format_install_summary(inspect_install(args.install_root)))
     return 0
 
 
@@ -286,7 +280,7 @@ def _run_list_files(args: argparse.Namespace) -> int:
 
 def _run_list_systems() -> int:
     print("Supported system reports:")
-    for info in list_systems():
+    for info in list_supported_systems():
         print(f"- {info.name}: {info.description}")
     return 0
 
@@ -310,7 +304,7 @@ def _run_analyze_script(args: argparse.Namespace) -> int:
 
 def _run_report_system(args: argparse.Namespace) -> int:
     install = GameInstall.discover(args.install_root)
-    report = build_system_report(install, args.system, language=args.language)
+    report = get_system_report(install, args.system, language=args.language)
     print(format_system_report(report))
     return 0
 

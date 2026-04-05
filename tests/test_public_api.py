@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import eu5miner
+import eu5miner.inspection as inspection_api
 from eu5miner import (
     ContentPhase,
     GameInstall,
@@ -160,6 +161,19 @@ from eu5miner.domains import (
     tags_from_tagged,
 )
 from eu5miner.formats.semantic import SemanticScalar
+from eu5miner.inspection import (
+    InstallPhaseRoot,
+    InstallSourceSummary,
+    InstallSummary,
+    SystemInfo,
+    SystemReport,
+    format_install_summary,
+    format_system_report,
+    get_system_report,
+    inspect_install,
+    list_supported_systems,
+    summarize_install,
+)
 
 EXPECTED_ROOT_EXPORTS = {
     "AppliedModUpdate",
@@ -184,6 +198,20 @@ EXPECTED_ROOT_EXPORTS = {
     "resolve_install_path",
 }
 
+EXPECTED_INSPECTION_EXPORTS = {
+    "InstallPhaseRoot",
+    "InstallSourceSummary",
+    "InstallSummary",
+    "SystemInfo",
+    "SystemReport",
+    "format_install_summary",
+    "format_system_report",
+    "get_system_report",
+    "inspect_install",
+    "list_supported_systems",
+    "summarize_install",
+}
+
 
 def test_root_package_exports_mod_workflow_surface() -> None:
     assert set(eu5miner.__all__) == EXPECTED_ROOT_EXPORTS
@@ -201,6 +229,21 @@ def test_root_package_keeps_domain_helpers_out_of_root_surface() -> None:
     assert not hasattr(eu5miner, "build_market_catalog")
     assert not hasattr(eu5miner, "parse_goods_document")
     assert not hasattr(eu5miner, "parse_religion_document")
+
+
+def test_inspection_module_exports_stable_read_only_facade() -> None:
+    assert set(inspection_api.__all__) == EXPECTED_INSPECTION_EXPORTS
+    assert InstallPhaseRoot.__name__ == "InstallPhaseRoot"
+    assert InstallSourceSummary.__name__ == "InstallSourceSummary"
+    assert InstallSummary.__name__ == "InstallSummary"
+    assert SystemInfo.__name__ == "SystemInfo"
+    assert SystemReport.__name__ == "SystemReport"
+    assert callable(inspect_install)
+    assert callable(summarize_install)
+    assert callable(format_install_summary)
+    assert callable(list_supported_systems)
+    assert callable(get_system_report)
+    assert callable(format_system_report)
 
 
 def test_domains_package_exports_curated_entrypoints() -> None:

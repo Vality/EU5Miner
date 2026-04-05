@@ -103,6 +103,31 @@ update = plan_mod_update(
 )
 ```
 
+For downstream GUI and MCP consumers that need a stable read-only seam for install discovery and high-level system summaries, use `eu5miner.inspection` instead of reaching into CLI helpers:
+
+```python
+from eu5miner import GameInstall
+from eu5miner.inspection import (
+	format_install_summary,
+	format_system_report,
+	get_system_report,
+	inspect_install,
+	list_supported_systems,
+)
+
+summary = inspect_install(r"C:\Program Files (x86)\Steam\steamapps\common\Europa Universalis V")
+print(format_install_summary(summary))
+
+systems = list_supported_systems()
+economy_report = get_system_report(
+	GameInstall.discover(summary.root),
+	"economy",
+)
+print(format_system_report(economy_report))
+```
+
+This inspection facade is the stable public entrypoint for install summaries, available system listing, and install-backed system report retrieval. The CLI remains a thin wrapper over that library surface.
+
 Implemented domain adapters are re-exported from `eu5miner.domains` so callers do not need to import individual domain modules directly:
 
 ```python
