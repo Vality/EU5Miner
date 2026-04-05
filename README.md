@@ -154,7 +154,7 @@ iron = get_system_entity(
 )
 ```
 
-This inspection facade is the stable public entrypoint for install summaries, available system listing, install-backed system report retrieval, and a deliberately narrow entity-browsing seam. The first browseable subset is intentionally limited to one primary entity family per system: `economy` goods, `government` government types, `religion` religions, and `map` linked locations. That keeps the preview API useful for GUI and MCP read-only flows without overcommitting to a generic graph API across every catalog family yet. The CLI remains a thin wrapper over the same library surface.
+This inspection facade is the stable public entrypoint for install summaries, available system listing, install-backed system report retrieval, and a deliberately narrow entity-browsing seam. The current browseable subset is intentionally limited to one primary entity family per system: `economy` goods, `diplomacy` casus belli, `government` government types, `religion` religions, and `map` linked locations. That keeps the preview API useful for GUI and MCP read-only flows without overcommitting to a generic graph API across every catalog family yet. The CLI remains a thin wrapper over the same library surface.
 
 For domain adapters and higher-level helpers, prefer grouped package entrypoints when you are working within one concept area. They are the clearest stable seam for downstream library consumers:
 

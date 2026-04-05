@@ -62,6 +62,7 @@ def test_list_entity_systems_returns_expected_names_and_primary_kinds() -> None:
 
     assert systems == (
         ("economy", "good"),
+        ("diplomacy", "casus_belli"),
         ("government", "government_type"),
         ("religion", "religion"),
         ("map", "location"),
@@ -122,6 +123,7 @@ def test_get_system_report_and_formatting_are_install_independent(
     ("system", "entity_name", "entity_kind", "group_name", "field_name"),
     [
         ("economy", "iron", "good", "raw_material", "default_market_price"),
+        ("diplomacy", "sample_cb", "casus_belli", "sample_goal", "war_goal_type"),
         ("government", "monarchy", "government_type", "legitimacy", "government_power"),
         ("religion", "catholic", "religion", "christian", "group"),
         ("map", "stockholm", "location", "province", "hierarchy_path"),
@@ -150,6 +152,19 @@ def test_entity_browsing_is_install_independent_for_curated_subset(
     assert detail.summary.name == entity_name
     assert detail.summary.entity_kind == entity_kind
     assert any(field.name == field_name for field in detail.fields)
+
+
+def test_diplomacy_entity_browsing_surfaces_linked_war_and_interaction_targets(
+    tmp_path: Path,
+) -> None:
+    install = _make_synthetic_report_install(tmp_path / "diplomacy", "diplomacy")
+
+    detail = get_system_entity(install, "diplomacy", "sample_cb")
+    links = {(reference.role, reference.target_name) for reference in detail.references}
+
+    assert ("wargoal", "sample_goal") in links
+    assert ("peace_treaty", "peace_example") in links
+    assert ("country_interaction", "country_link") in links
 
 
 def test_get_system_entity_rejects_unknown_name(tmp_path: Path) -> None:

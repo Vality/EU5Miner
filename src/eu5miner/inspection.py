@@ -200,6 +200,14 @@ _BROWSABLE_SYSTEMS: tuple[EntitySystemInfo, ...] = (
         primary_entity_kind="good",
     ),
     EntitySystemInfo(
+        name="diplomacy",
+        description=(
+            "Browse casus belli definitions with linked wargoals, peace treaties, "
+            "and country interactions."
+        ),
+        primary_entity_kind="casus_belli",
+    ),
+    EntitySystemInfo(
         name="government",
         description="Browse government types with linked reforms, laws, and default estates.",
         primary_entity_kind="government_type",
@@ -949,6 +957,8 @@ def _load_system_entity_details(
 
     if system == "economy":
         return _build_economy_entities(vfs)
+    if system == "diplomacy":
+        return _build_diplomacy_entities(vfs)
     if system == "government":
         return _build_government_entities(vfs)
     if system == "religion":
@@ -1048,6 +1058,127 @@ def _build_economy_entities(vfs: VirtualFilesystem) -> tuple[EntityDetail, ...]:
                             target_name=amount.name,
                         )
                         for amount in definition.wealth_impact_threshold
+                    ]
+                ),
+            )
+        )
+
+    return tuple(details)
+
+
+def _build_diplomacy_entities(vfs: VirtualFilesystem) -> tuple[EntityDetail, ...]:
+    catalog = build_diplomacy_graph_catalog(
+        casus_belli_documents=_load_documents(
+            vfs,
+            ContentPhase.IN_GAME,
+            Path("common") / "casus_belli",
+            parse_casus_belli_document,
+        ),
+        wargoal_documents=_load_documents(
+            vfs,
+            ContentPhase.IN_GAME,
+            Path("common") / "wargoals",
+            parse_wargoal_document,
+        ),
+        peace_treaty_documents=_load_documents(
+            vfs,
+            ContentPhase.IN_GAME,
+            Path("common") / "peace_treaties",
+            parse_peace_treaty_document,
+        ),
+        subject_type_documents=_load_documents(
+            vfs,
+            ContentPhase.IN_GAME,
+            Path("common") / "subject_types",
+            parse_subject_type_document,
+        ),
+        country_interaction_documents=_load_documents(
+            vfs,
+            ContentPhase.IN_GAME,
+            Path("common") / "country_interactions",
+            parse_country_interaction_document,
+        ),
+    )
+
+    details: list[EntityDetail] = []
+    war_flow_catalog = catalog.war_flow_catalog
+    for definition in sorted(war_flow_catalog.casus_belli_definitions, key=lambda item: item.name):
+        linked_wargoal = war_flow_catalog.get_wargoal_for_casus_belli(definition.name)
+        summary = EntitySummary(
+            system="diplomacy",
+            entity_kind="casus_belli",
+            name=definition.name,
+            group=definition.war_goal_type,
+            description=_join_summary_parts(
+                f"speed={definition.speed}" if definition.speed is not None else None,
+                "trade=yes" if definition.trade else None,
+                "no_cb=yes" if definition.no_cb else None,
+            ),
+        )
+        details.append(
+            EntityDetail(
+                summary=summary,
+                fields=_compact_fields(
+                    ("war_goal_type", definition.war_goal_type),
+                    ("speed", definition.speed),
+                    ("custom_tags", definition.custom_tags),
+                    ("additional_war_enthusiasm", definition.additional_war_enthusiasm),
+                    (
+                        "additional_war_enthusiasm_attacker",
+                        definition.additional_war_enthusiasm_attacker,
+                    ),
+                    (
+                        "additional_war_enthusiasm_defender",
+                        definition.additional_war_enthusiasm_defender,
+                    ),
+                    (
+                        "antagonism_reduction_per_warworth_defender",
+                        definition.antagonism_reduction_per_warworth_defender,
+                    ),
+                    ("max_warscore_from_battles", definition.max_warscore_from_battles),
+                    ("allow_release_areas", definition.allow_release_areas),
+                    ("allow_separate_peace", definition.allow_separate_peace),
+                    ("allow_wars_on_own_subjects", definition.allow_wars_on_own_subjects),
+                    ("allow_ports_for_reach_ai", definition.allow_ports_for_reach_ai),
+                    ("can_expire", definition.can_expire),
+                    ("cut_down_in_size_cb", definition.cut_down_in_size_cb),
+                    ("no_cb", definition.no_cb),
+                    ("trade", definition.trade),
+                ),
+                references=tuple(
+                    (
+                        [
+                            EntityReference(
+                                role="wargoal",
+                                system="diplomacy",
+                                entity_kind="wargoal",
+                                target_name=linked_wargoal.name,
+                            )
+                        ]
+                        if linked_wargoal is not None
+                        else []
+                    )
+                    + [
+                        EntityReference(
+                            role="peace_treaty",
+                            system="diplomacy",
+                            entity_kind="peace_treaty",
+                            target_name=peace_treaty.name,
+                        )
+                        for peace_treaty in war_flow_catalog.get_peace_treaties_for_casus_belli(
+                            definition.name
+                        )
+                    ]
+                    + [
+                        EntityReference(
+                            role="country_interaction",
+                            system="diplomacy",
+                            entity_kind="country_interaction",
+                            target_name=interaction.name,
+                        )
+                        for interaction in catalog.get_country_interactions_for_casus_belli(
+                            definition.name
+                        )
                     ]
                 ),
             )
