@@ -1,23 +1,35 @@
 # EU5MinerGUI
 
-EU5MinerGUI is a dedicated application repo for a read-first GUI built on top of the core `eu5miner` library.
+EU5MinerGUI is an unofficial companion application repo built on top of the core `eu5miner` library for Europa Universalis V data inspection.
 
-The current state is intentionally thin: this repo is being prepared for parallel cloud-agent work before committing to a larger UI stack.
+Release `0.5.0` is the first public preview release for this repo.
+
+This project is not affiliated with, endorsed by, or sponsored by Paradox Interactive. No game files or other game assets are included in this repository or its built artifacts.
 
 ## Status
 
-- The repo is scaffolded as a standalone Python application.
-- The first milestone is a launchable read-only shell that proves the dependency and validation pipeline.
-- Substantial parsing and domain logic should continue to live in the `eu5miner` library, not here.
+The `0.5.x` line should be treated as a public preview.
 
-For now the dependency resolves directly from the `EU5Miner` GitHub repo so CI can run before a package-registry release exists.
+- The repo ships a standalone Python application package and command entrypoint.
+- The current surface is a read-only text shell over stable `eu5miner.inspection` APIs, not a graphical browser yet.
+- GUI-specific product work should continue here, while parsing, VFS, and domain-model logic stay in the core `eu5miner` library.
 
-The current shell stays thin over `eu5miner.inspection`: it can list the stable supported systems without a local install, and when given an install root it can render an install summary plus a selected stable system report such as `map`.
+The current preview is pinned to the core `eu5miner` `v0.5.0` release tag and follows that preview contract rather than tracking the moving `main` branch.
+
+## Current Shell
+
+The current preview command prints inspection-backed text output.
+
+- Without a local install, it lists the stable supported system names and reports that no install summary is loaded.
+- With `--install-root`, it renders an install summary.
+- With both `--install-root` and `--system`, it renders the selected stable system report, such as `map`.
 
 ```powershell
 eu5miner-gui
 eu5miner-gui --install-root C:\EU5 --system map
 ```
+
+Install-backed reporting requires your own local EU5 installation. This repo does not bundle sample game content.
 
 ## Development
 

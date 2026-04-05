@@ -1,7 +1,8 @@
 # Changelog
 
-## 0.1.0 - Unreleased
+## 0.5.0 - 2026-04-05
 
-- Initial repository scaffolding.
-- Basic Python application shell wired to the core `eu5miner` library.
-- CI, release-artifact workflow, Dependabot, and agent-facing docs added.
+- First public preview release.
+- Read-only text shell wired to the stable `eu5miner.inspection` facade.
+- Install-free and synthetic-install coverage for the current shell behavior.
+- Public release metadata and repository policies prepared for preview distribution.
