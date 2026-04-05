@@ -28,6 +28,9 @@ eu5miner = "eu5miner.cli:main"
 [tool.hatch.build.targets.wheel]
 packages = ["src/eu5miner"]
 
+[tool.hatch.build.targets.wheel.force-include]
+"__main__.py" = "__main__.py"
+
 [tool.pytest.ini_options]
 minversion = "8.0"
 testpaths = ["tests"]
