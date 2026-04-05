@@ -24,18 +24,11 @@ The initial high-value file families are:
 
 This supports a strong v1 without depending on binary reverse engineering.
 
-### 3. Representative install files
+### 3. Representative install coverage
 
-These files were inspected and should remain part of the early test corpus:
+Early validation should cover a small set of representative files across the major text families: script text, setup data, GUI, map data, localization, and metadata.
 
-- `game/in_game/events/readme.txt`
-- `game/in_game/common/scripted_triggers/country_triggers.txt`
-- `game/in_game/setup/countries/00_readme.info`
-- `game/in_game/gui/agenda_view.gui`
-- `game/in_game/map_data/default.map`
-- `game/in_game/map_data/adjacencies.csv`
-- `game/main_menu/localization/english/actions_l_english.yml`
-- `game/dlc/D000_shared/D000_shared.dlc.json`
+The concrete sample list should live in code so it can evolve with the parser surface without turning this document into a stale inventory.
 
 ### 4. Mod structure is strict
 
@@ -48,7 +41,7 @@ Official documentation and the shipped layout agree on these rules:
 
 ### 5. Generated docs are useful but optional
 
-The official guidance points modders at `script_docs` and `dump_data_types`, but those generated files were not present in the user profile during research. The library should treat them as optional schema inputs, not hard dependencies.
+The official guidance points modders at `script_docs` and `dump_data_types`, but those generated files may be absent in a given install or tooling setup. The library should treat them as optional schema inputs, not hard dependencies.
 
 ### 6. Binary support should be deferred
 

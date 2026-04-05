@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 import pytest
@@ -7,22 +8,18 @@ import pytest
 from eu5miner.domains.mod_metadata import parse_mod_metadata_document
 from eu5miner.source import GameInstall
 
+LOCAL_MOD_METADATA_ENV_VAR = "EU5MINER_SAMPLE_MOD_METADATA_PATH"
+
 
 def _read_text(path: Path) -> str:
     return path.read_text(encoding="utf-8", errors="replace")
 
 
-def _local_mod_metadata_path() -> Path:
-    return (
-        Path.home()
-        / "Documents"
-        / "Paradox Interactive"
-        / "Europa Universalis V"
-        / "mod"
-        / "Shattered-Europa"
-        / ".metadata"
-        / "metadata.json"
-    )
+def _local_mod_metadata_path() -> Path | None:
+    raw_path = os.environ.get(LOCAL_MOD_METADATA_ENV_VAR)
+    if not raw_path:
+        return None
+    return Path(raw_path)
 
 
 def test_parse_mod_metadata_document_inline() -> None:
@@ -69,16 +66,19 @@ def test_parse_real_dlc_metadata_document(game_install: GameInstall) -> None:
 @pytest.mark.timeout(5)
 def test_parse_real_optional_local_mod_metadata_document() -> None:
     path = _local_mod_metadata_path()
+    if path is None:
+        pytest.skip(f"Set {LOCAL_MOD_METADATA_ENV_VAR} to run this optional local-sample test")
     if not path.exists():
-        pytest.skip("Local mod metadata sample is not present on this machine")
+        pytest.skip(f"Optional local metadata sample path does not exist: {path}")
 
     document = parse_mod_metadata_document(_read_text(path))
 
-    assert document.name == "Shattered Europa"
-    assert document.mod_id == "shattered.europa"
-    assert document.version == "1.0.0"
-    assert document.supported_game_version == "1.0.*"
-    assert document.short_description is not None
-    assert "Map" in document.tags
-    assert document.relationships == ()
-    assert document.game_custom_data == {}
+    assert document.raw
+    assert document.name is not None
+    assert document.name.strip()
+    assert document.mod_id is not None
+    assert document.mod_id.strip()
+    assert isinstance(document.replace_paths, tuple)
+    assert isinstance(document.tags, tuple)
+    assert isinstance(document.relationships, tuple)
+    assert document.game_custom_data is None or isinstance(document.game_custom_data, dict)

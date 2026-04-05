@@ -107,110 +107,11 @@ The optional broader validation sweep now lives behind `uv run python -m pytest 
 
 ## EU5 Install Facts
 
-The local research target used so far is:
+Install discovery and phase/layout assumptions live in `src/eu5miner/source.py`.
 
-- `C:\Program Files (x86)\Steam\steamapps\common\Europa Universalis V`
+Representative sample selection should be maintained in `GameInstall.representative_files()` rather than copied into static docs.
 
-Important layout facts:
-
-- top level contains `game`, `jomini`, `clausewitz`, and engine/version marker files
-- `game/` contains `loading_screen`, `main_menu`, `in_game`, `dlc`, and `mod`
-- most high-value moddable content currently targeted by this repo lives under `game/in_game/`
-
-Important representative files:
-
-- `game/in_game/events/readme.txt`
-- `game/in_game/common/scripted_triggers/country_triggers.txt`
-- `game/in_game/common/scripted_effects/country_effects.txt`
-- `game/in_game/common/scripted_modifiers/scripted_modifiers.info`
-- `game/in_game/common/scripted_lists/scripted_lists.info`
-- `game/in_game/common/scripted_lists/country_lists.txt`
-- `game/in_game/common/scripted_relations/readme.txt`
-- `game/in_game/common/scripted_relations/alliance.txt`
-- `game/in_game/common/scripted_relations/trade_access.txt`
-- `game/in_game/common/on_action/religion_flavor_pulse.txt`
-- `game/in_game/common/on_action/character_death_pulses.txt`
-- `game/in_game/common/on_action/_hardcoded.txt`
-- `game/in_game/common/building_types/readme.txt`
-- `game/in_game/common/building_types/common_buildings.txt`
-- `game/in_game/common/building_types/capital_buildings.txt`
-- `game/in_game/common/building_categories/00_default.txt`
-- `game/in_game/common/goods/readme.txt`
-- `game/in_game/common/goods/00_raw_materials.txt`
-- `game/in_game/common/goods/03_food.txt`
-- `game/in_game/common/prices/readme.txt`
-- `game/in_game/common/prices/00_hardcoded.txt`
-- `game/in_game/common/prices/01_buildings.txt`
-- `game/in_game/common/goods_demand_category/00_default.txt`
-- `game/in_game/common/goods_demand/building_construction_costs.txt`
-- `game/in_game/common/goods_demand/pop_demands.txt`
-- `game/in_game/common/goods_demand/from_events.txt`
-- `game/in_game/common/production_methods/__readme.txt`
-- `game/in_game/common/production_methods/unsorted_building_inputs.txt`
-- `game/in_game/common/employment_systems/readme.txt`
-- `game/in_game/common/employment_systems/00_default.txt`
-- `game/in_game/common/generic_actions/readme.txt`
-- `game/in_game/common/generic_actions/markets.txt`
-- `game/in_game/common/generic_actions/employment_system.txt`
-- `game/in_game/common/generic_actions/take_bank_loan.txt`
-- `game/in_game/common/attribute_columns/readme.txt`
-- `game/in_game/common/attribute_columns/00_defaults.txt`
-- `game/in_game/common/attribute_columns/19_market.txt`
-- `game/in_game/common/attribute_columns/29_trade.txt`
-- `game/in_game/common/attribute_columns/31_goods.txt`
-- `game/in_game/common/attribute_columns/40_loan.txt`
-- `game/in_game/common/casus_belli/conquest.txt`
-- `game/in_game/common/casus_belli/00_hardcoded.txt`
-- `game/in_game/common/casus_belli/coalition.txt`
-- `game/in_game/common/casus_belli/make_tributary_cb.txt`
-- `game/in_game/common/casus_belli/religious_superiority.txt`
-- `game/in_game/common/casus_belli/trade_conflict.txt`
-- `game/in_game/common/peace_treaties/readme.txt`
-- `game/in_game/common/peace_treaties/humiliate.txt`
-- `game/in_game/common/peace_treaties/steal_maps_treaty.txt`
-- `game/in_game/common/peace_treaties/force_tributary.txt`
-- `game/in_game/common/peace_treaties/religious_supremacy.txt`
-- `game/in_game/common/peace_treaties/dismantle_fort.txt`
-- `game/in_game/common/subject_types/readme.txt`
-- `game/in_game/common/subject_types/vassal.txt`
-- `game/in_game/common/subject_types/tributary.txt`
-- `game/in_game/common/subject_types/colonial_nation.txt`
-- `game/in_game/common/subject_types/hre.txt`
-- `game/in_game/common/subject_types/appanage.txt`
-- `game/in_game/common/subject_military_stances/readme.txt`
-- `game/in_game/common/subject_military_stances/00_default.txt`
-- `game/in_game/common/country_interactions/readme.txt`
-- `game/in_game/common/country_interactions/request_loan.txt`
-- `game/in_game/common/country_interactions/sell_icon.txt`
-- `game/in_game/common/character_interactions/readme.txt`
-- `game/in_game/common/character_interactions/abdicate.txt`
-- `game/in_game/common/character_interactions/move_children_to_court.txt`
-- `game/in_game/common/character_interactions/marry_noble.txt`
-- `game/in_game/common/wargoals/readme.txt`
-- `game/in_game/common/wargoals/00_default.txt`
-- `game/in_game/common/script_values/best_capital_for_colony.txt`
-- `game/in_game/common/script_values/eu4_conversions.txt`
-- `game/in_game/common/cultures/00_cultures.info`
-- `game/in_game/common/cultures/british.txt`
-- `game/in_game/common/religions/christian.txt`
-- `game/in_game/common/religions/buddhist.txt`
-- `game/in_game/common/country_description_categories/readme.txt`
-- `game/in_game/common/country_description_categories/categories.txt`
-- `game/in_game/setup/countries/00_readme.info`
-- `game/in_game/setup/countries/france.txt`
-- `game/in_game/gui/agenda_view.gui`
-- `game/in_game/gui/eventwindow.gui`
-- `game/in_game/gui/ui_library.gui`
-- `game/main_menu/common/scenarios/00_scenarios.txt`
-- `game/loading_screen/localization/english/load_tips_l_english.yml`
-- `game/in_game/map_data/default.map`
-- `game/in_game/map_data/definitions.txt`
-- `game/in_game/map_data/adjacencies.csv`
-- `game/in_game/map_data/ports.csv`
-- `game/main_menu/setup/start/10_countries.txt`
-- `game/main_menu/setup/start/21_locations.txt`
-- `game/main_menu/localization/english/actions_l_english.yml`
-- `game/dlc/D000_shared/D000_shared.dlc.json`
+Real-file validation should use locally available shipped content or optional generated dumps, but shipped game files, local profile artifacts, and generated dumps should not be committed to the repository.
 
 ## Environment Notes
 
