@@ -38,6 +38,7 @@ During the preview phase, the downstream `EU5MinerGUI` and `EU5MinerMCP` repos s
 The completed preview baseline now includes:
 
 - the core integration pass, validation expansion, and three-repo alignment work
+- the recent preview hardening follow-up over the already-curated library seams
 - install discovery, merged VFS support, CST and semantic parsing helpers, and broad typed domain coverage in the core library
 - a stable read-only inspection facade and thin CLI over the intended library seams
 - initial mod planning and apply workflows in the core library
@@ -53,23 +54,26 @@ The next work should build on those shipped seams instead of repeating foundatio
 3. Three-repo workspace and shared scaffolding baseline
 4. First GUI foundation plus structured read-only browsing
 5. First MCP foundation plus initial inspect, file, system, and mod workflow tools
+6. Core preview hardening follow-up over the current stable seams
 
 ## Next Recommended Slices
 
-### 1. Core Preview Hardening From Downstream Usage
+### 1. Core V1 Stabilization Pass
 
-Goal: use real downstream consumption in GUI and MCP to tighten the preview library surface, docs, examples, and synthetic validation where rough edges still show.
+Goal: turn the current preview seams into one explicit `1.0` compatibility boundary without broadening the architecture or cutting the release in this slice.
 
 Use this slice for:
 
-- targeted API polish on already-curated seams
-- higher-level tests around inspection and mod workflows
-- documentation updates that keep the stable surface explicit
+- final public-contract decisions on already-curated seams
+- compatibility-focused tests around inspection and mod workflows
+- documentation and example alignment around the intended `1.0` boundary
+- release-readiness gates that stay grounded in current behavior
 
-Reference specs:
+Reference spec:
 
-- `documents/specs/library-integration-pass.md`
-- `documents/specs/validation-expansion.md`
+- `documents/specs/v1-stabilization-pass.md`
+
+The earlier integration and validation specs remain useful reference material for follow-up polish, but they are no longer the primary milestone definition.
 
 ### 2. GUI Read-Only Browsing Refinement
 
@@ -106,7 +110,7 @@ Use this slice for:
 Use these rules when choosing the next task:
 
 1. If the task affects stable imports, grouped package entrypoints, inspection helpers, or mod workflow seams, it belongs in the core repo.
-2. If the task is mostly synthetic tests, fixture design, or validation policy for existing seams, it belongs under preview hardening in the core repo.
+2. If the task is mostly contract clarification, synthetic tests, fixture design, or validation policy for existing seams, it belongs under the `1.0` stabilization pass in the core repo.
 3. If the task is about browse flow, report presentation, or install/session UX over existing library APIs, it belongs in the GUI repo.
 4. If the task is about MCP tool contracts, server boundaries, or transport readiness over existing library APIs, it belongs in the MCP repo.
 5. If coordinated work needs a new downstream seam, land that seam in the core library first and only then consume it downstream.
@@ -116,7 +120,6 @@ Use these rules when choosing the next task:
 The immediate sequence should be:
 
 1. treat the current foundation specs as completed baseline and reference material
-2. use downstream usage to harden the preview library surface and release docs
-3. scope one focused GUI browse-refinement slice
-4. scope one focused MCP contract-consolidation slice
-5. cut the next preview release only after the cross-repo docs and dependency posture are aligned
+2. use the stabilization pass to define the intended `1.0` contract on the current curated seams
+3. keep GUI and MCP follow-on work thin over those same seams instead of widening the core scope
+4. align release docs and targeted validation before proposing an actual `1.0` cut
