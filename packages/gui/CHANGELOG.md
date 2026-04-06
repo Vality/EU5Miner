@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+No unreleased changes recorded after `0.6.0`.
+
 ## 0.6.0 - 2026-04-06
 
 - Added the structured read-only browser session used by the GUI shell, including install overview, stable inspection-backed report pages, and covered entity list/detail browsing.

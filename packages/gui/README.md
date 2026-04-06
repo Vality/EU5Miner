@@ -16,7 +16,7 @@ The `0.6.x` line should be treated as a public preview.
 
 The published dependency is pinned to the coordinated core `eu5miner` release tag `v0.6.0`. In this multi-repo workspace, local `uv` resolution still points `eu5miner` at the sibling `../EU5Miner` checkout so GUI validation follows the checked-out core source during coordinated workspace work.
 
-Release `0.6.0` captures the completed step-2 grouped-helper breadth for the current preview line: diplomacy helper pages and the single religion helper page are both shipped, and that helper scope remains explicit. The next major phase remains validation, build, test, and release-readiness work for later preview cuts rather than widening helper scope again.
+Release `0.6.0` captures the completed step-2 grouped-helper breadth for the current preview line: diplomacy helper pages and the single religion helper page are both shipped, and that helper scope remains explicit. The immediate post-release phase is validation, build, test, and preview-contract maintenance for later patch or minor planning rather than widening helper scope again.
 
 ## Current Browser Shell
 
@@ -86,7 +86,7 @@ uv run mypy src
 uv build
 ```
 
-Inside this workspace, `uv` resolves `eu5miner` from the sibling core checkout. That keeps GUI tests and shell output aligned with the latest `eu5miner.inspection` supported-system and entity-browsing contract before the next preview release is cut.
+Inside this workspace, `uv` resolves `eu5miner` from the sibling core checkout. That keeps GUI tests and shell output aligned with the latest `eu5miner.inspection` supported-system and entity-browsing contract during post-release coordination and later patch planning.
 The published package metadata remains pinned to the coordinated core `v0.6.0` release tag even when local workspace validation uses the sibling checkout override.
 
 ## Documentation

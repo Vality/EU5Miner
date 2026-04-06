@@ -17,13 +17,13 @@ The current preview baseline now includes:
 - entity-list sorting, dedicated entity windowing, detail mode, and concrete list-to-detail jump hints
 - graceful unavailable-page handling for partial or synthetic installs, including overview recovery guidance and stable session-position context
 
-Release `0.6.0` packages the completed step-2 grouped-helper breadth through diplomacy and religion plus the first coherence pass over the README, roadmap, changelog, and spec index. The next major phase after this cut is full validation, build, test, and preview release readiness, not another helper-breadth expansion.
+Release `0.6.0` packages the completed step-2 grouped-helper breadth through diplomacy and religion plus the first coherence pass over the README, roadmap, changelog, and spec index. The immediate post-release phase is validation, build, test, and preview-contract maintenance for later patch or minor planning, not another helper-breadth expansion.
 
 ## Next Recommended Order
 
-### 1. Validation, Build, Test, And Preview Release Readiness
+### 1. Post-0.6.0 Stabilization And Preview Contract Maintenance
 
-Goal: keep the GUI thin over the intended stable seams while the current preview surface is validated and prepared for the next release cut.
+Goal: keep the GUI thin over the intended stable seams while the shipped preview surface is monitored, validated, and tightened after release.
 
 Reference spec: `documents/specs/preview-alignment.md`
 
@@ -33,10 +33,10 @@ Use this slice for:
 - docs and examples that match the shipped inspection-backed browser behavior
 - focused test updates when the core inspection facade changes or tightens its stable catalog contract
 - local source alignment and contract-locking around supported-system and browseable-entity-system coverage
-- dependency and release alignment with the core preview contract
+- dependency alignment and patch-level doc truthfulness with the core preview contract
 
 Do not reopen landed browse-refinement slices unless a core contract change forces a narrow follow-up.
-Do not use this slice to add another helper family before the release-readiness work is in place.
+Do not use this slice to add another helper family before the post-release contract pass is settled.
 
 ### 2. Diplomacy Helper Pages Over Stable Grouped Packages
 
