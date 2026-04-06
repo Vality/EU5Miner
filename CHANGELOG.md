@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- Documentation and roadmap wording across the three preview repos now records the checked-in state consistently: the core step-1 stabilization boundary is closed, the downstream step-2 grouped-helper breadth is shipped through diplomacy and religion, and the next major phase is validation, build, test, and release-readiness work.
+- Preview-scope language now keeps the downstream GUI and MCP helper surfaces explicit instead of implying another near-term core feature expansion.
+
 ## 0.5.0 - 2026-03-28
 
 - First public preview release.

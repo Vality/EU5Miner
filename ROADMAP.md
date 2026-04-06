@@ -46,9 +46,13 @@ The completed preview baseline now includes:
 - a stable read-only inspection facade and thin CLI over the intended library seams
 - initial mod planning and apply workflows in the core library
 - a structured read-only browser model in `EU5MinerGUI`
+- thin grouped-helper GUI pages for diplomacy and religion in `EU5MinerGUI`
 - a typed MCP shell in `EU5MinerMCP` with `inspect-install`, `list-files`, `list-systems`, `report-system`, `plan-mod-update`, and `apply-mod-update`
+- thin grouped-helper MCP tools for diplomacy and religion in `EU5MinerMCP`
 
 The next work should build on those shipped seams instead of repeating foundation or repo-setup slices.
+
+The checked-in three-repo state now covers the completed core step-1 stabilization boundary and the completed downstream step-2 grouped-helper breadth through diplomacy and religion. The immediate step-3 follow-on is coherence and release execution discipline: keep docs truthful, run the full validation and build gate, and align release-readiness work across the three preview repos.
 
 For the checked-in core repo state, the stabilization close-out is now effectively complete. Remaining work before proposing an actual `1.0` release is the later release step plus the targeted manual install-backed sanity checks documented in `documents/v1-release-readiness.md`.
 
@@ -89,7 +93,9 @@ Treat this as a close-out pass on the current preview contract, not as a new fea
 
 ### 2. GUI Read-Only Browsing Refinement
 
-Goal: iterate on the existing browser model rather than rebuild the shell.
+Status: the first downstream breadth slice is already complete for the current checked-in repo state through the shipped diplomacy and religion helper pages.
+
+Goal: keep future GUI follow-ons thin over the existing browser model rather than rebuild the shell.
 
 Use this slice for:
 
@@ -97,7 +103,11 @@ Use this slice for:
 - better presentation of partial-install and unavailable-report states
 - thin GUI-side integration work that stays over `eu5miner.inspection`
 
+Do not treat this as the current next major phase while cross-repo validation, build, test, and release-readiness work is still open.
+
 ### 3. MCP Server Contract Consolidation
+
+Status: the first downstream breadth slice is already complete for the current checked-in repo state through the shipped diplomacy and religion helper tools.
 
 Goal: tighten the current tool surface before promising larger MCP scope.
 
@@ -107,15 +117,18 @@ Use this slice for:
 - stronger separation between local shell behavior and future transport work
 - targeted additions only when backed by stable core seams
 
-### 4. Cross-Repo Preview Release Alignment
+Do not treat this as the current next major phase while cross-repo validation, build, test, and release-readiness work is still open.
 
-Goal: keep the three preview repos aligned as the next release is cut.
+### 4. Cross-Repo Validation, Build, Test, And Preview Release Alignment
+
+Goal: keep the three preview repos aligned now that the core step-1 close-out and the first downstream step-2 breadth slices are both checked in.
 
 Use this slice for:
 
-- dependency and changelog alignment
-- roadmap and README consistency across repos
-- release-ready validation and documentation polish
+ - full validation, type-check, lint, and build execution in each repo
+ - dependency and changelog alignment
+ - roadmap and README consistency across repos
+ - release-ready validation, manual sanity-check planning, and documentation polish
 
 ## Decision Rules
 
@@ -132,7 +145,7 @@ Use these rules when choosing the next task:
 The immediate sequence should be:
 
 1. treat the current foundation specs as completed baseline and reference material
-2. use the stabilization pass to define the intended `1.0` contract on the current curated seams
-3. treat the core contract hardening rounds as largely complete and avoid restarting them in new packaging or feature terms
-4. keep GUI and MCP follow-on work thin over those same seams instead of widening the core scope
-5. align release docs and targeted validation before proposing an actual `1.0` cut
+2. treat the core stabilization pass as completed reference material for the intended `1.0` contract on the current curated seams
+3. treat the downstream diplomacy and religion grouped-helper slices as completed reference material rather than the next active feature phase
+4. use the step-3 coherence sweep to keep README, roadmap, changelog, and spec-index wording aligned across repos
+5. make full validation, build, test, and targeted manual sanity checks the next major phase before proposing an actual `1.0` cut

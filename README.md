@@ -24,12 +24,14 @@ The `0.5.x` line should be treated as a public preview.
 
 - The root package, grouped domain packages, `eu5miner.inspection`, and the `eu5miner.mods` facade are intended for real use.
 - The CLI is intended as a thin convenience surface over the same library APIs.
-- Additional helper layers, future editing surfaces, and the planned MCP and GUI packages are still expected to evolve before `1.0`.
+- Additional helper layers, future editing surfaces, and the downstream GUI and MCP packages are still expected to evolve before `1.0`.
 - API coverage is intentionally incomplete relative to the full game data surface; missing families and API adjustments should still be expected during the preview line.
 
 In practice, this release is suitable for install inspection, virtual filesystem queries, representative parsing, typed domain reads, and the current mod update planning and application workflow. It is not yet a promise that every exported helper will remain unchanged across future minor releases.
 
 The recent stabilization rounds already locked the main preview contract around the narrow root package, grouped domain packages, `eu5miner.inspection`, `eu5miner.mods`, and the documented thin CLI workflow. That close-out work is now reflected in the checked-in docs and tests: the public-API and grouped-package contract tests, inspection contract coverage, thin CLI contract coverage, README contract examples, and the default no-install validation gate all point at the same boundary. A later `1.0` proposal should treat the remaining work as release execution plus targeted manual sanity checks against a local install and representative mod workspace, not as another feature phase.
+
+That checked-in core state now also has matching downstream breadth in the companion preview repos: `EU5MinerGUI` and `EU5MinerMCP` both ship thin grouped-helper surfaces through diplomacy and religion, and those helper families remain the explicit preview boundary. The next cross-repo phase should focus on full validation, build, and test execution plus release-readiness alignment rather than widening helper scope again.
 
 ## Development
 
