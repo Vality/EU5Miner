@@ -17,7 +17,7 @@ The current preview baseline now includes:
 - entity-list sorting, dedicated entity windowing, detail mode, and concrete list-to-detail jump hints
 - graceful unavailable-page handling for partial or synthetic installs, including overview recovery guidance and stable session-position context
 
-That checked-in state now covers the completed step-2 grouped-helper breadth through diplomacy and religion. The step-3 coherence sweep should keep the README, roadmap, changelog, and spec index aligned to that shipped surface. The next major phase after this documentation pass is full validation, build, test, and preview release readiness, not another helper-breadth expansion.
+Release `0.6.0` packages the completed step-2 grouped-helper breadth through diplomacy and religion plus the first coherence pass over the README, roadmap, changelog, and spec index. The next major phase after this cut is full validation, build, test, and preview release readiness, not another helper-breadth expansion.
 
 ## Next Recommended Order
 

@@ -2,21 +2,21 @@
 
 EU5MinerGUI is an unofficial companion application repo built on top of the core `eu5miner` library for Europa Universalis V data inspection.
 
-Release `0.5.0` is the first public preview release for this repo.
+Release `0.6.0` is the current public preview release for this repo.
 
 This project is not affiliated with, endorsed by, or sponsored by Paradox Interactive. No game files or other game assets are included in this repository or its built artifacts.
 
 ## Status
 
-The `0.5.x` line should be treated as a public preview.
+The `0.6.x` line should be treated as a public preview.
 
 - The repo ships a standalone Python application package and command entrypoint.
 - The current surface is a read-only text shell over stable core browse seams, including inspection-backed install overview, system reports, covered entity list/detail browsing, thin diplomacy helper pages built over grouped `eu5miner.domains.diplomacy` helpers, and one thin religion helper page built over grouped `eu5miner.domains.religion` helpers.
 - GUI-specific product work should continue here, while parsing, VFS, and domain-model logic stay in the core `eu5miner` library.
 
-The published dependency continues to track the core `eu5miner` `main` branch. In this multi-repo workspace, local `uv` resolution also points `eu5miner` at the sibling `../EU5Miner` checkout so GUI validation follows the current inspection facade during preview alignment work.
+The published dependency is pinned to the coordinated core `eu5miner` release tag `v0.6.0`. In this multi-repo workspace, local `uv` resolution still points `eu5miner` at the sibling `../EU5Miner` checkout so GUI validation follows the checked-out core source during coordinated workspace work.
 
-The checked-in GUI repo now reflects the completed step-2 grouped-helper breadth for the current preview line: diplomacy helper pages and the single religion helper page are both shipped, and that helper scope remains explicit. The current step-3 follow-on is coherence and release readiness: keep docs truthful, keep the full validation, build, and test gate green, and avoid widening helper scope again before the next preview cut.
+Release `0.6.0` captures the completed step-2 grouped-helper breadth for the current preview line: diplomacy helper pages and the single religion helper page are both shipped, and that helper scope remains explicit. The next major phase remains validation, build, test, and release-readiness work for later preview cuts rather than widening helper scope again.
 
 ## Current Browser Shell
 
@@ -87,6 +87,7 @@ uv build
 ```
 
 Inside this workspace, `uv` resolves `eu5miner` from the sibling core checkout. That keeps GUI tests and shell output aligned with the latest `eu5miner.inspection` supported-system and entity-browsing contract before the next preview release is cut.
+The published package metadata remains pinned to the coordinated core `v0.6.0` release tag even when local workspace validation uses the sibling checkout override.
 
 ## Documentation
 

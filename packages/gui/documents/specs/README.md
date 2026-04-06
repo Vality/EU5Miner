@@ -6,7 +6,7 @@ These specs are the execution layer under `ROADMAP.md`.
 
 The shell, browser, and browse-refinement specs in this folder now describe landed preview behavior. The first two explicit checked step-2 implementation slices are the diplomacy helper page family over the stable grouped core diplomacy package and the single-page religion helper follow-on over the stable grouped core religion package.
 
-The checked-in docs now also reflect the step-3 coherence sweep after that shipped step-2 breadth. No additional helper-page breadth is the current active spec; the next major phase is operational and release-oriented.
+The 0.6.0 preview cut now also packages the step-3 coherence sweep after that shipped step-2 breadth. No additional helper-page breadth is the current active spec; the next major phase is operational and release-oriented.
 
 ## Landed Baseline Specs
 

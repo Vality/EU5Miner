@@ -24,9 +24,9 @@ The repository includes workspace settings in `.vscode/settings.json` that:
 
 ## Local Core Alignment
 
-`pyproject.toml` keeps the published dependency pointed at the core `main` branch and also uses `[tool.uv.sources]` to resolve `eu5miner` from `../EU5Miner` inside this multi-repo workspace.
+`pyproject.toml` pins the published dependency to the core `v0.6.0` release tag and also uses `[tool.uv.sources]` to resolve `eu5miner` from `../EU5Miner` inside this multi-repo workspace.
 
-That local source override keeps GUI validation aligned with the sibling core checkout's current `eu5miner.inspection` supported-system and browseable-entity-system contract.
+That local source override keeps GUI validation aligned with whichever sibling core checkout is present in the multi-repo workspace, even though the published package metadata is pinned to the coordinated release tag.
 
 ## Validation
 

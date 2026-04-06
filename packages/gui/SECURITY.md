@@ -6,7 +6,7 @@ This repository is currently published as a public preview.
 
 | Version | Supported |
 | --- | --- |
-| 0.5.x | Yes |
+| 0.6.x | Yes |
 | Older preview versions | No |
 
 ## Reporting a Vulnerability
