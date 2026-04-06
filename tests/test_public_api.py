@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import eu5miner
 import eu5miner.inspection as inspection_api
+import eu5miner.mods as mods_api
 from eu5miner import (
     ContentPhase,
     GameInstall,
@@ -228,6 +229,22 @@ EXPECTED_INSPECTION_EXPORTS = {
     "summarize_install",
 }
 
+EXPECTED_MODS_EXPORTS = {
+    "AppliedModUpdate",
+    "AppliedModWrite",
+    "BlockedModEmission",
+    "ModUpdateAdvisory",
+    "ModUpdateAdvisoryKind",
+    "ModUpdateWarning",
+    "ModUpdateWarningKind",
+    "ModUpdateWrite",
+    "ModUpdateWriteKind",
+    "PlannedModUpdate",
+    "apply_mod_update",
+    "format_mod_update_report",
+    "plan_mod_update",
+}
+
 
 def test_root_package_exports_mod_workflow_surface() -> None:
     assert set(eu5miner.__all__) == EXPECTED_ROOT_EXPORTS
@@ -271,6 +288,18 @@ def test_inspection_module_exports_stable_read_only_facade() -> None:
     assert callable(get_system_entity)
     assert callable(get_system_report)
     assert callable(format_system_report)
+
+
+def test_mods_module_exports_stable_mod_workflow_facade() -> None:
+    assert set(mods_api.__all__) == EXPECTED_MODS_EXPORTS
+    assert mods_api.PlannedModUpdate.__name__ == "PlannedModUpdate"
+    assert mods_api.AppliedModUpdate.__name__ == "AppliedModUpdate"
+    assert mods_api.ModUpdateWrite.__name__ == "ModUpdateWrite"
+    assert mods_api.ModUpdateAdvisoryKind.__name__ == "ModUpdateAdvisoryKind"
+    assert mods_api.ModUpdateWarningKind.__name__ == "ModUpdateWarningKind"
+    assert callable(mods_api.plan_mod_update)
+    assert callable(mods_api.apply_mod_update)
+    assert callable(mods_api.format_mod_update_report)
 
 
 def test_domains_package_exports_curated_entrypoints() -> None:

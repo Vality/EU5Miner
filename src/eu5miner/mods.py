@@ -376,3 +376,20 @@ def _format_applied_update_report(update: AppliedModUpdate) -> str:
         lines.extend(f"- {warning.message}" for warning in update.warnings)
 
     return "\n".join(lines)
+
+
+__all__ = [
+    "AppliedModUpdate",
+    "AppliedModWrite",
+    "BlockedModEmission",
+    "ModUpdateAdvisory",
+    "ModUpdateAdvisoryKind",
+    "ModUpdateWarning",
+    "ModUpdateWarningKind",
+    "ModUpdateWrite",
+    "ModUpdateWriteKind",
+    "PlannedModUpdate",
+    "apply_mod_update",
+    "format_mod_update_report",
+    "plan_mod_update",
+]

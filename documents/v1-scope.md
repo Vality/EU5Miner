@@ -23,6 +23,18 @@ Release `0.5.0` is a public preview inside this scope. It marks the first intent
 
 The preview release is expected to support real parsing and reporting work, but it does not yet claim that every helper surface is final. The first `1.0` release should follow a short hardening pass that confirms which import paths and workflows are part of the long-term compatibility contract.
 
+## Intended 1.0 Contract Boundary
+
+The intended `1.0` compatibility boundary is the current curated surface, not every helper exported anywhere in the package tree.
+
+- The narrow root package: install discovery, VFS primitives, and the main mod workflow helpers.
+- Grouped domain packages such as `eu5miner.domains.diplomacy`, `eu5miner.domains.economy`, `eu5miner.domains.government`, `eu5miner.domains.religion`, `eu5miner.domains.map`, and `eu5miner.domains.localization` when working within one concept area.
+- `eu5miner.inspection` for stable read-only install summaries, system reports, and the current narrow entity-browsing surface.
+- `eu5miner.mods` for stable higher-level plan, apply, and report mod workflow operations.
+- The CLI as a thin wrapper over those library seams rather than an expanded standalone product API.
+
+The broad `eu5miner.domains` convenience import remains available during preview, but grouped packages are the preferred stable seam. Internal implementation modules are not part of the intended `1.0` contract.
+
 ## Why this cut
 
 This scope captures the file families that matter most for modding and data mining while keeping the implementation small enough to stay test-heavy and extensible. It also avoids locking the project into brittle binary reverse engineering before the text core is reliable.
