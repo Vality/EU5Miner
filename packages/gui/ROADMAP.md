@@ -38,7 +38,27 @@ Use this slice for:
 Do not reopen landed browse-refinement slices unless a core contract change forces a narrow follow-up.
 Do not use this slice to add another helper family before the post-release contract pass is settled.
 
-### 2. Diplomacy Helper Pages Over Stable Grouped Packages
+### 2. First Real Kivy Desktop Shell
+
+Goal: ship the first practical desktop application for this repo by keeping the current read-only browse surface and helper coverage, but moving the primary UX to a real Kivy desktop window with explicit source selection, sidebar navigation, efficient large-entity browsing, clickable detail navigation, and a state architecture that can support later editing work.
+
+Execution spec: `documents/specs/kivy-desktop-browser.md`
+
+Use this slice for:
+
+- a real desktop GUI, not another command-focused shell, with a sidebar plus main detail pane layout
+- install auto-discovery, manual install-root override, and explicit extra mod-folder selection over existing core discovery and inspection seams
+- full current coverage for supported system reports, browseable entity systems, diplomacy helper pages, and the religion helper page
+- efficient entity-list search and filtering for large EU5 datasets using Kivy view virtualization, cached summary records, and selection-driven detail loading instead of per-row widget construction
+- clickable navigation between overview, report, entity-list, entity-detail, and helper views where the target page is deterministic
+- limited high-signal visualizations where they materially improve comprehension, such as source-layer summaries and diplomacy or religion helper relationship totals
+- a GUI architecture that stays read-only now but keeps later editing practical by separating source state, navigation state, cached page data, and widget presentation
+- keeping the current text shell only as a focused contract and regression seam during the desktop transition, not as the primary product surface
+
+Do not use this slice to add editing, a raw file editor, a second browse-only CLI experience, a generic graph explorer, or GUI-local parser and domain logic.
+Do not turn this slice into a second planning phase for speculative future workflows before the first desktop app is shippable.
+
+### 3. Diplomacy Helper Pages Over Stable Grouped Packages
 
 Status: complete through diplomacy and religion for the current checked-in repo state; use this section as the reference boundary for any later helper follow-on rather than as the next active slice.
 
@@ -69,7 +89,7 @@ Boundary preserved by that shipped follow-on:
 
 Do not use this slice to widen `--all-systems`, invent religion parsing in the GUI repo, or bypass the current browser/page model with bespoke helper-only workflows.
 
-### 3. Defer Editing Workflows
+### 4. Defer Editing Workflows
 
 Goal: keep write or editor-oriented work out of scope until a concrete cross-repo plan exists.
 
@@ -79,5 +99,6 @@ Editing is not the current next release slice for this repo.
 
 - parsing work stays in `eu5miner`
 - UI work stays here
-- the current read-only browser model is the baseline, not a prototype to replace by default
+- the current read-only browser model is the baseline, even when the presentation surface moves from the text shell to a desktop window
+- the next active product slice is the Kivy desktop shell described in `documents/specs/kivy-desktop-browser.md`
 - major follow-on slices should be backed by a spec in `documents/specs/`

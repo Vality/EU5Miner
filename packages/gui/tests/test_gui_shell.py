@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Any
 
 import eu5miner.inspection as inspection
 
@@ -427,23 +428,51 @@ def test_build_shell_message_entity_list_window_and_detail_mode(tmp_path: Path) 
 
 
 def test_cli_main_returns_zero(capsys) -> None:
-    assert main([]) == 0
+    desktop_calls: list[tuple[tuple[Any, ...], dict[str, Any]]] = []
+
+    def fake_launch_desktop(*args: Any, **kwargs: Any) -> int:
+        desktop_calls.append((args, kwargs))
+        return 0
+
+    import eu5miner_gui.cli as cli_module
+
+    original_launch_desktop = cli_module.launch_desktop
+    cli_module.launch_desktop = fake_launch_desktop
+    try:
+        assert main([]) == 0
+    finally:
+        cli_module.launch_desktop = original_launch_desktop
+
     captured = capsys.readouterr()
-    assert "EU5MinerGUI read-only browser ready." in captured.out
-    assert "Available pages:" in captured.out
+    assert desktop_calls
+    assert captured.out == ""
 
 
 def test_package_main_returns_zero(capsys) -> None:
-    assert package_main([]) == 0
+    desktop_calls: list[tuple[tuple[Any, ...], dict[str, Any]]] = []
+
+    def fake_launch_desktop(*args: Any, **kwargs: Any) -> int:
+        desktop_calls.append((args, kwargs))
+        return 0
+
+    import eu5miner_gui.cli as cli_module
+
+    original_launch_desktop = cli_module.launch_desktop
+    cli_module.launch_desktop = fake_launch_desktop
+    try:
+        assert package_main([]) == 0
+    finally:
+        cli_module.launch_desktop = original_launch_desktop
+
     captured = capsys.readouterr()
-    assert "EU5MinerGUI read-only browser ready." in captured.out
-    assert "Available pages:" in captured.out
+    assert desktop_calls
+    assert captured.out == ""
 
 
 def test_cli_selected_system_report_from_synthetic_install(tmp_path: Path, capsys) -> None:
     install_root = _make_report_install(tmp_path / "install")
 
-    exit_code = main(["--install-root", str(install_root), "--system", "map"])
+    exit_code = main(["--describe", "--install-root", str(install_root), "--system", "map"])
 
     captured = capsys.readouterr()
     assert exit_code == 0
@@ -467,7 +496,7 @@ def test_cli_all_systems_from_synthetic_install(tmp_path: Path, capsys) -> None:
     install_root = _make_report_install(tmp_path / "install")
     model = build_browser_model(install_root, include_all_systems=True)
 
-    exit_code = main(["--install-root", str(install_root), "--all-systems"])
+    exit_code = main(["--describe", "--install-root", str(install_root), "--all-systems"])
 
     captured = capsys.readouterr()
     assert exit_code == 0
@@ -493,6 +522,7 @@ def test_cli_selected_entity_detail_from_synthetic_install(tmp_path: Path, capsy
 
     exit_code = main(
         [
+            "--describe",
             "--install-root",
             str(install_root),
             "--entity-system",
@@ -822,7 +852,7 @@ def test_build_shell_message_quotes_entity_selection_flag_values_with_spaces(
 
 def test_cli_rejects_negative_browser_window_controls(capsys) -> None:
     try:
-        main(["--page-list-limit", "-1"])
+        main(["--describe", "--page-list-limit", "-1"])
     except SystemExit as exc:
         assert exc.code == 2
     else:
@@ -832,7 +862,7 @@ def test_cli_rejects_negative_browser_window_controls(capsys) -> None:
     assert "page_list_limit cannot be negative." in captured.err
 
     try:
-        main(["--entity-list-offset", "-1"])
+        main(["--describe", "--entity-list-offset", "-1"])
     except SystemExit as exc:
         assert exc.code == 2
     else:
@@ -850,6 +880,7 @@ def test_cli_page_key_can_open_entity_detail_without_explicit_entity_flags(
 
     exit_code = main(
         [
+            "--describe",
             "--install-root",
             str(install_root),
             "--page",
@@ -872,6 +903,7 @@ def test_cli_page_key_can_open_diplomacy_helper_without_explicit_helper_flag(
 
     exit_code = main(
         [
+            "--describe",
             "--install-root",
             str(install_root),
             "--page",
@@ -894,6 +926,7 @@ def test_cli_page_alias_can_open_religion_helper_without_explicit_helper_flag(
 
     exit_code = main(
         [
+            "--describe",
             "--install-root",
             str(install_root),
             "--page",
@@ -916,6 +949,7 @@ def test_cli_page_alias_can_open_entity_detail_without_explicit_entity_flags(
 
     exit_code = main(
         [
+            "--describe",
             "--install-root",
             str(install_root),
             "--page",
@@ -934,7 +968,7 @@ def test_cli_page_target_suggests_closest_supported_system(tmp_path: Path, capsy
     install_root = _make_report_install(tmp_path / "install")
 
     try:
-        main(["--install-root", str(install_root), "--page", "system:mapp"])
+        main(["--describe", "--install-root", str(install_root), "--page", "system:mapp"])
     except SystemExit as exc:
         assert exc.code == 2
     else:
@@ -948,7 +982,13 @@ def test_cli_show_all_pages_restores_full_page_dump(tmp_path: Path, capsys) -> N
     install_root = _make_report_install(tmp_path / "install")
 
     exit_code = main(
-        ["--install-root", str(install_root), "--all-systems", "--show-all-pages"]
+        [
+            "--describe",
+            "--install-root",
+            str(install_root),
+            "--all-systems",
+            "--show-all-pages",
+        ]
     )
 
     captured = capsys.readouterr()
@@ -969,6 +1009,7 @@ def test_cli_entity_list_source_sort_and_limit_controls(tmp_path: Path, capsys) 
 
     exit_code = main(
         [
+            "--describe",
             "--install-root",
             str(install_root),
             "--entity-system",

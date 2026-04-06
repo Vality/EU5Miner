@@ -11,6 +11,8 @@ from eu5miner_gui.browser import (
     parse_browser_page_selection,
     render_browser_model,
 )
+from eu5miner_gui.desktop.bootstrap import DesktopLaunchOptions, launch_desktop_app
+from eu5miner_gui.desktop.navigation import NavigationTarget, navigation_target_from_page_key
 from eu5miner_gui.diplomacy_helpers import list_diplomacy_helpers
 from eu5miner_gui.religion_helpers import list_religion_helpers
 
@@ -136,6 +138,78 @@ def launch_app(
         entity_list_mode=entity_list_mode,
         entity_list_limit=entity_list_limit,
         entity_list_offset=entity_list_offset,
+    )
+
+
+def build_navigation_target(
+    install_root: str | Path | None = None,
+    *,
+    selected_system: str | None = None,
+    selected_entity_system: str | None = None,
+    selected_entity_name: str | None = None,
+    selected_diplomacy_helper: str | None = None,
+    selected_religion_helper: str | None = None,
+    page_key: str | None = None,
+) -> NavigationTarget:
+    (
+        normalized_page_key,
+        resolved_system,
+        resolved_entity_system,
+        resolved_entity_name,
+        resolved_diplomacy_helper,
+        resolved_religion_helper,
+    ) = _resolve_navigation_request(
+        install_root,
+        page_key=page_key,
+        selected_system=selected_system,
+        selected_entity_system=selected_entity_system,
+        selected_entity_name=selected_entity_name,
+        selected_diplomacy_helper=selected_diplomacy_helper,
+        selected_religion_helper=selected_religion_helper,
+    )
+    if normalized_page_key is not None:
+        return navigation_target_from_page_key(normalized_page_key)
+    if resolved_entity_system is not None and resolved_entity_name is not None:
+        return NavigationTarget.entity_detail(resolved_entity_system, resolved_entity_name)
+    if resolved_entity_system is not None:
+        return NavigationTarget.entity_list(resolved_entity_system)
+    if resolved_system is not None:
+        return NavigationTarget.report(resolved_system)
+    if resolved_religion_helper is not None:
+        return NavigationTarget.helper(resolved_religion_helper)
+    if resolved_diplomacy_helper is not None:
+        return NavigationTarget.helper(resolved_diplomacy_helper)
+    return NavigationTarget.overview()
+
+
+def launch_desktop(
+    install_root: str | Path | None = None,
+    *,
+    selected_system: str | None = None,
+    selected_entity_system: str | None = None,
+    selected_entity_name: str | None = None,
+    selected_diplomacy_helper: str | None = None,
+    selected_religion_helper: str | None = None,
+    page_key: str | None = None,
+    mod_roots: tuple[str | Path, ...] = (),
+) -> int:
+    normalized_install_root = None if install_root is None else Path(install_root)
+    normalized_mod_roots = tuple(Path(mod_root) for mod_root in mod_roots)
+    initial_target = build_navigation_target(
+        normalized_install_root,
+        selected_system=selected_system,
+        selected_entity_system=selected_entity_system,
+        selected_entity_name=selected_entity_name,
+        selected_diplomacy_helper=selected_diplomacy_helper,
+        selected_religion_helper=selected_religion_helper,
+        page_key=page_key,
+    )
+    return launch_desktop_app(
+        options=DesktopLaunchOptions(
+            install_root=normalized_install_root,
+            initial_target=initial_target,
+            mod_folders=normalized_mod_roots,
+        )
     )
 
 

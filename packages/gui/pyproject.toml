@@ -14,6 +14,7 @@ authors = [
 ]
 dependencies = [
   "eu5miner @ git+https://github.com/Vality/EU5Miner.git@v0.6.0",
+  "kivy>=2.3,<3",
 ]
 
 [project.optional-dependencies]
@@ -25,6 +26,7 @@ dev = [
 
 [project.scripts]
 eu5miner-gui = "eu5miner_gui.cli:main"
+eu5miner-gui-shell = "eu5miner_gui.cli:shell_main"
 
 [tool.uv.sources]
 eu5miner = { path = "../EU5Miner" }
@@ -62,3 +64,16 @@ python_version = "3.12"
 strict = true
 packages = ["eu5miner_gui"]
 warn_unused_configs = true
+
+[[tool.mypy.overrides]]
+module = ["kivy.*"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["eu5miner_gui.desktop.widgets.*"]
+disallow_subclassing_any = false
+warn_return_any = false
+
+[[tool.mypy.overrides]]
+module = ["eu5miner_gui.desktop.bootstrap"]
+disallow_subclassing_any = false

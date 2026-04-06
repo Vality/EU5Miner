@@ -11,16 +11,33 @@ This project is not affiliated with, endorsed by, or sponsored by Paradox Intera
 The `0.6.x` line should be treated as a public preview.
 
 - The repo ships a standalone Python application package and command entrypoint.
-- The current surface is a read-only text shell over stable core browse seams, including inspection-backed install overview, system reports, covered entity list/detail browsing, thin diplomacy helper pages built over grouped `eu5miner.domains.diplomacy` helpers, and one thin religion helper page built over grouped `eu5miner.domains.religion` helpers.
+- The primary surface is now a real read-only Kivy desktop application with a source strip, sidebar navigation, virtualized entity browsing, detail-pane cross-links, install auto-discovery, manual install-root override, and session-local extra mod folders.
+- The previous text browser remains available as an explicit regression seam through `eu5miner-gui --describe` or the `eu5miner-gui-shell` entrypoint, including inspection-backed install overview, system reports, covered entity list/detail browsing, thin diplomacy helper pages built over grouped `eu5miner.domains.diplomacy` helpers, and one thin religion helper page built over grouped `eu5miner.domains.religion` helpers.
 - GUI-specific product work should continue here, while parsing, VFS, and domain-model logic stay in the core `eu5miner` library.
 
 The published dependency is pinned to the coordinated core `eu5miner` release tag `v0.6.0`. In this multi-repo workspace, local `uv` resolution still points `eu5miner` at the sibling `../EU5Miner` checkout so GUI validation follows the checked-out core source during coordinated workspace work.
 
 Release `0.6.0` captures the completed step-2 grouped-helper breadth for the current preview line: diplomacy helper pages and the single religion helper page are both shipped, and that helper scope remains explicit. The immediate post-release phase is validation, build, test, and preview-contract maintenance for later patch or minor planning rather than widening helper scope again.
 
-## Current Browser Shell
+## Current Desktop Shell
 
-The current preview command prints a structured read-only browser view backed by stable core browse seams.
+The default `eu5miner-gui` command now launches a Kivy desktop window.
+
+- Startup attempts install auto-discovery through `eu5miner.GameInstall.discover()` and falls back to a recoverable overview state if no install can be found.
+- The top source strip supports manual install-root override, reload, adding extra mod folders, and removing the currently selected extra mod folder.
+- The sidebar keeps one `Overview` page, all supported system reports from `eu5miner.inspection.list_supported_systems()`, all current browseable entity systems from `eu5miner.inspection.list_entity_systems()`, and explicit helper entries for `war-flow`, `diplomacy-graph`, and `religion-overview`.
+- Entity pages use a virtualized `RecycleView`, debounced substring search, cached entity summaries, sort controls, and selection-driven detail loading so large browseable systems stay responsive.
+- The main detail pane includes overview source-layer visualization, report/helper summary chips, entity detail references with deterministic cross-links where the target system is browseable, and clear source-scope notices when helper pages cannot yet incorporate extra mod folders.
+
+```powershell
+eu5miner-gui
+eu5miner-gui --install-root C:\EU5 --page report:map
+eu5miner-gui --install-root C:\EU5 --mod-root C:\Mods\MyTotalConversion
+```
+
+## Text Browser Regression Seam
+
+The structured text browser remains available for contract-style tests, shell debugging, and doc examples.
 
 - Without a local install, it renders the overview page with the supported system list and an unloaded install-summary section.
 - With `--install-root`, it renders an install overview page with roots, phases, and merged content sources.
@@ -44,25 +61,26 @@ The current preview command prints a structured read-only browser view backed by
 - When a selected install is partial or synthetic, the browser keeps the overview and marks unavailable system pages instead of aborting the whole session, while unavailable pages now explain how to recover context from the overview.
 
 ```powershell
-eu5miner-gui
-eu5miner-gui --install-root C:\EU5 --system map
-eu5miner-gui --install-root C:\EU5 --entity-system religion
-eu5miner-gui --install-root C:\EU5 --entity-system religion --entity-list-limit 10 --entity-list-offset 20
-eu5miner-gui --install-root C:\EU5 --entity-system government --entity-list-mode detail
-eu5miner-gui --install-root C:\EU5 --entity-system economy --entity-list-sort group
-eu5miner-gui --install-root C:\EU5 --entity-system map --entity stockholm
-eu5miner-gui --install-root C:\EU5 --diplomacy-helper war-flow
-eu5miner-gui --install-root C:\EU5 --religion-helper religion-overview
-eu5miner-gui --install-root C:\EU5 --page helper:diplomacy-graph
-eu5miner-gui --install-root C:\EU5 --page religion-helper:religion-overview
-eu5miner-gui --install-root C:\EU5 --page report:map
-eu5miner-gui --install-root C:\EU5 --page system:map
-eu5miner-gui --install-root C:\EU5 --page detail:government:monarchy
-eu5miner-gui --install-root C:\EU5 --all-systems --list-pages
-eu5miner-gui --install-root C:\EU5 --all-systems --page-list-limit 5
-eu5miner-gui --install-root C:\EU5 --all-systems --page-filter map
-eu5miner-gui --install-root C:\EU5 --all-systems
-eu5miner-gui --install-root C:\EU5 --all-systems --show-all-pages
+eu5miner-gui --describe
+eu5miner-gui --describe --install-root C:\EU5 --system map
+eu5miner-gui --describe --install-root C:\EU5 --entity-system religion
+eu5miner-gui --describe --install-root C:\EU5 --entity-system religion --entity-list-limit 10 --entity-list-offset 20
+eu5miner-gui --describe --install-root C:\EU5 --entity-system government --entity-list-mode detail
+eu5miner-gui --describe --install-root C:\EU5 --entity-system economy --entity-list-sort group
+eu5miner-gui --describe --install-root C:\EU5 --entity-system map --entity stockholm
+eu5miner-gui --describe --install-root C:\EU5 --diplomacy-helper war-flow
+eu5miner-gui --describe --install-root C:\EU5 --religion-helper religion-overview
+eu5miner-gui --describe --install-root C:\EU5 --page helper:diplomacy-graph
+eu5miner-gui --describe --install-root C:\EU5 --page religion-helper:religion-overview
+eu5miner-gui --describe --install-root C:\EU5 --page report:map
+eu5miner-gui --describe --install-root C:\EU5 --page system:map
+eu5miner-gui --describe --install-root C:\EU5 --page detail:government:monarchy
+eu5miner-gui --describe --install-root C:\EU5 --all-systems --list-pages
+eu5miner-gui --describe --install-root C:\EU5 --all-systems --page-list-limit 5
+eu5miner-gui --describe --install-root C:\EU5 --all-systems --page-filter map
+eu5miner-gui --describe --install-root C:\EU5 --all-systems
+eu5miner-gui --describe --install-root C:\EU5 --all-systems --show-all-pages
+eu5miner-gui-shell --install-root C:\EU5 --system map
 ```
 
 Page filtering works only over pages already loaded into the current browser session. Use `--all-systems` or the relevant explicit selection flags when you want a wider index before filtering. If a filter matches nothing, the shell now calls that out explicitly and reminds you that filtering only applies to the loaded session.

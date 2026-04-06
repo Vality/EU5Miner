@@ -6,7 +6,7 @@ These specs are the execution layer under `ROADMAP.md`.
 
 The shell, browser, and browse-refinement specs in this folder now describe landed preview behavior. The first two explicit checked step-2 implementation slices are the diplomacy helper page family over the stable grouped core diplomacy package and the single-page religion helper follow-on over the stable grouped core religion package.
 
-With `0.6.0` now published, the step-3 coherence sweep is also complete after that shipped step-2 breadth. No additional helper-page breadth is the current active spec; the immediate next phase is operational post-release follow-through.
+With `0.6.0` now published, the step-3 coherence sweep is also complete after that shipped step-2 breadth. No additional helper-page breadth is the current active spec; the immediate next phase is operational post-release follow-through, followed by the first real read-only Kivy desktop shell slice.
 
 ## Landed Baseline Specs
 
@@ -28,8 +28,14 @@ Treat the browse-refinement specs above as closed baseline scope. Reopen them on
 
 The immediate post-release phase is full validation, build, test, and preview-contract maintenance over the shipped browser and helper-page surface. Future helper-page follow-ons should stay as narrow as the shipped diplomacy and religion slices instead of turning helper pages into a generic second browse surface.
 
+## Next Major Implementation Slice
+
+- `kivy-desktop-browser.md`: execution-ready spec for the first practical desktop app, keeping the GUI read-only while moving the primary UX to a Kivy sidebar-plus-detail-pane desktop shell with full current report/entity/helper coverage, install auto-discovery plus manual override, extra mod-folder selection, efficient large-entity search and filtering, deterministic clickable navigation, and a state model that keeps later editing practical
+
 ## Rules
 
 - keep parsing and domain logic in `eu5miner`
 - keep new GUI work thin over stable `eu5miner.inspection` behavior
+- keep the read-only browser model and helper-page boundaries even when the primary presentation surface becomes a desktop window
+- make the desktop window the primary product surface for this slice instead of widening the text shell into a second long-term UX
 - make hosted CI sufficient for the default workflow
