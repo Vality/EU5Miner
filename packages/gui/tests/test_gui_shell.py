@@ -381,6 +381,26 @@ def test_build_shell_message_empty_filter_shows_guidance(tmp_path: Path) -> None
     assert "Page filters only search already-loaded pages." in message
 
 
+def test_build_shell_message_filter_guides_reopening_hidden_selected_page(
+    tmp_path: Path,
+) -> None:
+    install_root = _make_report_install(tmp_path / "install")
+
+    message = build_shell_message(
+        install_root,
+        selected_system="map",
+        page_filter="overview",
+    )
+
+    assert "Selected page: overview" in message
+    assert "Session-selected page hidden by current filter: report:map." in message
+    assert "Direct page flag: --page report:map" in message
+    assert (
+        "Filter reopen hint: clear --page-filter or change it until that page is visible "
+        "again."
+    ) in message
+
+
 def test_build_shell_message_list_pages_only_hides_page_content(tmp_path: Path) -> None:
     install_root = _make_report_install(tmp_path / "install")
 
@@ -425,7 +445,13 @@ def test_build_shell_message_page_window_offset_can_hide_selected_page(tmp_path:
 
     assert "Available pages (showing 1-3 of 11 loaded):" in message
     assert "Page window: showing 1-3 of 11 matched pages." in message
-    assert "Selected page is outside the current page window." in message
+    assert "Selected page is outside the current page window: entities:map." in message
+    assert "Direct page flag: --page entities:map" in message
+    assert (
+        "Index reopen hint: omit --page-list-offset to keep the selected page visible, "
+        "or use --page-list-offset 8."
+    ) in message
+    assert "Full index hint: use --page-list-limit 0 to disable page-index windowing." in message
     assert "* entities:map: map entities" not in message
     assert "- overview: Install overview" in message
 

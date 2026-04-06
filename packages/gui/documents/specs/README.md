@@ -4,7 +4,7 @@ These specs are the execution layer under `ROADMAP.md`.
 
 ## Current Status
 
-The two specs in this folder describe the baseline that has already landed for the preview repo.
+The shell, browser, and browse-refinement specs in this folder now describe landed preview behavior.
 
 ## Landed Baseline Specs
 
@@ -12,11 +12,11 @@ The two specs in this folder describe the baseline that has already landed for t
 - `read-only-data-browser.md`: completed baseline for the structured overview and per-system report browser model
 - `entity-browser-pages.md`: completed browse refinement for covered entity list/detail pages over `eu5miner.inspection`
 - `browser-navigation.md`: completed navigation refinement for explicit page focus, page listing, and lightweight filtering over the existing browser model
-- `browser-session-ergonomics.md`: current refinement slice for large-session readability, page-window controls, and navigation hints in the lightweight shell
-- `large-entity-list-browsing.md`: current refinement slice for large entity-list sorting, windowing, mode selection, and clearer list-to-detail jumps
-- `browser-page-context.md`: current refinement slice for session-position hints and clearer unavailable-page guidance over the loaded browser session
+- `browser-session-ergonomics.md`: completed refinement for large-session readability, page-window controls, and navigation hints in the lightweight shell
+- `large-entity-list-browsing.md`: completed refinement for large entity-list sorting, windowing, mode selection, and clearer list-to-detail jumps
+- `browser-page-context.md`: completed refinement for session-position hints, unavailable-page recovery guidance, and hidden-selection reopen hints over the loaded browser session
 
-The next spec for this repo should continue refining presentation on top of the existing browser model rather than reopening shell, scaffolding, or core-data plumbing work.
+The next spec for this repo should focus on preview alignment with the core library contract rather than reopening baseline browse ergonomics, shell scaffolding, or core-data plumbing work.
 
 ## Rules
 

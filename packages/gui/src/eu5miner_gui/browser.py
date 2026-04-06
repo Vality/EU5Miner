@@ -311,6 +311,7 @@ def render_browser_model(
         section_line_limit,
         option_name="section_line_limit",
     )
+    session_selected_page = model.get_page(model.selected_page_key)
     visible_pages = _filter_pages(model.pages, normalized_page_filter)
     selected_page = _resolve_rendered_page(
         model,
@@ -362,6 +363,16 @@ def render_browser_model(
                 "No pages matched the current filter.",
                 "Page filters only search already-loaded pages. Widen the session with "
                 "--all-systems or adjust the current system/entity selection.",
+                *_build_session_flow_guidance_lines(
+                    visible_pages=visible_pages,
+                    indexed_pages=indexed_pages,
+                    session_selected_page=session_selected_page,
+                    rendered_page=selected_page,
+                    page_window=page_window,
+                    page_filter=normalized_page_filter,
+                    page_list_limit=normalized_page_list_limit,
+                    page_list_offset=normalized_page_list_offset,
+                ),
             )
         )
         return "\n".join(lines)
@@ -371,12 +382,18 @@ def render_browser_model(
             f"Page window: showing {page_window.start + 1}-{page_window.end} of "
             f"{page_window.total} matched pages."
         )
-    if (
-        selected_page is not None
-        and page_window.has_hidden_pages
-        and selected_page not in indexed_pages
-    ):
-        lines.append("Selected page is outside the current page window.")
+    lines.extend(
+        _build_session_flow_guidance_lines(
+            visible_pages=visible_pages,
+            indexed_pages=indexed_pages,
+            session_selected_page=session_selected_page,
+            rendered_page=selected_page,
+            page_window=page_window,
+            page_filter=normalized_page_filter,
+            page_list_limit=normalized_page_list_limit,
+            page_list_offset=normalized_page_list_offset,
+        )
+    )
 
     if list_pages_only:
         lines.extend(("", "Index mode: page content hidden."))
@@ -1034,6 +1051,95 @@ def _build_session_summary_lines(
             f"{visible_page_count} matched of {session_summary.loaded_page_count} loaded pages"
         )
     return tuple(lines)
+
+
+def _build_session_flow_guidance_lines(
+    *,
+    visible_pages: tuple[BrowserPage, ...],
+    indexed_pages: tuple[BrowserPage, ...],
+    session_selected_page: BrowserPage | None,
+    rendered_page: BrowserPage | None,
+    page_window: PageWindow,
+    page_filter: str | None,
+    page_list_limit: int | None,
+    page_list_offset: int | None,
+) -> tuple[str, ...]:
+    lines: list[str] = []
+
+    if (
+        page_filter is not None
+        and session_selected_page is not None
+        and session_selected_page not in visible_pages
+    ):
+        lines.extend(
+            (
+                f"Session-selected page hidden by current filter: {session_selected_page.key}.",
+                f"Direct page flag: --page {session_selected_page.key}",
+                "Filter reopen hint: clear --page-filter or change it until that page is "
+                "visible again.",
+            )
+        )
+
+    if (
+        rendered_page is not None
+        and page_window.has_hidden_pages
+        and rendered_page not in indexed_pages
+    ):
+        lines.extend(
+            (
+                f"Selected page is outside the current page window: {rendered_page.key}.",
+                f"Direct page flag: --page {rendered_page.key}",
+                _format_page_window_reopen_hint(
+                    visible_pages,
+                    rendered_page=rendered_page,
+                    page_list_limit=page_list_limit,
+                    page_list_offset=page_list_offset,
+                ),
+                "Full index hint: use --page-list-limit 0 to disable page-index windowing.",
+            )
+        )
+
+    return tuple(lines)
+
+
+def _format_page_window_reopen_hint(
+    visible_pages: tuple[BrowserPage, ...],
+    *,
+    rendered_page: BrowserPage,
+    page_list_limit: int | None,
+    page_list_offset: int | None,
+) -> str:
+    if page_list_limit is None:
+        return (
+            "Index reopen hint: remove the explicit page window to keep the selected "
+            "page visible."
+        )
+
+    recommended_offset = _recommended_page_list_offset(
+        visible_pages,
+        selected_page=rendered_page,
+        page_list_limit=page_list_limit,
+    )
+    if page_list_offset is None:
+        return (
+            "Index reopen hint: omit --page-list-offset to keep the selected page "
+            "visible."
+        )
+    return (
+        "Index reopen hint: omit --page-list-offset to keep the selected page visible, "
+        f"or use --page-list-offset {recommended_offset}."
+    )
+
+
+def _recommended_page_list_offset(
+    visible_pages: tuple[BrowserPage, ...],
+    *,
+    selected_page: BrowserPage,
+    page_list_limit: int,
+) -> int:
+    selected_index = visible_pages.index(selected_page)
+    max_start = max(0, len(visible_pages) - page_list_limit)
+    return min(selected_index, max_start)
 
 
 def _build_navigation_lines(model: BrowserModel, page: BrowserPage) -> tuple[str, ...]:

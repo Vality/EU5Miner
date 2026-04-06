@@ -10,24 +10,16 @@ The current preview baseline now includes:
 - a launchable CLI and app shell
 - a structured read-only browser model with an overview page and per-system report pages
 - browsing for one selected system or all supported systems from a chosen install
-- explicit page-key focus, page index mode, and lightweight filtering over loaded browser pages
-- graceful unavailable-page handling for partial or synthetic installs
+- explicit page-key focus, page index mode, lightweight filtering, and concrete reopen hints when filters hide the current session selection
+- page-index windowing, section truncation, and navigation hints for larger browser sessions
+- entity-list sorting, dedicated entity windowing, detail mode, and concrete list-to-detail jump hints
+- graceful unavailable-page handling for partial or synthetic installs, including overview recovery guidance and stable session-position context
 
-That means the next work should refine the shipped read-only browser, not restart shell or scaffolding work.
+That means the next work should keep the shipped browser aligned with the core preview contract rather than reopening another baseline browse-flow slice.
 
 ## Next Recommended Order
 
-### 1. Read-Only Browsing Refinement
-
-Goal: improve the existing browser model and browse flow.
-
-Use this slice for:
-
-- clearer page selection and session flow
-- better presentation of overview, report, and unavailable states
-- thin UI-facing structure over the existing `eu5miner.inspection` reports
-
-### 2. Preview Alignment With The Core Library
+### 1. Preview Alignment With The Core Library
 
 Goal: keep the GUI thin over the intended stable seams as the preview line evolves.
 
@@ -37,7 +29,7 @@ Use this slice for:
 - test updates when the core inspection facade gains or tightens stable behavior
 - dependency and release alignment with the core preview contract
 
-### 3. Defer Editing Workflows
+### 2. Defer Editing Workflows
 
 Goal: keep write or editor-oriented work out of scope until a concrete cross-repo plan exists.
 
