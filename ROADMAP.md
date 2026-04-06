@@ -40,6 +40,7 @@ The completed preview baseline now includes:
 - the core integration pass, validation expansion, and three-repo alignment work
 - the recent preview hardening follow-up over the already-curated library seams
 - a completed stabilization hardening slice for the thin CLI mod workflow contract around mixed intended or content inputs and stdout or stderr diagnostics
+- a completed stabilization hardening slice for inspection-facing compatibility coverage and explicit import-boundary locking around `eu5miner.inspection` versus root imports
 - install discovery, merged VFS support, CST and semantic parsing helpers, and broad typed domain coverage in the core library
 - a stable read-only inspection facade and thin CLI over the intended library seams
 - initial mod planning and apply workflows in the core library
@@ -76,7 +77,7 @@ Reference spec:
 
 The earlier integration and validation specs remain useful reference material for follow-up polish, but they are no longer the primary milestone definition.
 
-The current remaining stabilization focus is to keep tightening the already-curated seams around public import contracts, inspection compatibility coverage, and release-readiness documentation without widening the CLI or reopening foundation work.
+The current remaining stabilization focus is to keep release-readiness alignment and any last compatibility audits tight around the already-curated seams without widening the CLI or reopening foundation work.
 
 ### 2. GUI Read-Only Browsing Refinement
 

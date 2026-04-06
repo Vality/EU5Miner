@@ -22,6 +22,8 @@ Most top-level specs in this folder now describe work that has already landed as
 
 Recent stabilization work has also landed for the documented thin CLI mod workflow: high-level compatibility coverage now locks mixed `--content-root`, `--content-file`, and `--intended-path` behavior plus the stdout report and stderr diagnostics split.
 
+Recent stabilization work has also landed for the inspection-facing public seam: focused compatibility coverage now locks the supported-system ordering and descriptions, the curated browsable-entity ordering and descriptions, and the intended import split between the root package and `eu5miner.inspection`.
+
 Use them in two ways:
 
 - as reference when polishing or extending the shipped preview seams
@@ -31,7 +33,7 @@ Use them in two ways:
 
 - `v1-stabilization-pass.md`: the next major core milestone; use it to define the explicit `1.0` contract on the current architecture without treating the spec itself as release execution
 
-Current remaining focus under that milestone is the rest of the compatibility pass: public import-boundary clarity, inspection-facing contract coverage, and release-readiness alignment over the already-shipped seams.
+Current remaining focus under that milestone is release-readiness alignment and any final compatibility audits over the already-shipped seams.
 
 ## Reference Specs For Ongoing Core Polish
 
