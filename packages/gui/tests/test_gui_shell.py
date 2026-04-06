@@ -189,6 +189,9 @@ def test_cli_selected_system_report_from_synthetic_install(tmp_path: Path, capsy
     assert "Selected page: report:map" in captured.out
     assert "* report:map: map system report" in captured.out
     assert "== map system report ==" in captured.out
+    assert "Navigation:" in captured.out
+    assert "- Page key: report:map" in captured.out
+    assert "- Overview page: overview" in captured.out
     assert "Representative files:" in captured.out
     assert "- map_default" in captured.out
     assert "- default.map referenced files: 2" in captured.out
@@ -270,6 +273,21 @@ def test_build_shell_message_filter_limits_visible_pages(tmp_path: Path) -> None
     assert "== Install overview ==" not in message
 
 
+def test_build_shell_message_empty_filter_shows_guidance(tmp_path: Path) -> None:
+    install_root = _make_report_install(tmp_path / "install")
+
+    message = build_shell_message(
+        install_root,
+        include_all_systems=True,
+        page_filter="does-not-match",
+    )
+
+    assert "Selected page: none" in message
+    assert "Available pages (0 of 11 loaded):" in message
+    assert "No pages matched the current filter." in message
+    assert "Page filters only search already-loaded pages." in message
+
+
 def test_build_shell_message_list_pages_only_hides_page_content(tmp_path: Path) -> None:
     install_root = _make_report_install(tmp_path / "install")
 
@@ -283,6 +301,90 @@ def test_build_shell_message_list_pages_only_hides_page_content(tmp_path: Path) 
     assert "Index mode: page content hidden." in message
     assert "== Install overview ==" not in message
     assert "== map system report ==" not in message
+
+
+def test_build_shell_message_page_window_keeps_selected_page_visible(tmp_path: Path) -> None:
+    install_root = _make_report_install(tmp_path / "install")
+
+    message = build_shell_message(
+        install_root,
+        include_all_systems=True,
+        page_key="entities:map",
+        page_list_limit=3,
+    )
+
+    assert "Available pages (showing 9-11 of 11 loaded):" in message
+    assert "Page window: showing 9-11 of 11 matched pages." in message
+    assert "* entities:map: map entities" in message
+    assert "- overview: Install overview" not in message
+
+
+def test_build_shell_message_page_window_offset_can_hide_selected_page(tmp_path: Path) -> None:
+    install_root = _make_report_install(tmp_path / "install")
+
+    message = build_shell_message(
+        install_root,
+        include_all_systems=True,
+        page_key="entities:map",
+        page_list_limit=3,
+        page_list_offset=0,
+    )
+
+    assert "Available pages (showing 1-3 of 11 loaded):" in message
+    assert "Page window: showing 1-3 of 11 matched pages." in message
+    assert "Selected page is outside the current page window." in message
+    assert "* entities:map: map entities" not in message
+    assert "- overview: Install overview" in message
+
+
+def test_build_shell_message_section_line_limit_truncates_large_entity_lists(
+    tmp_path: Path,
+) -> None:
+    install_root = _make_large_entity_browsing_install(tmp_path / "install")
+
+    message = build_shell_message(
+        install_root,
+        selected_entity_system="religion",
+        section_line_limit=5,
+    )
+
+    assert "== religion entities ==" in message
+    assert "- Entity count: 12" in message
+    assert "- faith_01 [group]" in message
+    assert "- faith_05 [group]" in message
+    assert "- faith_06 [group]" not in message
+    assert (
+        "- ... 7 more lines hidden; increase --section-line-limit or use 0 for full "
+        "output." in message
+    )
+
+
+def test_build_shell_message_entity_detail_navigation_hints_parent_page(tmp_path: Path) -> None:
+    install_root = _make_entity_browsing_install(tmp_path / "install")
+
+    message = build_shell_message(
+        install_root,
+        selected_entity_system="government",
+        selected_entity_name="monarchy",
+    )
+
+    assert "== monarchy government_type ==" in message
+    assert "Navigation:" in message
+    assert "- Page key: entity:government:monarchy" in message
+    assert "- Overview page: overview" in message
+    assert "- Parent list page: entities:government" in message
+
+
+def test_cli_rejects_negative_browser_window_controls(capsys) -> None:
+    try:
+        main(["--page-list-limit", "-1"])
+    except SystemExit as exc:
+        assert exc.code == 2
+    else:
+        raise AssertionError("Expected CLI parse failure")
+
+    captured = capsys.readouterr()
+    assert "page_list_limit cannot be negative." in captured.err
 
 
 def test_cli_page_key_can_open_entity_detail_without_explicit_entity_flags(
@@ -388,6 +490,18 @@ def _make_entity_browsing_install(install_root: Path) -> Path:
 
     for relative_path, text in _entity_fixture_texts().items():
         _write_text(game_dir / relative_path, text)
+
+    return install_root
+
+
+def _make_large_entity_browsing_install(install_root: Path) -> Path:
+    install_root = _make_entity_browsing_install(install_root)
+    game_dir = install_root / "game"
+
+    _write_text(
+        game_dir / "in_game" / "common" / "religions" / "00_religions.txt",
+        _large_religion_fixture_text(12),
+    )
 
     return install_root
 
@@ -516,6 +630,19 @@ def _first_entity_name_for(system: str) -> str:
         "map": "stockholm",
     }
     return names[system]
+
+
+def _large_religion_fixture_text(religion_count: int) -> str:
+    religion_blocks = [
+        (
+            f"faith_{index:02d} = {{\n"
+            "    group = group\n"
+            f"    description = synthetic religion {index}\n"
+            "}\n"
+        )
+        for index in range(1, religion_count + 1)
+    ]
+    return "".join(religion_blocks)
 
 
 def _write_text(path: Path, text: str) -> None:

@@ -78,6 +78,33 @@ def main(argv: Sequence[str] | None = None) -> int:
         help="Render all matched pages instead of only the selected page.",
     )
     parser.add_argument(
+        "--page-list-limit",
+        type=int,
+        default=12,
+        help=(
+            "Maximum page-index entries to show at once. Use 0 to disable truncation. "
+            "Defaults to 12."
+        ),
+    )
+    parser.add_argument(
+        "--page-list-offset",
+        type=int,
+        default=None,
+        help=(
+            "Optional zero-based page-index window offset. When omitted, the page index "
+            "keeps the selected page in view when possible."
+        ),
+    )
+    parser.add_argument(
+        "--section-line-limit",
+        type=int,
+        default=25,
+        help=(
+            "Maximum rendered lines per section before truncation. Use 0 to disable "
+            "truncation. Defaults to 25."
+        ),
+    )
+    parser.add_argument(
         "--language",
         default="english",
         help="Localization language used by language-backed system reports.",
@@ -99,6 +126,9 @@ def main(argv: Sequence[str] | None = None) -> int:
                 page_filter=args.page_filter,
                 list_pages_only=args.list_pages,
                 show_all_pages=args.show_all_pages,
+                page_list_limit=args.page_list_limit,
+                page_list_offset=args.page_list_offset,
+                section_line_limit=args.section_line_limit,
             )
         )
     except (KeyError, ValueError) as exc:

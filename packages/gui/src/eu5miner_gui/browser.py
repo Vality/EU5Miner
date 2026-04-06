@@ -53,6 +53,17 @@ class BrowserModel:
         return None
 
 
+@dataclass(frozen=True)
+class PageWindow:
+    start: int
+    end: int
+    total: int
+
+    @property
+    def has_hidden_pages(self) -> bool:
+        return self.start > 0 or self.end < self.total
+
+
 def parse_browser_page_selection(page_key: str) -> BrowserPageSelection:
     normalized_page_key = page_key.strip()
     if not normalized_page_key:
@@ -207,8 +218,23 @@ def render_browser_model(
     page_filter: str | None = None,
     list_pages_only: bool = False,
     show_all_pages: bool = False,
+    page_list_limit: int | None = 12,
+    page_list_offset: int | None = None,
+    section_line_limit: int | None = 25,
 ) -> str:
     normalized_page_filter = _normalize_optional_text(page_filter)
+    normalized_page_list_limit = _normalize_limit(
+        page_list_limit,
+        option_name="page_list_limit",
+    )
+    normalized_page_list_offset = _normalize_offset(
+        page_list_offset,
+        option_name="page_list_offset",
+    )
+    normalized_section_line_limit = _normalize_limit(
+        section_line_limit,
+        option_name="section_line_limit",
+    )
     visible_pages = _filter_pages(model.pages, normalized_page_filter)
     selected_page = _resolve_rendered_page(
         model,
@@ -216,12 +242,19 @@ def render_browser_model(
         page_key=page_key,
         page_filter=normalized_page_filter,
     )
+    indexed_pages, page_window = _window_pages(
+        visible_pages,
+        selected_page=selected_page,
+        page_list_limit=normalized_page_list_limit,
+        page_list_offset=normalized_page_list_offset,
+    )
     selected_page_label = selected_page.key if selected_page is not None else "none"
-    page_index_title = "Available pages:"
-    if normalized_page_filter is not None:
-        page_index_title = (
-            f"Available pages ({len(visible_pages)} of {len(model.pages)} loaded):"
-        )
+    page_index_title = _format_page_index_title(
+        model,
+        visible_pages=visible_pages,
+        page_window=page_window,
+        page_filter=normalized_page_filter,
+    )
 
     lines = [
         "EU5MinerGUI read-only browser ready.",
@@ -236,14 +269,33 @@ def render_browser_model(
             *(
                 f"{'*' if selected_page is not None and page.key == selected_page.key else '-'} "
                 f"{page.key}: {page.title}{_format_page_status_suffix(page)}"
-                for page in visible_pages
+                for page in indexed_pages
             ),
         )
     )
 
     if not visible_pages:
-        lines.extend(("", "No pages matched the current filter."))
+        lines.extend(
+            (
+                "",
+                "No pages matched the current filter.",
+                "Page filters only search already-loaded pages. Widen the session with "
+                "--all-systems or adjust the current system/entity selection.",
+            )
+        )
         return "\n".join(lines)
+
+    if page_window.has_hidden_pages:
+        lines.append(
+            f"Page window: showing {page_window.start + 1}-{page_window.end} of "
+            f"{page_window.total} matched pages."
+        )
+    if (
+        selected_page is not None
+        and page_window.has_hidden_pages
+        and selected_page not in indexed_pages
+    ):
+        lines.append("Selected page is outside the current page window.")
 
     if list_pages_only:
         lines.extend(("", "Index mode: page content hidden."))
@@ -254,9 +306,23 @@ def render_browser_model(
         if page is None:
             continue
         lines.extend(("", f"== {page.title} ==", page.description))
+        navigation_lines = _build_navigation_lines(model, page)
+        if navigation_lines:
+            lines.append("Navigation:")
+            lines.extend(f"- {line}" for line in navigation_lines)
         for section in page.sections:
             lines.append(f"{section.title}:")
-            lines.extend(f"- {line}" for line in section.lines)
+            displayed_section_lines, hidden_line_count = _truncate_lines(
+                section.lines,
+                line_limit=normalized_section_line_limit,
+            )
+            lines.extend(f"- {line}" for line in displayed_section_lines)
+            if hidden_line_count > 0:
+                lines.append(
+                    "- ... "
+                    f"{hidden_line_count} more lines hidden; increase --section-line-limit "
+                    "or use 0 for full output."
+                )
 
     return "\n".join(lines)
 
@@ -706,6 +772,111 @@ def _page_matches_filter(page: BrowserPage, normalized_filter: str) -> bool:
         page_text.append(section.title)
         page_text.extend(section.lines)
     return any(normalized_filter in line.casefold() for line in page_text)
+
+
+def _normalize_limit(value: int | None, *, option_name: str) -> int | None:
+    if value is None or value == 0:
+        return None
+    if value < 0:
+        raise ValueError(f"{option_name} cannot be negative.")
+    return value
+
+
+def _normalize_offset(value: int | None, *, option_name: str) -> int | None:
+    if value is None:
+        return None
+    if value < 0:
+        raise ValueError(f"{option_name} cannot be negative.")
+    return value
+
+
+def _window_pages(
+    visible_pages: tuple[BrowserPage, ...],
+    *,
+    selected_page: BrowserPage | None,
+    page_list_limit: int | None,
+    page_list_offset: int | None,
+) -> tuple[tuple[BrowserPage, ...], PageWindow]:
+    total = len(visible_pages)
+    if total == 0:
+        return (), PageWindow(start=0, end=0, total=0)
+
+    if page_list_limit is None or page_list_limit >= total:
+        return visible_pages, PageWindow(start=0, end=total, total=total)
+
+    max_start = total - page_list_limit
+    if page_list_offset is not None:
+        start = min(page_list_offset, max_start)
+    elif selected_page is not None:
+        selected_index = visible_pages.index(selected_page)
+        start = min(selected_index, max_start)
+    else:
+        start = 0
+
+    end = start + page_list_limit
+    return visible_pages[start:end], PageWindow(start=start, end=end, total=total)
+
+
+def _format_page_index_title(
+    model: BrowserModel,
+    *,
+    visible_pages: tuple[BrowserPage, ...],
+    page_window: PageWindow,
+    page_filter: str | None,
+) -> str:
+    if not visible_pages:
+        if page_filter is None:
+            return "Available pages:"
+        return f"Available pages (0 of {len(model.pages)} loaded):"
+
+    if page_filter is not None and page_window.has_hidden_pages:
+        return (
+            f"Available pages (showing {page_window.start + 1}-{page_window.end} of "
+            f"{len(visible_pages)} matched, {len(model.pages)} loaded):"
+        )
+    if page_filter is not None:
+        return f"Available pages ({len(visible_pages)} of {len(model.pages)} loaded):"
+    if page_window.has_hidden_pages:
+        return (
+            f"Available pages (showing {page_window.start + 1}-{page_window.end} of "
+            f"{len(visible_pages)} loaded):"
+        )
+    return "Available pages:"
+
+
+def _build_navigation_lines(model: BrowserModel, page: BrowserPage) -> tuple[str, ...]:
+    lines = [f"Page key: {page.key}"]
+    if page.key == "overview":
+        return tuple(lines)
+
+    if model.get_page("overview") is not None:
+        lines.append("Overview page: overview")
+
+    if page.key.startswith("entities:"):
+        _, system = page.key.split(":", maxsplit=1)
+        lines.append(f"Detail page pattern: entity:{system}:<entity-name>")
+    elif page.key.startswith("entity:"):
+        _, system, _ = page.key.split(":", maxsplit=2)
+        list_key = _entity_list_page_key(system)
+        if model.get_page(list_key) is not None:
+            lines.append(f"Parent list page: {list_key}")
+    elif page.key.startswith("report:"):
+        _, system = page.key.split(":", maxsplit=1)
+        list_key = _entity_list_page_key(system)
+        if model.get_page(list_key) is not None:
+            lines.append(f"Related entity list page: {list_key}")
+
+    return tuple(lines)
+
+
+def _truncate_lines(
+    lines: tuple[str, ...],
+    *,
+    line_limit: int | None,
+) -> tuple[tuple[str, ...], int]:
+    if line_limit is None or len(lines) <= line_limit:
+        return lines, 0
+    return lines[:line_limit], len(lines) - line_limit
 
 
 def _resolve_rendered_page(

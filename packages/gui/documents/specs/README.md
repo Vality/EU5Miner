@@ -12,6 +12,7 @@ The two specs in this folder describe the baseline that has already landed for t
 - `read-only-data-browser.md`: completed baseline for the structured overview and per-system report browser model
 - `entity-browser-pages.md`: completed browse refinement for covered entity list/detail pages over `eu5miner.inspection`
 - `browser-navigation.md`: completed navigation refinement for explicit page focus, page listing, and lightweight filtering over the existing browser model
+- `browser-session-ergonomics.md`: current refinement slice for large-session readability, page-window controls, and navigation hints in the lightweight shell
 
 The next spec for this repo should refine presentation on top of the existing browser model rather than reopening shell, scaffolding, or core-data plumbing work.
 

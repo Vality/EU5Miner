@@ -27,8 +27,11 @@ The current preview command prints a structured read-only browser view backed by
 - With `--install-root --entity-system ... --entity ...`, it loads the corresponding entity detail page with generic fields and cross-system references from `eu5miner.inspection`.
 - With `--page`, the shell can focus a page key directly: `overview`, `report:map`, `entities:religion`, or `entity:map:stockholm`.
 - With `--list-pages`, it prints only the current page index; with `--page-filter`, it narrows loaded pages by case-insensitive text across page metadata and rendered lines.
+- The page index now windows large sessions by default. Use `--page-list-limit`, `--page-list-offset`, or `0` to disable page-index truncation when you need a wider index dump.
+- Rendered page sections also truncate long lists by default. Use `--section-line-limit 0` for full section output, or set a smaller explicit limit when browsing large entity lists.
 - With `--install-root --all-systems`, it loads one install overview, all supported report pages, and all covered entity list pages, while still rendering only the selected page by default.
 - `--show-all-pages` restores the full multi-page dump when you want to inspect the whole loaded session at once.
+- Rendered pages now include lightweight navigation hints such as the current page key, overview page, related list page, or detail-page pattern.
 - When a selected install is partial or synthetic, the browser keeps the overview and marks unavailable system pages instead of aborting the whole session.
 
 ```powershell
@@ -38,12 +41,14 @@ eu5miner-gui --install-root C:\EU5 --entity-system religion
 eu5miner-gui --install-root C:\EU5 --entity-system map --entity stockholm
 eu5miner-gui --install-root C:\EU5 --page report:map
 eu5miner-gui --install-root C:\EU5 --all-systems --list-pages
+eu5miner-gui --install-root C:\EU5 --all-systems --page-list-limit 5
+eu5miner-gui --install-root C:\EU5 --entity-system religion --section-line-limit 10
 eu5miner-gui --install-root C:\EU5 --all-systems --page-filter map
 eu5miner-gui --install-root C:\EU5 --all-systems
 eu5miner-gui --install-root C:\EU5 --all-systems --show-all-pages
 ```
 
-Page filtering works only over pages already loaded into the current browser session. Use `--all-systems` or the relevant explicit selection flags when you want a wider index before filtering.
+Page filtering works only over pages already loaded into the current browser session. Use `--all-systems` or the relevant explicit selection flags when you want a wider index before filtering. If a filter matches nothing, the shell now calls that out explicitly and reminds you that filtering only applies to the loaded session.
 
 Install-backed reporting requires your own local EU5 installation. This repo does not bundle sample game content.
 

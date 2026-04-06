@@ -33,6 +33,9 @@ def build_shell_message(
     page_filter: str | None = None,
     list_pages_only: bool = False,
     show_all_pages: bool = False,
+    page_list_limit: int | None = 12,
+    page_list_offset: int | None = None,
+    section_line_limit: int | None = 25,
 ) -> str:
     (
         normalized_page_key,
@@ -59,6 +62,9 @@ def build_shell_message(
         page_filter=page_filter,
         list_pages_only=list_pages_only,
         show_all_pages=show_all_pages,
+        page_list_limit=page_list_limit,
+        page_list_offset=page_list_offset,
+        section_line_limit=section_line_limit,
     )
 
 
@@ -74,6 +80,9 @@ def launch_app(
     page_filter: str | None = None,
     list_pages_only: bool = False,
     show_all_pages: bool = False,
+    page_list_limit: int | None = 12,
+    page_list_offset: int | None = None,
+    section_line_limit: int | None = 25,
 ) -> str:
     return build_shell_message(
         install_root,
@@ -86,6 +95,9 @@ def launch_app(
         page_filter=page_filter,
         list_pages_only=list_pages_only,
         show_all_pages=show_all_pages,
+        page_list_limit=page_list_limit,
+        page_list_offset=page_list_offset,
+        section_line_limit=section_line_limit,
     )
 
 
