@@ -55,8 +55,9 @@ def main(argv: Sequence[str] | None = None) -> int:
         "--page",
         default=None,
         help=(
-            "Explicit page key to focus, such as overview, report:map, "
-            "entities:religion, or entity:map:stockholm."
+            "Explicit page key to focus, such as overview or home, report:map or "
+            "system:map, entities:religion or list:religion, or entity:map:stockholm "
+            "or detail:map:stockholm."
         ),
     )
     parser.add_argument(

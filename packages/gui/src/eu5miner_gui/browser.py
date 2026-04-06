@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from difflib import get_close_matches
 from pathlib import Path
 
 import eu5miner.inspection as inspection
@@ -71,32 +72,39 @@ def parse_browser_page_selection(page_key: str) -> BrowserPageSelection:
     if not normalized_page_key:
         raise KeyError("Page key cannot be empty.")
 
-    if normalized_page_key == "overview":
+    if normalized_page_key.casefold() in {"overview", "home"}:
         return BrowserPageSelection(page_key="overview")
 
     page_parts = normalized_page_key.split(":")
-    if len(page_parts) == 2 and page_parts[0] == "report" and page_parts[1]:
-        return BrowserPageSelection(
-            page_key=normalized_page_key,
-            selected_system=page_parts[1],
-        )
-    if len(page_parts) == 2 and page_parts[0] == "entities" and page_parts[1]:
-        return BrowserPageSelection(
-            page_key=normalized_page_key,
-            selected_entity_system=page_parts[1],
-        )
-    if len(page_parts) >= 3 and page_parts[0] == "entity" and page_parts[1]:
-        entity_name = ":".join(page_parts[2:]).strip()
-        if entity_name:
+    page_prefix = page_parts[0].casefold()
+    if len(page_parts) == 2 and page_prefix in {"report", "system"}:
+        selected_system = page_parts[1].strip()
+        if selected_system:
             return BrowserPageSelection(
-                page_key=normalized_page_key,
-                selected_entity_system=page_parts[1],
+                page_key=_report_page_key(selected_system),
+                selected_system=selected_system,
+            )
+    if len(page_parts) == 2 and page_prefix in {"entities", "list"}:
+        selected_entity_system = page_parts[1].strip()
+        if selected_entity_system:
+            return BrowserPageSelection(
+                page_key=_entity_list_page_key(selected_entity_system),
+                selected_entity_system=selected_entity_system,
+            )
+    if len(page_parts) >= 3 and page_prefix in {"entity", "detail"}:
+        selected_entity_system = page_parts[1].strip()
+        entity_name = ":".join(page_parts[2:]).strip()
+        if selected_entity_system and entity_name:
+            return BrowserPageSelection(
+                page_key=_entity_detail_page_key(selected_entity_system, entity_name),
+                selected_entity_system=selected_entity_system,
                 selected_entity_name=entity_name,
             )
 
     raise KeyError(
-        "Unknown page key format. Valid examples: overview, report:map, "
-        "entities:religion, entity:map:stockholm"
+        "Unknown page key format. Valid examples: overview or home, report:map or "
+        "system:map, entities:religion or list:religion, entity:map:stockholm or "
+        "detail:map:stockholm"
     )
 
 
@@ -367,7 +375,10 @@ def _validate_selected_system(
     valid_system_names = {info.name for info in supported_systems}
     if selected_system not in valid_system_names:
         valid_systems = ", ".join(sorted(valid_system_names))
-        raise KeyError(f"Unknown system '{selected_system}'. Valid systems: {valid_systems}")
+        suggestion = _format_candidate_suggestion(selected_system, valid_system_names)
+        raise KeyError(
+            f"Unknown system '{selected_system}'.{suggestion} Valid systems: {valid_systems}"
+        )
 
 
 def _validate_selected_entity_system(
@@ -380,10 +391,21 @@ def _validate_selected_entity_system(
     valid_system_names = {info.name for info in entity_systems}
     if selected_entity_system not in valid_system_names:
         valid_systems = ", ".join(sorted(valid_system_names))
+        suggestion = _format_candidate_suggestion(
+            selected_entity_system,
+            valid_system_names,
+        )
         raise KeyError(
             "Unknown entity system "
-            f"'{selected_entity_system}'. Valid systems: {valid_systems}"
+            f"'{selected_entity_system}'.{suggestion} Valid systems: {valid_systems}"
         )
+
+
+def _format_candidate_suggestion(value: str, candidates: set[str]) -> str:
+    matches = get_close_matches(value, sorted(candidates), n=1, cutoff=0.6)
+    if not matches:
+        return ""
+    return f" Did you mean '{matches[0]}'?"
 
 
 def _validate_selected_entity_name(

@@ -4,7 +4,7 @@ from pathlib import Path
 
 from eu5miner_gui.__main__ import main as package_main
 from eu5miner_gui.app import build_shell_message
-from eu5miner_gui.browser import build_browser_model
+from eu5miner_gui.browser import build_browser_model, parse_browser_page_selection
 from eu5miner_gui.cli import main
 
 
@@ -42,6 +42,18 @@ def test_build_browser_model_with_selected_system_builds_overview_and_report_pag
         line.startswith("location hierarchy definitions:")
         for line in model.pages[1].sections[1].lines
     )
+
+
+def test_parse_browser_page_selection_supports_aliases() -> None:
+    assert parse_browser_page_selection("home").page_key == "overview"
+    assert parse_browser_page_selection("system:map").page_key == "report:map"
+    assert parse_browser_page_selection("list:religion").page_key == "entities:religion"
+
+    detail_selection = parse_browser_page_selection("detail:map:stockholm")
+
+    assert detail_selection.page_key == "entity:map:stockholm"
+    assert detail_selection.selected_entity_system == "map"
+    assert detail_selection.selected_entity_name == "stockholm"
 
 
 def test_build_browser_model_with_all_systems_loads_all_report_pages(tmp_path: Path) -> None:
@@ -510,6 +522,42 @@ def test_cli_page_key_can_open_entity_detail_without_explicit_entity_flags(
     assert "Selected page: entity:government:monarchy" in captured.out
     assert "* entity:government:monarchy: monarchy government_type" in captured.out
     assert "== monarchy government_type ==" in captured.out
+
+
+def test_cli_page_alias_can_open_entity_detail_without_explicit_entity_flags(
+    tmp_path: Path,
+    capsys,
+) -> None:
+    install_root = _make_entity_browsing_install(tmp_path / "install")
+
+    exit_code = main(
+        [
+            "--install-root",
+            str(install_root),
+            "--page",
+            "detail:government:monarchy",
+        ]
+    )
+
+    captured = capsys.readouterr()
+    assert exit_code == 0
+    assert "Selected page: entity:government:monarchy" in captured.out
+    assert "* entity:government:monarchy: monarchy government_type" in captured.out
+    assert "== monarchy government_type ==" in captured.out
+
+
+def test_cli_page_target_suggests_closest_supported_system(tmp_path: Path, capsys) -> None:
+    install_root = _make_report_install(tmp_path / "install")
+
+    try:
+        main(["--install-root", str(install_root), "--page", "system:mapp"])
+    except SystemExit as exc:
+        assert exc.code == 2
+    else:
+        raise AssertionError("Expected CLI parse failure")
+
+    captured = capsys.readouterr()
+    assert "Unknown system 'mapp'. Did you mean 'map'?" in captured.err
 
 
 def test_cli_show_all_pages_restores_full_page_dump(tmp_path: Path, capsys) -> None:

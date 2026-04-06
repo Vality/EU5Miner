@@ -27,7 +27,7 @@ The current preview command prints a structured read-only browser view backed by
 - With `--install-root --entity-system ... --entity ...`, it loads the corresponding entity detail page with generic fields and cross-system references from `eu5miner.inspection`.
 - Entity list pages now sort by entity name by default, keep their own explicit entity window, and can switch between compact rows and detail rows with embedded detail-page keys.
 - Use `--entity-list-sort`, `--entity-list-limit`, `--entity-list-offset`, and `--entity-list-mode` when large covered systems need a narrower or more detail-oriented list view.
-- With `--page`, the shell can focus a page key directly: `overview`, `report:map`, `entities:religion`, or `entity:map:stockholm`.
+- With `--page`, the shell can focus a page key directly: `overview` or `home`, `report:map` or `system:map`, `entities:religion` or `list:religion`, or `entity:map:stockholm` or `detail:map:stockholm`.
 - With `--list-pages`, it prints only the current page index; with `--page-filter`, it narrows loaded pages by case-insensitive text across page metadata and rendered lines.
 - The page index now windows large sessions by default. Use `--page-list-limit`, `--page-list-offset`, or `0` to disable page-index truncation when you need a wider index dump.
 - Rendered page sections still truncate long generic sections by default. Use `--section-line-limit 0` for full non-entity output, while entity list pages use their own entity-window controls instead of the generic section truncation.
@@ -46,6 +46,8 @@ eu5miner-gui --install-root C:\EU5 --entity-system government --entity-list-mode
 eu5miner-gui --install-root C:\EU5 --entity-system economy --entity-list-sort group
 eu5miner-gui --install-root C:\EU5 --entity-system map --entity stockholm
 eu5miner-gui --install-root C:\EU5 --page report:map
+eu5miner-gui --install-root C:\EU5 --page system:map
+eu5miner-gui --install-root C:\EU5 --page detail:government:monarchy
 eu5miner-gui --install-root C:\EU5 --all-systems --list-pages
 eu5miner-gui --install-root C:\EU5 --all-systems --page-list-limit 5
 eu5miner-gui --install-root C:\EU5 --all-systems --page-filter map

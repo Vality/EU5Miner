@@ -125,35 +125,35 @@ def _resolve_navigation_request(
     selected_entity_system: str | None,
     selected_entity_name: str | None,
 ) -> tuple[str | None, str | None, str | None, str | None]:
-    normalized_page_key = _normalize_optional_text(page_key)
-    if normalized_page_key is None:
+    requested_page_key = _normalize_optional_text(page_key)
+    if requested_page_key is None:
         return (None, selected_system, selected_entity_system, selected_entity_name)
 
-    page_selection = parse_browser_page_selection(normalized_page_key)
+    page_selection = parse_browser_page_selection(requested_page_key)
     if page_selection.requires_install and install_root is None:
-        raise ValueError(f"Page key '{normalized_page_key}' requires an install root.")
+        raise ValueError(f"Page key '{requested_page_key}' requires an install root.")
 
     _validate_navigation_conflict(
-        normalized_page_key,
+        requested_page_key,
         option_name="system",
         explicit_value=selected_system,
         page_value=page_selection.selected_system,
     )
     _validate_navigation_conflict(
-        normalized_page_key,
+        requested_page_key,
         option_name="entity-system",
         explicit_value=selected_entity_system,
         page_value=page_selection.selected_entity_system,
     )
     _validate_navigation_conflict(
-        normalized_page_key,
+        requested_page_key,
         option_name="entity",
         explicit_value=selected_entity_name,
         page_value=page_selection.selected_entity_name,
     )
 
     return (
-        normalized_page_key,
+        page_selection.page_key,
         selected_system or page_selection.selected_system,
         selected_entity_system or page_selection.selected_entity_system,
         selected_entity_name or page_selection.selected_entity_name,
