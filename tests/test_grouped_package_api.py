@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import eu5miner.domains as domains_api
 import eu5miner.domains.diplomacy as diplomacy_api
 import eu5miner.domains.economy as economy_api
 import eu5miner.domains.government as government_api
@@ -288,6 +289,16 @@ def test_grouped_packages_publish_package_level_entrypoints() -> None:
     assert set(map_api.__all__) == EXPECTED_MAP_EXPORTS
     assert set(religion_api.__all__) == EXPECTED_RELIGION_EXPORTS
     assert set(units_api.__all__) == EXPECTED_UNITS_EXPORTS
+
+
+def test_grouped_package_entrypoints_match_preview_domain_convenience_hub() -> None:
+    assert parse_casus_belli_document is domains_api.parse_casus_belli_document
+    assert build_market_catalog is domains_api.build_market_catalog
+    assert parse_government_type_document is domains_api.parse_government_type_document
+    assert build_localization_bundle is domains_api.build_localization_bundle
+    assert build_linked_location_document is domains_api.build_linked_location_document
+    assert build_religion_catalog is domains_api.build_religion_catalog
+    assert parse_unit_category_document is domains_api.parse_unit_category_document
 
 
 def test_grouped_diplomacy_package_exports_both_helper_layers() -> None:

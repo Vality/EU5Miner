@@ -35,11 +35,14 @@ Excluded from v1:
 - Tests should use real EU5 files where practical
 - Public APIs should remain small and extensible
 
-## Initial Public API Direction
+## Current Curated Public API Direction
 
-The initial code should support:
+The current intended `1.0` boundary is the curated surface that the preview docs already point downstream users toward:
 
-- Discovering the EU5 install and its major content roots.
-- Enumerating files under content phases.
-- Reading representative file families into minimal structured models.
-- Detecting script-level constructs needed by later parser work.
+- The narrow `eu5miner` root package for install discovery, VFS primitives, and the main mod workflow helpers.
+- Grouped domain packages such as `eu5miner.domains.diplomacy`, `eu5miner.domains.economy`, `eu5miner.domains.government`, `eu5miner.domains.religion`, `eu5miner.domains.map`, `eu5miner.domains.localization`, and `eu5miner.domains.units` for concept-local imports.
+- `eu5miner.inspection` for stable read-only install summaries, system reports, and the current narrow entity-browsing workflow.
+- `eu5miner.mods` for stable plan, apply, and report mod workflow operations.
+- The CLI as a thin wrapper over those library seams, not as a broader standalone product API.
+
+The broad `eu5miner.domains` convenience import remains available during preview, but grouped packages are the preferred stable seam. Internal implementation modules are not part of the intended compatibility contract.

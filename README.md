@@ -22,7 +22,7 @@ The project is intentionally test-heavy. Core functionality is validated against
 
 The `0.5.x` line should be treated as a public preview.
 
-- The root package, grouped domain packages, and the `eu5miner.mods` facade are intended for real use.
+- The root package, grouped domain packages, `eu5miner.inspection`, and the `eu5miner.mods` facade are intended for real use.
 - The CLI is intended as a thin convenience surface over the same library APIs.
 - Additional helper layers, future editing surfaces, and the planned MCP and GUI packages are still expected to evolve before `1.0`.
 - API coverage is intentionally incomplete relative to the full game data surface; missing families and API adjustments should still be expected during the preview line.
@@ -178,8 +178,8 @@ from eu5miner.domains.economy import (
 from eu5miner.domains.government import build_government_catalog, parse_government_type_document
 from eu5miner.domains.localization import build_localization_bundle
 from eu5miner.domains.map import build_linked_location_document, parse_default_map_document
-from eu5miner.domains.on_actions import build_on_action_catalog_document, parse_on_action_document
 from eu5miner.domains.religion import build_religion_catalog, parse_religion_document
+from eu5miner.domains.units import parse_unit_category_document
 
 casus_belli_document = parse_casus_belli_document(
 	"sample_cb = { war_goal_type = superiority }\n"
@@ -232,9 +232,9 @@ default_map_document = parse_default_map_document('definitions = "definitions.tx
 localization_bundle = build_localization_bundle(
 	(("sample.yml", 'l_english:\nSAMPLE_KEY: "Sample"\n'),)
 )
-
-on_action_document = parse_on_action_document("on_example = { events = { flavor_test.1 } }\n")
-on_action_catalog = build_on_action_catalog_document([on_action_document])
+unit_category_document = parse_unit_category_document(
+	"sample_category = { is_army = yes startup_amount = 1 }\n"
+)
 ```
 
 For mod update workflows in the preview release, `eu5miner.mods` remains the stable higher-level seam, while the CLI stays a thin wrapper over the same plan/apply/report operations.

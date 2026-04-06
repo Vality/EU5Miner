@@ -302,6 +302,16 @@ def test_mods_module_exports_stable_mod_workflow_facade() -> None:
     assert callable(mods_api.format_mod_update_report)
 
 
+def test_root_mod_workflow_exports_alias_mods_facade() -> None:
+    assert plan_mod_update is mods_api.plan_mod_update
+    assert apply_mod_update is mods_api.apply_mod_update
+    assert format_mod_update_report is mods_api.format_mod_update_report
+    assert ModUpdateAdvisory is mods_api.ModUpdateAdvisory
+    assert ModUpdateWarning is mods_api.ModUpdateWarning
+    assert eu5miner.PlannedModUpdate is mods_api.PlannedModUpdate
+    assert eu5miner.AppliedModUpdate is mods_api.AppliedModUpdate
+
+
 def test_domains_package_exports_curated_entrypoints() -> None:
     trigger_document = parse_scripted_trigger_document("test_trigger = { always = yes }\n")
     setup_document = parse_setup_country_document("FRA = { tier = kingdom }\n")
