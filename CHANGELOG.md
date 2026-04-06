@@ -2,9 +2,9 @@
 
 ## Unreleased
 
-No unreleased changes recorded after the planned `0.6.0` preview cut.
+No unreleased changes recorded after `0.6.0`.
 
-## 0.6.0 - Unreleased
+## 0.6.0 - 2026-04-06
 
 - Added a substantially broader read-only inspection facade: downstream callers can now list supported entity-browsing systems, enumerate entities, and fetch detailed entities for the initial economy, diplomacy, government, religion, and map families.
 - Locked the intended preview compatibility boundary with focused contract coverage for `eu5miner.inspection`, grouped domain packages, the thin CLI command surface, README examples, and the higher-level `eu5miner.mods` workflow.

@@ -31,11 +31,11 @@ Use them in two ways:
 - as reference when polishing or extending the shipped preview seams
 - as a record of what is already complete, so new work does not restart foundation slices
 
-That narrow close-out pass is now reflected in the checked-in core repo: docs, examples, and compatibility-focused tests align around the same curated `1.0` boundary. Remaining pre-release work is the later release step plus targeted manual install-backed sanity checks, not another round of core feature work.
+That narrow close-out pass is now reflected in the checked-in core repo: docs, examples, and compatibility-focused tests align around the same curated `1.0` boundary. Remaining post-release work on the path to `1.0` is targeted manual install-backed sanity checks and continued gate discipline, not another round of core feature work.
 
-That checked-in state also assumes the downstream preview repos have already completed their first narrow grouped-helper breadth through diplomacy and religion. The current cross-repo phase is operational rather than architectural: keep validation, build, test, and release-readiness work aligned across all three repos instead of reopening feature breadth.
+That checked-in state also assumes the downstream preview repos have already completed their first narrow grouped-helper breadth through diplomacy and religion. The current cross-repo phase is operational rather than architectural: keep post-release validation, build, test, and contract-truthfulness work aligned across all three repos instead of reopening feature breadth.
 
-For the coordinated `0.6.0` preview release sweep, use this index as reference material for the checked-in boundary and release-readiness work, not as a prompt to restart completed foundation or stabilization slices.
+With the coordinated `0.6.0` preview release now published, use this index as reference material for post-release stabilization and later release-planning work, not as a prompt to restart completed foundation or stabilization slices.
 
 ## Current Core Reference Milestone
 
@@ -43,7 +43,7 @@ For the coordinated `0.6.0` preview release sweep, use this index as reference m
 
 The remaining focus under that milestone is now operational rather than architectural: keep the automated gate green and complete the documented manual checks before an actual release proposal.
 
-For the step-3 coherence sweep across the three preview repos, use the roadmap, changelog, README, and release-readiness docs to keep status language truthful. Do not treat the core spec index as a prompt to start a new feature slice.
+Treat the step-3 coherence sweep across the three preview repos as completed release work. Use the roadmap, changelog, README, and release-readiness docs to keep post-release status language truthful instead of starting a new feature slice.
 
 Do not use that milestone to recreate the already-landed CLI or inspection stabilization rounds unless a verified regression or contract ambiguity requires follow-up.
 
