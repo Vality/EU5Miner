@@ -30,6 +30,7 @@ The current preview command prints a structured read-only browser view backed by
 - With `--page`, the shell can focus a page key directly: `overview` or `home`, `report:map` or `system:map`, `entities:religion` or `list:religion`, or `entity:map:stockholm` or `detail:map:stockholm`.
 - With `--list-pages`, it prints only the current page index; with `--page-filter`, it narrows loaded pages by case-insensitive text across page metadata and rendered lines.
 - The page index now windows large sessions by default. Use `--page-list-limit`, `--page-list-offset`, or `0` to disable page-index truncation when you need a wider index dump.
+- The shell header now prints a compact session summary with loaded, ready, and unavailable page counts plus the current browse request scope, so page-focused views keep their broader session context.
 - Rendered page sections still truncate long generic sections by default. Use `--section-line-limit 0` for full non-entity output, while entity list pages use their own entity-window controls instead of the generic section truncation.
 - With `--install-root --all-systems`, it loads one install overview, all supported report pages, and all covered entity list pages, while still rendering only the selected page by default.
 - `--show-all-pages` restores the full multi-page dump when you want to inspect the whole loaded session at once.

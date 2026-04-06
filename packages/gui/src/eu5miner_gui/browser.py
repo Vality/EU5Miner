@@ -40,9 +40,21 @@ class BrowserPageSelection:
 
 
 @dataclass(frozen=True)
+class BrowserSessionSummary:
+    loaded_page_count: int
+    ready_page_count: int
+    unavailable_page_count: int
+    requested_report_scope: str
+    requested_entity_scope: str
+    requested_entity_detail: str
+    install_summary_loaded: bool
+
+
+@dataclass(frozen=True)
 class BrowserModel:
     supported_systems: tuple[inspection.SystemInfo, ...]
     entity_systems: tuple[inspection.EntitySystemInfo, ...]
+    session_summary: BrowserSessionSummary
     pages: tuple[BrowserPage, ...]
     selected_page_key: str
 
@@ -209,10 +221,40 @@ def build_browser_model(
 
     loaded_page_count = 1 + len(report_pages) + len(entity_list_pages) + len(entity_detail_pages)
 
+    ready_page_count = (
+        1
+        + len(ready_report_names)
+        + len(ready_entity_list_names)
+        + len(ready_entity_detail_names)
+    )
+    unavailable_page_count = (
+        len(unavailable_report_names)
+        + len(unavailable_entity_list_names)
+        + len(unavailable_entity_detail_names)
+    )
+    session_summary = BrowserSessionSummary(
+        loaded_page_count=loaded_page_count,
+        ready_page_count=ready_page_count,
+        unavailable_page_count=unavailable_page_count,
+        requested_report_scope=(
+            "all supported reports"
+            if include_all_systems
+            else selected_system or "overview only"
+        ),
+        requested_entity_scope=(
+            "all covered entity lists"
+            if include_all_systems
+            else selected_entity_system or "none"
+        ),
+        requested_entity_detail=selected_entity_name or "none",
+        install_summary_loaded=summary is not None,
+    )
+
     overview_page = _build_overview_page(
         supported_systems,
         entity_systems,
         summary,
+        session_summary=session_summary,
         selected_system=selected_system,
         selected_entity_system=selected_entity_system,
         selected_entity_name=selected_entity_name,
@@ -223,7 +265,6 @@ def build_browser_model(
         unavailable_entity_list_names=unavailable_entity_list_names,
         ready_entity_detail_names=ready_entity_detail_names,
         unavailable_entity_detail_names=unavailable_entity_detail_names,
-        loaded_page_count=loaded_page_count,
     )
     pages = (
         overview_page,
@@ -240,6 +281,7 @@ def build_browser_model(
     return BrowserModel(
         supported_systems=supported_systems,
         entity_systems=entity_systems,
+        session_summary=session_summary,
         pages=pages,
         selected_page_key=selected_page_key,
     )
@@ -294,6 +336,11 @@ def render_browser_model(
         "EU5MinerGUI read-only browser ready.",
         "Stable inspection facade available.",
         f"Selected page: {selected_page_label}",
+        *_build_session_summary_lines(
+            model.session_summary,
+            visible_page_count=len(visible_pages),
+            page_filter=normalized_page_filter,
+        ),
     ]
     if normalized_page_filter is not None:
         lines.append(f"Page filter: {normalized_page_filter}")
@@ -449,6 +496,7 @@ def _build_overview_page(
     entity_systems: tuple[inspection.EntitySystemInfo, ...],
     summary: inspection.InstallSummary | None,
     *,
+    session_summary: BrowserSessionSummary,
     selected_system: str | None,
     selected_entity_system: str | None,
     selected_entity_name: str | None,
@@ -459,43 +507,24 @@ def _build_overview_page(
     unavailable_entity_list_names: tuple[str, ...],
     ready_entity_detail_names: tuple[str, ...],
     unavailable_entity_detail_names: tuple[str, ...],
-    loaded_page_count: int,
 ) -> BrowserPage:
-    ready_page_count = (
-        1
-        + len(ready_report_names)
-        + len(ready_entity_list_names)
-        + len(ready_entity_detail_names)
-    )
-    unavailable_page_count = (
-        len(unavailable_report_names)
-        + len(unavailable_entity_list_names)
-        + len(unavailable_entity_detail_names)
-    )
-    requested_report_scope = (
-        "all supported reports"
-        if include_all_systems
-        else selected_system or "overview only"
-    )
-    requested_entity_scope = (
-        "all covered entity lists"
-        if include_all_systems
-        else selected_entity_system or "none"
-    )
     sections = [
         BrowserSection(
             title="Browser status",
             lines=(
                 (
                     "Loaded pages: "
-                    f"{loaded_page_count} total, "
-                    f"{ready_page_count} ready, "
-                    f"{unavailable_page_count} unavailable"
+                    f"{session_summary.loaded_page_count} total, "
+                    f"{session_summary.ready_page_count} ready, "
+                    f"{session_summary.unavailable_page_count} unavailable"
                 ),
-                f"Requested report scope: {requested_report_scope}",
-                f"Requested entity scope: {requested_entity_scope}",
-                f"Requested entity detail: {selected_entity_name or 'none'}",
-                f"Install summary loaded: {'yes' if summary is not None else 'no'}",
+                f"Requested report scope: {session_summary.requested_report_scope}",
+                f"Requested entity scope: {session_summary.requested_entity_scope}",
+                f"Requested entity detail: {session_summary.requested_entity_detail}",
+                (
+                    "Install summary loaded: "
+                    f"{'yes' if session_summary.install_summary_loaded else 'no'}"
+                ),
                 (
                     "Ready report pages: "
                     f"{', '.join(ready_report_names) if ready_report_names else 'none'}"
@@ -975,6 +1004,36 @@ def _format_page_index_title(
             f"{len(visible_pages)} loaded):"
         )
     return "Available pages:"
+
+
+def _build_session_summary_lines(
+    session_summary: BrowserSessionSummary,
+    *,
+    visible_page_count: int,
+    page_filter: str | None,
+) -> tuple[str, ...]:
+    lines = [
+        (
+            "Session summary: "
+            f"{session_summary.loaded_page_count} loaded, "
+            f"{session_summary.ready_page_count} ready, "
+            f"{session_summary.unavailable_page_count} unavailable; "
+            "install summary loaded: "
+            f"{'yes' if session_summary.install_summary_loaded else 'no'}"
+        ),
+        (
+            "Session request: "
+            f"reports={session_summary.requested_report_scope}; "
+            f"entity lists={session_summary.requested_entity_scope}; "
+            f"detail={session_summary.requested_entity_detail}"
+        ),
+    ]
+    if page_filter is not None:
+        lines.append(
+            "Filter result: "
+            f"{visible_page_count} matched of {session_summary.loaded_page_count} loaded pages"
+        )
+    return tuple(lines)
 
 
 def _build_navigation_lines(model: BrowserModel, page: BrowserPage) -> tuple[str, ...]:

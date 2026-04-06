@@ -12,6 +12,11 @@ def test_build_shell_message_lists_supported_systems_without_install() -> None:
     message = build_shell_message()
 
     assert "EU5MinerGUI read-only browser ready." in message
+    assert (
+        "Session summary: 1 loaded, 1 ready, 0 unavailable; install summary loaded: no"
+        in message
+    )
+    assert "Session request: reports=overview only; entity lists=none; detail=none" in message
     assert "Available pages:" in message
     assert "* overview: Install overview" in message
     assert "== Install overview ==" in message
@@ -62,6 +67,13 @@ def test_build_browser_model_with_all_systems_loads_all_report_pages(tmp_path: P
     model = build_browser_model(install_root, include_all_systems=True)
 
     assert model.selected_page_key == "overview"
+    assert model.session_summary.loaded_page_count == 11
+    assert model.session_summary.ready_page_count == 3
+    assert model.session_summary.unavailable_page_count == 8
+    assert model.session_summary.requested_report_scope == "all supported reports"
+    assert model.session_summary.requested_entity_scope == "all covered entity lists"
+    assert model.session_summary.requested_entity_detail == "none"
+    assert model.session_summary.install_summary_loaded is True
     assert model.page_keys() == (
         "overview",
         "report:economy",
@@ -277,6 +289,14 @@ def test_cli_all_systems_from_synthetic_install(tmp_path: Path, capsys) -> None:
     captured = capsys.readouterr()
     assert exit_code == 0
     assert "Selected page: overview" in captured.out
+    assert (
+        "Session summary: 11 loaded, 3 ready, 8 unavailable; install summary loaded: yes"
+        in captured.out
+    )
+    assert (
+        "Session request: reports=all supported reports; "
+        "entity lists=all covered entity lists; detail=none"
+    ) in captured.out
     assert "* overview: Install overview" in captured.out
     assert "- report:economy: economy system report (unavailable)" in captured.out
     assert "- report:map: map system report" in captured.out
@@ -337,6 +357,8 @@ def test_build_shell_message_filter_limits_visible_pages(tmp_path: Path) -> None
     )
 
     assert "Selected page: entities:religion" in message
+    assert "Session request: reports=overview only; entity lists=religion; detail=none" in message
+    assert "Filter result: 1 matched of 2 loaded pages" in message
     assert "Page filter: catholic" in message
     assert "Available pages (1 of 2 loaded):" in message
     assert "* entities:religion: religion entities" in message
