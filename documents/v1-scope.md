@@ -37,6 +37,8 @@ The broad `eu5miner.domains` convenience import remains available during preview
 
 The current narrow pre-release blocker set for that contract lives in `documents/v1-release-readiness.md`.
 
+Most stabilization work for that boundary has already landed in the preview hardening rounds. The remaining work before a truthful `1.0` proposal is to keep the checked-in docs aligned to the same boundary, keep the default validation gate green, and close any final compatibility audit gaps that show the current contract is still underspecified.
+
 ## Why this cut
 
 This scope captures the file families that matter most for modding and data mining while keeping the implementation small enough to stay test-heavy and extensible. It also avoids locking the project into brittle binary reverse engineering before the text core is reliable.

@@ -29,11 +29,15 @@ Use them in two ways:
 - as reference when polishing or extending the shipped preview seams
 - as a record of what is already complete, so new work does not restart foundation slices
 
+At this point, the main remaining core work is a narrow close-out pass: release-readiness alignment across the checked-in docs and any final compatibility audits that discover a real gap in the current curated contract.
+
 ## Next Core Milestone
 
 - `v1-stabilization-pass.md`: the next major core milestone; use it to define the explicit `1.0` contract on the current architecture without treating the spec itself as release execution
 
 Current remaining focus under that milestone is release-readiness alignment and any final compatibility audits over the already-shipped seams.
+
+Do not use that milestone to recreate the already-landed CLI or inspection stabilization rounds unless a verified regression or contract ambiguity requires follow-up.
 
 ## Reference Specs For Ongoing Core Polish
 
@@ -47,6 +51,8 @@ Current remaining focus under that milestone is release-readiness alignment and 
 - `eu5miner-mcp-foundation.md`: the downstream MCP foundation has landed in the dedicated repo
 
 The older core specs remain useful guardrails, but the stabilization pass is now the main planning entry for core work that is explicitly about the path to `1.0`.
+
+In practice, that now means a small number of truthfulness checks over current behavior rather than another broad hardening phase.
 
 ## Agent Rules
 

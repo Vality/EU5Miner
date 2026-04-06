@@ -23,6 +23,14 @@ Primary validation remains the hosted-friendly baseline:
 
 Real-install validation is still recommended before a real `1.0` release is cut, but it should remain a targeted manual check over already-documented workflows instead of a prerequisite for every task in this pass.
 
+## Current Status
+
+Most of the first stabilization hardening work for this pass has already landed in the current preview line.
+
+- focused compatibility coverage now locks the documented thin CLI mod workflow around mixed content inputs and stdout or stderr diagnostics
+- focused compatibility coverage now locks the intended inspection-facing public seam, including supported-system metadata, browsable-system metadata, and the import boundary between the root package and `eu5miner.inspection`
+- the remaining work is expected to stay narrow: release-readiness doc alignment, example truthfulness checks, and any final compatibility audits that uncover a concrete gap in the current curated contract
+
 ## Stabilization Criteria
 
 Treat this pass as complete when all of the following are true:
@@ -55,12 +63,14 @@ Treat this pass as complete when all of the following are true:
 - align `README.md`, `ROADMAP.md`, `documents/specs/README.md`, and `documents/v1-scope.md` around the same `1.0` boundary
 - make the distinction clear between the current preview line, the intended `1.0` contract, and areas that are still intentionally out of scope
 - keep examples anchored on the current architecture rather than describing future generic graph, writer, or product capabilities that do not exist yet
+- prefer small truthfulness updates over broad rewrites; this stage should mostly remove ambiguity about what is already done versus what still blocks a real release proposal
 
 ### 3. Compatibility-Focused Validation
 
 - add or tighten tests around the stable import seams and the high-level workflows they expose
 - prefer tests that exercise public facades and grouped packages instead of internal modules
 - expand synthetic workflow coverage where docs make compatibility claims, especially around inspection and mod planning or application flows
+- treat this as follow-up work only when a verified contract gap remains; do not reopen already-landed hardening slices without a concrete mismatch to resolve
 
 ### 4. Release-Readiness Gate Definition
 
@@ -68,6 +78,8 @@ Treat this pass as complete when all of the following are true:
 - keep that gate narrow: explicit contract, aligned docs, stable validation, and targeted manual sanity checks on representative install-backed workflows
 - treat downstream GUI and MCP consumption as coordination checks for release readiness, not as a reason to widen the core contract ad hoc
 - keep the concrete gate grounded in current checked-in behavior; the current working definition lives in `documents/v1-release-readiness.md`
+
+At the current stage, most tasks under this work package should be clarification or close-out tasks rather than new capability work.
 
 ## Acceptance Criteria
 

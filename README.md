@@ -29,6 +29,8 @@ The `0.5.x` line should be treated as a public preview.
 
 In practice, this release is suitable for install inspection, virtual filesystem queries, representative parsing, typed domain reads, and the current mod update planning and application workflow. It is not yet a promise that every exported helper will remain unchanged across future minor releases.
 
+The recent stabilization rounds already locked the main preview contract around the narrow root package, grouped domain packages, `eu5miner.inspection`, `eu5miner.mods`, and the documented thin CLI workflow. The remaining path to a truthful `1.0` proposal is narrower: keep those docs and examples aligned, keep the default validation gate green, and close any last compatibility audit gaps without reopening feature scope.
+
 ## Development
 
 This repository is stored under OneDrive, so the recommended setup is to keep the `uv` environment outside the synced tree.
@@ -87,6 +89,8 @@ eu5miner apply-mod-update --install-root C:\EU5 --mod-root C:\mods\my_mod --phas
 ```
 
 For the stabilization pass, treat these seven commands and their documented arguments as the intended thin CLI contract. Higher-level automation should prefer the library facades in `eu5miner.inspection` and `eu5miner.mods` rather than depending on internal CLI helpers.
+
+Release-readiness work should keep that command list stable unless a concrete compatibility problem is found. It is not an invitation to widen the CLI before `1.0`.
 
 `list-systems` and `report-system` provide install-backed summaries for the major connected systems currently implemented in the library: `economy`, `diplomacy`, `government`, `religion`, `interface`, and `map`.
 
@@ -257,6 +261,8 @@ The test suite and install-discovery helpers use this precedence for the game in
 ## Documentation
 
 The planning entrypoint is [ROADMAP.md](ROADMAP.md).
+
+For the current `1.0` boundary and blocker set, use [documents/v1-scope.md](documents/v1-scope.md) together with [documents/v1-release-readiness.md](documents/v1-release-readiness.md).
 
 Execution-ready work packages for contributors and cloud agents live in [documents/specs/README.md](documents/specs/README.md).
 

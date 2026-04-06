@@ -49,6 +49,8 @@ The completed preview baseline now includes:
 
 The next work should build on those shipped seams instead of repeating foundation or repo-setup slices.
 
+Post-round-five, the remaining core stabilization work is intentionally narrow. The main open work is release-readiness alignment around the already-curated seams plus any final compatibility audit gaps that turn up while checking the current contract.
+
 ## Completed Preview Slices
 
 1. Library integration and API polish baseline
@@ -78,6 +80,8 @@ Reference spec:
 The earlier integration and validation specs remain useful reference material for follow-up polish, but they are no longer the primary milestone definition.
 
 The current remaining stabilization focus is to keep release-readiness alignment and any last compatibility audits tight around the already-curated seams without widening the CLI or reopening foundation work.
+
+Treat this as a close-out pass on the current preview contract, not as a new feature phase. If a proposed task needs a broader API or new capability to justify itself, it does not belong in this slice.
 
 ### 2. GUI Read-Only Browsing Refinement
 
@@ -125,5 +129,6 @@ The immediate sequence should be:
 
 1. treat the current foundation specs as completed baseline and reference material
 2. use the stabilization pass to define the intended `1.0` contract on the current curated seams
-3. keep GUI and MCP follow-on work thin over those same seams instead of widening the core scope
-4. align release docs and targeted validation before proposing an actual `1.0` cut
+3. treat the core contract hardening rounds as largely complete and avoid restarting them in new packaging or feature terms
+4. keep GUI and MCP follow-on work thin over those same seams instead of widening the core scope
+5. align release docs and targeted validation before proposing an actual `1.0` cut
