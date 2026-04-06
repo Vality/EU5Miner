@@ -258,6 +258,8 @@ def test_cli_selected_system_report_from_synthetic_install(tmp_path: Path, capsy
     assert "== map system report ==" in captured.out
     assert "Navigation:" in captured.out
     assert "- Page key: report:map" in captured.out
+    assert "- Direct page flag: --page report:map" in captured.out
+    assert "- Selection flags: --system map" in captured.out
     assert "- Session position: 2 of 2 loaded pages" in captured.out
     assert "- Previous page: overview" in captured.out
     assert "- Overview page: overview" in captured.out
@@ -437,6 +439,8 @@ def test_build_shell_message_entity_detail_navigation_hints_parent_page(tmp_path
     assert "== monarchy government_type ==" in message
     assert "Navigation:" in message
     assert "- Page key: entity:government:monarchy" in message
+    assert "- Direct page flag: --page entity:government:monarchy" in message
+    assert "- Selection flags: --entity-system government --entity monarchy" in message
     assert "- Session position: 3 of 3 loaded pages" in message
     assert "- Previous page: entities:government" in message
     assert "- Overview page: overview" in message
@@ -470,6 +474,8 @@ def test_build_shell_message_unavailable_page_adds_recovery_guidance(
     )
 
     assert "== economy system report ==" in message
+    assert "- Direct page flag: --page report:economy" in message
+    assert "- Selection flags: --system economy" in message
     assert "- Session position: 2 of 11 loaded pages" in message
     assert "- Next page: report:diplomacy" in message
     assert "- Unavailable from selected install." in message
@@ -478,6 +484,32 @@ def test_build_shell_message_unavailable_page_adds_recovery_guidance(
         "- Unavailable pages stay indexed so partial or synthetic installs keep a stable "
         "session."
     ) in message
+
+
+def test_build_shell_message_quotes_entity_selection_flag_values_with_spaces(
+    tmp_path: Path,
+) -> None:
+    install_root = _make_entity_browsing_install(tmp_path / "install")
+
+    model = build_browser_model(
+        install_root,
+        selected_entity_system="religion",
+        selected_entity_name="holy order",
+    )
+
+    navigation_lines = model.pages[-1].navigation_hints
+    assert navigation_lines == ()
+
+    message = build_shell_message(
+        install_root,
+        selected_entity_system="religion",
+        selected_entity_name="holy order",
+    )
+
+    assert (
+        "- Selection flags: --entity-system religion --entity \"holy order\""
+        in message
+    )
 
 
 def test_cli_rejects_negative_browser_window_controls(capsys) -> None:

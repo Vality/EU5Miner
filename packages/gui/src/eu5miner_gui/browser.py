@@ -981,6 +981,7 @@ def _build_navigation_lines(model: BrowserModel, page: BrowserPage) -> tuple[str
     page_index = model.pages.index(page)
     lines = [
         f"Page key: {page.key}",
+        f"Direct page flag: --page {page.key}",
         f"Session position: {page_index + 1} of {len(model.pages)} loaded pages",
     ]
     if page_index > 0:
@@ -995,14 +996,20 @@ def _build_navigation_lines(model: BrowserModel, page: BrowserPage) -> tuple[str
 
     if page.key.startswith("entities:"):
         _, system = page.key.split(":", maxsplit=1)
+        lines.append(f"Selection flags: --entity-system {system}")
         lines.append(f"Detail page pattern: entity:{system}:<entity-name>")
     elif page.key.startswith("entity:"):
-        _, system, _ = page.key.split(":", maxsplit=2)
+        _, system, entity_name = page.key.split(":", maxsplit=2)
         list_key = _entity_list_page_key(system)
+        lines.append(
+            "Selection flags: "
+            f"--entity-system {system} --entity {_format_cli_value(entity_name)}"
+        )
         if model.get_page(list_key) is not None:
             lines.append(f"Parent list page: {list_key}")
     elif page.key.startswith("report:"):
         _, system = page.key.split(":", maxsplit=1)
+        lines.append(f"Selection flags: --system {system}")
         list_key = _entity_list_page_key(system)
         if model.get_page(list_key) is not None:
             lines.append(f"Related entity list page: {list_key}")
@@ -1010,6 +1017,13 @@ def _build_navigation_lines(model: BrowserModel, page: BrowserPage) -> tuple[str
     lines.extend(page.navigation_hints)
 
     return tuple(lines)
+
+
+def _format_cli_value(value: str) -> str:
+    if not value or any(character.isspace() for character in value):
+        escaped_value = value.replace('"', '\\"')
+        return f'"{escaped_value}"'
+    return value
 
 
 def _sort_entity_summaries(
