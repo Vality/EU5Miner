@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "eu5miner"
-version = "0.5.0"
+version = "0.6.0"
 description = "Text-first parsing and modding support library for Europa Universalis V data files"
 readme = "README.md"
 requires-python = ">=3.12"

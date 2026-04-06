@@ -2,8 +2,15 @@
 
 ## Unreleased
 
-- Documentation and roadmap wording across the three preview repos now records the checked-in state consistently: the core step-1 stabilization boundary is closed, the downstream step-2 grouped-helper breadth is shipped through diplomacy and religion, and the next major phase is validation, build, test, and release-readiness work.
-- Preview-scope language now keeps the downstream GUI and MCP helper surfaces explicit instead of implying another near-term core feature expansion.
+No unreleased changes recorded after the planned `0.6.0` preview cut.
+
+## 0.6.0 - Unreleased
+
+- Added a substantially broader read-only inspection facade: downstream callers can now list supported entity-browsing systems, enumerate entities, and fetch detailed entities for the initial economy, diplomacy, government, religion, and map families.
+- Locked the intended preview compatibility boundary with focused contract coverage for `eu5miner.inspection`, grouped domain packages, the thin CLI command surface, README examples, and the higher-level `eu5miner.mods` workflow.
+- Added explicit `python -m eu5miner` and wheel `__main__` entrypoints so packaged CLI execution matches the documented thin command surface.
+- Cleaned the default no-install validation baseline so `uv run pytest` stays warning-free even without optional plugins, and added release-readiness docs for the later `1.0` proposal.
+- Refreshed README, roadmap, spec-index, scope, security, and environment wording so the checked-in preview state and OneDrive-safe `uv` workflow stay consistent across the repo.
 
 ## 0.5.0 - 2026-03-28
 

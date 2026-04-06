@@ -1,6 +1,6 @@
 # V1 Scope
 
-Release `0.5.0` is a public preview inside this scope. It marks the first intentional public package cut, not the final `1.0` stability line.
+Release `0.6.0` is the current public preview inside this scope. Release `0.5.0` marked the first intentional public package cut, not the final `1.0` stability line.
 
 ## In Scope
 

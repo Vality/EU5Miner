@@ -35,6 +35,8 @@ That narrow close-out pass is now reflected in the checked-in core repo: docs, e
 
 That checked-in state also assumes the downstream preview repos have already completed their first narrow grouped-helper breadth through diplomacy and religion. The current cross-repo phase is operational rather than architectural: keep validation, build, test, and release-readiness work aligned across all three repos instead of reopening feature breadth.
 
+For the coordinated `0.6.0` preview release sweep, use this index as reference material for the checked-in boundary and release-readiness work, not as a prompt to restart completed foundation or stabilization slices.
+
 ## Current Core Reference Milestone
 
 - `v1-stabilization-pass.md`: the reference milestone for the explicit `1.0` contract on the current architecture; use it to keep later release work grounded in the checked-in boundary rather than to reopen feature scope

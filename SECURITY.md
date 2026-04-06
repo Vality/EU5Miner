@@ -2,7 +2,7 @@
 
 ## Supported Versions
 
-The current supported public release line is `0.5.x`.
+The current supported public release line is `0.6.x`.
 
 Older preview builds may not receive fixes.
 

@@ -6,7 +6,7 @@ This is an unofficial community project. It is not affiliated with, endorsed by,
 
 The repository and published package do not include game assets. Real-file validation and many install-backed workflows expect a locally available EU5 installation.
 
-Release `0.5.0` is the first public preview release.
+Release `0.6.0` is the current public preview release.
 
 The current release focuses on the major moddable text-based file families:
 
@@ -20,7 +20,9 @@ The project is intentionally test-heavy. Core functionality is validated against
 
 ## Status
 
-The `0.5.x` line should be treated as a public preview.
+The `0.6.x` line should be treated as a public preview.
+
+Compared with `0.5.0`, this preview expands the stable read-only inspection seam with initial entity browsing for economy, diplomacy, government, religion, and map while keeping the public API deliberately curated.
 
 - The root package, grouped domain packages, `eu5miner.inspection`, and the `eu5miner.mods` facade are intended for real use.
 - The CLI is intended as a thin convenience surface over the same library APIs.

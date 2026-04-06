@@ -21,7 +21,7 @@ The roadmap stays intentionally high level.
 
 ## Release Posture
 
-- `0.5.x` is a preview line.
+- `0.6.x` is the current preview line.
 - Patch releases are appropriate for validation fixes, packaging fixes, CI or automation changes, and refactors that do not add new user-facing capability.
 - Minor releases should be reserved for a completed roadmap slice that changes what users can materially do with the library or downstream products.
 
@@ -53,6 +53,8 @@ The completed preview baseline now includes:
 The next work should build on those shipped seams instead of repeating foundation or repo-setup slices.
 
 The checked-in three-repo state now covers the completed core step-1 stabilization boundary and the completed downstream step-2 grouped-helper breadth through diplomacy and religion. The immediate step-3 follow-on is coherence and release execution discipline: keep docs truthful, run the full validation and build gate, and align release-readiness work across the three preview repos.
+
+That operational slice is what justifies the coordinated `0.6.0` preview release across the workspace. Keep it focused on validation, packaging, changelog, and doc truthfulness rather than reopening feature breadth.
 
 For the checked-in core repo state, the stabilization close-out is now effectively complete. Remaining work before proposing an actual `1.0` release is the later release step plus the targeted manual install-backed sanity checks documented in `documents/v1-release-readiness.md`.
 
