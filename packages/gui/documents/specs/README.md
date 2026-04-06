@@ -6,6 +6,8 @@ These specs are the execution layer under `ROADMAP.md`.
 
 The shell, browser, and browse-refinement specs in this folder now describe landed preview behavior. The first two explicit checked step-2 implementation slices are the diplomacy helper page family over the stable grouped core diplomacy package and the single-page religion helper follow-on over the stable grouped core religion package.
 
+The checked-in docs now also reflect the step-3 coherence sweep after that shipped step-2 breadth. No additional helper-page breadth is the current active spec; the next major phase is operational and release-oriented.
+
 ## Landed Baseline Specs
 
 - `read-only-shell.md`: completed foundation for the launchable app shell and CLI entrypoint
@@ -20,11 +22,11 @@ The shell, browser, and browse-refinement specs in this folder now describe land
 
 Treat the browse-refinement specs above as closed baseline scope. Reopen them only when a core contract change forces a narrow follow-up.
 
-## Next Active Slice
+## Current Release-Readiness Focus
 
-- `preview-alignment.md`: execution-ready round-six slice for keeping GUI tests, docs, and `--all-systems` behavior aligned with the stable `eu5miner.inspection` supported-system and browseable-entity-system contract
+- `preview-alignment.md`: reference slice for keeping GUI tests, docs, and `--all-systems` behavior aligned with the stable `eu5miner.inspection` supported-system and browseable-entity-system contract while release-readiness work proceeds
 
-Future helper-page follow-ons should stay as narrow as the shipped diplomacy helper slice instead of turning helper pages into a generic second browse surface.
+The next major phase is full validation, build, test, and preview release readiness over the shipped browser and helper-page surface. Future helper-page follow-ons should stay as narrow as the shipped diplomacy and religion slices instead of turning helper pages into a generic second browse surface.
 
 ## Rules
 

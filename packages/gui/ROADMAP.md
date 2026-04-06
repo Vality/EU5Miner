@@ -17,26 +17,30 @@ The current preview baseline now includes:
 - entity-list sorting, dedicated entity windowing, detail mode, and concrete list-to-detail jump hints
 - graceful unavailable-page handling for partial or synthetic installs, including overview recovery guidance and stable session-position context
 
-That means the next work should keep the shipped browser aligned with the core preview contract rather than reopening another baseline browse-flow slice.
+That checked-in state now covers the completed step-2 grouped-helper breadth through diplomacy and religion. The step-3 coherence sweep should keep the README, roadmap, changelog, and spec index aligned to that shipped surface. The next major phase after this documentation pass is full validation, build, test, and preview release readiness, not another helper-breadth expansion.
 
 ## Next Recommended Order
 
-### 1. Preview Alignment With The Core Library
+### 1. Validation, Build, Test, And Preview Release Readiness
 
-Goal: keep the GUI thin over the intended stable seams as the preview line evolves.
+Goal: keep the GUI thin over the intended stable seams while the current preview surface is validated and prepared for the next release cut.
 
-Execution spec: `documents/specs/preview-alignment.md`
+Reference spec: `documents/specs/preview-alignment.md`
 
 Use this slice for:
 
+- full repo validation and build hygiene over the shipped shell and helper-page surface
 - docs and examples that match the shipped inspection-backed browser behavior
 - focused test updates when the core inspection facade changes or tightens its stable catalog contract
 - local source alignment and contract-locking around supported-system and browseable-entity-system coverage
 - dependency and release alignment with the core preview contract
 
 Do not reopen landed browse-refinement slices unless a core contract change forces a narrow follow-up.
+Do not use this slice to add another helper family before the release-readiness work is in place.
 
 ### 2. Diplomacy Helper Pages Over Stable Grouped Packages
+
+Status: complete through diplomacy and religion for the current checked-in repo state; use this section as the reference boundary for any later helper follow-on rather than as the next active slice.
 
 Goal: keep the first grouped-package expansion explicit and narrow by surfacing diplomacy helper pages over the stable core diplomacy helper surface.
 

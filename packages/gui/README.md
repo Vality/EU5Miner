@@ -16,6 +16,8 @@ The `0.5.x` line should be treated as a public preview.
 
 The published dependency continues to track the core `eu5miner` `main` branch. In this multi-repo workspace, local `uv` resolution also points `eu5miner` at the sibling `../EU5Miner` checkout so GUI validation follows the current inspection facade during preview alignment work.
 
+The checked-in GUI repo now reflects the completed step-2 grouped-helper breadth for the current preview line: diplomacy helper pages and the single religion helper page are both shipped, and that helper scope remains explicit. The current step-3 follow-on is coherence and release readiness: keep docs truthful, keep the full validation, build, and test gate green, and avoid widening helper scope again before the next preview cut.
+
 ## Current Browser Shell
 
 The current preview command prints a structured read-only browser view backed by stable core browse seams.
