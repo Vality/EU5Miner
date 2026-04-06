@@ -52,11 +52,13 @@ The completed preview baseline now includes:
 
 The next work should build on those shipped seams instead of repeating foundation or repo-setup slices.
 
-The checked-in three-repo state now covers the completed core step-1 stabilization boundary and the completed downstream step-2 grouped-helper breadth through diplomacy and religion. The immediate step-3 follow-on is coherence and release execution discipline: keep docs truthful, run the full validation and build gate, and align release-readiness work across the three preview repos.
+The checked-in three-repo state now covers the completed core step-1 stabilization boundary and the completed downstream step-2 grouped-helper breadth through diplomacy and religion. The coordinated `0.6.0` preview release is now out across the workspace.
 
-That operational slice is what justifies the coordinated `0.6.0` preview release across the workspace. Keep it focused on validation, packaging, changelog, and doc truthfulness rather than reopening feature breadth.
+The immediate post-release follow-on is stabilization and evidence gathering: keep docs truthful, keep the full validation and build gate green, and run the targeted manual install-backed sanity checks captured in `documents/v1-release-readiness.md`.
 
-For the checked-in core repo state, the stabilization close-out is now effectively complete. Remaining work before proposing an actual `1.0` release is the later release step plus the targeted manual install-backed sanity checks documented in `documents/v1-release-readiness.md`.
+Treat the next cross-repo slice as post-release contract maintenance and patch planning rather than a prompt to reopen helper breadth.
+
+For the checked-in core repo state, the stabilization close-out is now effectively complete. Remaining work before proposing an actual `1.0` release is post-release validation discipline plus the targeted manual install-backed sanity checks documented in `documents/v1-release-readiness.md`.
 
 ## Completed Preview Slices
 
@@ -89,7 +91,7 @@ Reference spec:
 
 The earlier integration and validation specs remain useful reference material for follow-up polish, but they are no longer the primary milestone definition.
 
-The checked-in repo now reflects that release-readiness alignment and compatibility-audit work. The remaining release-readiness work lives outside this slice: keep the automated gate green, run the documented manual install-backed sanity checks, and handle the eventual version bump and release execution separately.
+The checked-in repo now reflects that release-readiness alignment and compatibility-audit work. The remaining post-release work lives outside this slice: keep the automated gate green, run the documented manual install-backed sanity checks, and handle later patch or release decisions separately.
 
 Treat this as a close-out pass on the current preview contract, not as a new feature phase. If a proposed task needs a broader API or new capability to justify itself, it does not belong in this slice.
 
@@ -105,7 +107,7 @@ Use this slice for:
 - better presentation of partial-install and unavailable-report states
 - thin GUI-side integration work that stays over `eu5miner.inspection`
 
-Do not treat this as the current next major phase while cross-repo validation, build, test, and release-readiness work is still open.
+Do not treat this as the current next major phase while the post-`0.6.0` stabilization and manual-check follow-on is still the active priority.
 
 ### 3. MCP Server Contract Consolidation
 
@@ -119,18 +121,18 @@ Use this slice for:
 - stronger separation between local shell behavior and future transport work
 - targeted additions only when backed by stable core seams
 
-Do not treat this as the current next major phase while cross-repo validation, build, test, and release-readiness work is still open.
+Do not treat this as the current next major phase while the post-`0.6.0` stabilization and manual-check follow-on is still the active priority.
 
-### 4. Cross-Repo Validation, Build, Test, And Preview Release Alignment
+### 4. Cross-Repo Post-Release Validation And Contract Alignment
 
-Goal: keep the three preview repos aligned now that the core step-1 close-out and the first downstream step-2 breadth slices are both checked in.
+Goal: keep the three preview repos aligned now that the coordinated `0.6.0` prereleases are published and the current preview surface is live.
 
 Use this slice for:
 
  - full validation, type-check, lint, and build execution in each repo
- - dependency and changelog alignment
- - roadmap and README consistency across repos
- - release-ready validation, manual sanity-check planning, and documentation polish
+ - dependency and contract alignment across core, GUI, and MCP
+ - changelog, roadmap, README, and spec-index truthfulness for patch follow-ons
+ - targeted manual sanity-check evidence for the later `1.0` proposal
 
 ## Decision Rules
 
@@ -149,5 +151,5 @@ The immediate sequence should be:
 1. treat the current foundation specs as completed baseline and reference material
 2. treat the core stabilization pass as completed reference material for the intended `1.0` contract on the current curated seams
 3. treat the downstream diplomacy and religion grouped-helper slices as completed reference material rather than the next active feature phase
-4. use the step-3 coherence sweep to keep README, roadmap, changelog, and spec-index wording aligned across repos
-5. make full validation, build, test, and targeted manual sanity checks the next major phase before proposing an actual `1.0` cut
+4. treat the step-3 coherence sweep as completed release work and keep the resulting status docs truthful as post-release changes land
+5. make full validation, build, test, and targeted manual sanity checks the next major phase while collecting evidence for later `0.6.x` or `1.0` decisions

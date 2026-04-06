@@ -33,7 +33,7 @@ In practice, this release is suitable for install inspection, virtual filesystem
 
 The recent stabilization rounds already locked the main preview contract around the narrow root package, grouped domain packages, `eu5miner.inspection`, `eu5miner.mods`, and the documented thin CLI workflow. That close-out work is now reflected in the checked-in docs and tests: the public-API and grouped-package contract tests, inspection contract coverage, thin CLI contract coverage, README contract examples, and the default no-install validation gate all point at the same boundary. A later `1.0` proposal should treat the remaining work as release execution plus targeted manual sanity checks against a local install and representative mod workspace, not as another feature phase.
 
-That checked-in core state now also has matching downstream breadth in the companion preview repos: `EU5MinerGUI` and `EU5MinerMCP` both ship thin grouped-helper surfaces through diplomacy and religion, and those helper families remain the explicit preview boundary. The next cross-repo phase should focus on full validation, build, and test execution plus release-readiness alignment rather than widening helper scope again.
+That checked-in core state now also has matching downstream breadth in the companion preview repos: `EU5MinerGUI` and `EU5MinerMCP` both ship thin grouped-helper surfaces through diplomacy and religion, and those helper families remain the explicit preview boundary. The next cross-repo phase should focus on post-release validation, contract monitoring, and targeted manual sanity checks rather than widening helper scope again.
 
 ## Development
 
@@ -95,7 +95,7 @@ eu5miner apply-mod-update --install-root C:\EU5 --mod-root C:\mods\my_mod --phas
 
 For the stabilization pass, treat these seven commands and their documented arguments as the intended thin CLI contract. Higher-level automation should prefer the library facades in `eu5miner.inspection` and `eu5miner.mods` rather than depending on internal CLI helpers.
 
-Release-readiness work should keep that command list stable unless a concrete compatibility problem is found. It is not an invitation to widen the CLI before `1.0`.
+Post-release stabilization work should keep that command list stable unless a concrete compatibility problem is found. It is not an invitation to widen the CLI before `1.0`.
 
 `list-systems` and `report-system` provide install-backed summaries for the major connected systems currently implemented in the library: `economy`, `diplomacy`, `government`, `religion`, `interface`, and `map`.
 
