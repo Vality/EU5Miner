@@ -11,23 +11,24 @@ This project is not affiliated with, endorsed by, or sponsored by Paradox Intera
 The `0.5.x` line should be treated as a public preview.
 
 - The repo ships a standalone Python application package and command entrypoint.
-- The current surface is a read-only text shell over stable `eu5miner.inspection` APIs, including install overview, system reports, and covered entity list/detail browsing.
+- The current surface is a read-only text shell over stable core browse seams, including inspection-backed install overview, system reports, covered entity list/detail browsing, and thin diplomacy helper pages built over grouped `eu5miner.domains.diplomacy` helpers.
 - GUI-specific product work should continue here, while parsing, VFS, and domain-model logic stay in the core `eu5miner` library.
 
 The published dependency continues to track the core `eu5miner` `main` branch. In this multi-repo workspace, local `uv` resolution also points `eu5miner` at the sibling `../EU5Miner` checkout so GUI validation follows the current inspection facade during preview alignment work.
 
 ## Current Browser Shell
 
-The current preview command prints a structured read-only browser view backed by the stable `eu5miner.inspection` APIs.
+The current preview command prints a structured read-only browser view backed by stable core browse seams.
 
 - Without a local install, it renders the overview page with the supported system list and an unloaded install-summary section.
 - With `--install-root`, it renders an install overview page with roots, phases, and merged content sources.
 - With both `--install-root` and `--system`, it loads the selected stable system report page, such as `map`, and focuses that page by default.
 - With `--install-root` and `--entity-system`, it loads an entity list page for one currently browseable inspection system, such as `diplomacy`, `religion`, or `map`.
 - With `--install-root --entity-system ... --entity ...`, it loads the corresponding entity detail page with generic fields and cross-system references from `eu5miner.inspection`.
+- With `--install-root --diplomacy-helper war-flow` or `diplomacy-graph`, it loads a thin helper report page backed by representative install files plus grouped `eu5miner.domains.diplomacy` helper builders.
 - Entity list pages now sort by entity name by default, keep their own explicit entity window, and can switch between compact rows and detail rows with embedded detail-page keys.
 - Use `--entity-list-sort`, `--entity-list-limit`, `--entity-list-offset`, and `--entity-list-mode` when large covered systems need a narrower or more detail-oriented list view.
-- With `--page`, the shell can focus a page key directly: `overview` or `home`, `report:map` or `system:map`, `entities:religion` or `list:religion`, or `entity:map:stockholm` or `detail:map:stockholm`.
+- With `--page`, the shell can focus a page key directly: `overview` or `home`, `report:map` or `system:map`, `entities:religion` or `list:religion`, `helper:war-flow` or `diplomacy-helper:war-flow`, or `entity:map:stockholm` or `detail:map:stockholm`.
 - With `--list-pages`, it prints only the current page index; with `--page-filter`, it narrows loaded pages by case-insensitive text across page metadata and rendered lines.
 - The page index now windows large sessions by default. Use `--page-list-limit`, `--page-list-offset`, or `0` to disable page-index truncation when you need a wider index dump.
 - The shell header now prints a compact session summary with loaded, ready, and unavailable page counts plus the current browse request scope, so page-focused views keep their broader session context.
@@ -47,6 +48,8 @@ eu5miner-gui --install-root C:\EU5 --entity-system religion --entity-list-limit 
 eu5miner-gui --install-root C:\EU5 --entity-system government --entity-list-mode detail
 eu5miner-gui --install-root C:\EU5 --entity-system economy --entity-list-sort group
 eu5miner-gui --install-root C:\EU5 --entity-system map --entity stockholm
+eu5miner-gui --install-root C:\EU5 --diplomacy-helper war-flow
+eu5miner-gui --install-root C:\EU5 --page helper:diplomacy-graph
 eu5miner-gui --install-root C:\EU5 --page report:map
 eu5miner-gui --install-root C:\EU5 --page system:map
 eu5miner-gui --install-root C:\EU5 --page detail:government:monarchy

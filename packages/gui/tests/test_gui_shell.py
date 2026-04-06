@@ -7,6 +7,7 @@ import eu5miner.inspection as inspection
 from eu5miner_gui.__main__ import main as package_main
 from eu5miner_gui.app import (
     build_shell_message,
+    list_diplomacy_helper_names,
     list_entity_system_names,
     list_supported_system_names,
 )
@@ -49,6 +50,7 @@ def test_app_system_name_helpers_follow_inspection_facade() -> None:
         info.name for info in _supported_system_infos()
     )
     assert list_entity_system_names() == tuple(info.name for info in _entity_system_infos())
+    assert list_diplomacy_helper_names() == ("war-flow", "diplomacy-graph")
 
 
 def test_build_shell_message_lists_supported_systems_without_install() -> None:
@@ -65,12 +67,21 @@ def test_build_shell_message_lists_supported_systems_without_install() -> None:
     assert "== Install overview ==" in message
     assert "Supported systems:" in message
     assert "Browsable entity systems:" in message
+    assert "Diplomacy helper pages:" in message
     for info in _supported_system_infos():
         assert f"- {info.name}: {info.description}" in message
     for info in _entity_system_infos():
         assert (
             f"- {info.name}: {info.primary_entity_kind} - {info.description}" in message
         )
+    assert (
+        "- war-flow: Representative war-flow coverage built from "
+        "eu5miner.domains.diplomacy over install sample files."
+    ) in message
+    assert (
+        "- diplomacy-graph: Representative diplomacy-graph coverage built from "
+        "eu5miner.domains.diplomacy over install sample files."
+    ) in message
     assert "Install summary:" in message
     assert "- Not loaded." in message
 
@@ -97,12 +108,49 @@ def test_parse_browser_page_selection_supports_aliases() -> None:
     assert parse_browser_page_selection("home").page_key == "overview"
     assert parse_browser_page_selection("system:map").page_key == "report:map"
     assert parse_browser_page_selection("list:religion").page_key == "entities:religion"
+    assert parse_browser_page_selection("helper:war-flow").page_key == "helper:war-flow"
+    assert (
+        parse_browser_page_selection("diplomacy-helper:war-flow").selected_diplomacy_helper
+        == "war-flow"
+    )
 
     detail_selection = parse_browser_page_selection("detail:map:stockholm")
 
     assert detail_selection.page_key == "entity:map:stockholm"
     assert detail_selection.selected_entity_system == "map"
     assert detail_selection.selected_entity_name == "stockholm"
+
+
+def test_build_browser_model_with_selected_diplomacy_helper_builds_helper_page(
+    tmp_path: Path,
+) -> None:
+    install_root = _make_diplomacy_helper_install(tmp_path / "install")
+
+    model = build_browser_model(install_root, selected_diplomacy_helper="war-flow")
+
+    assert model.selected_page_key == "helper:war-flow"
+    assert model.page_keys() == ("overview", "helper:war-flow")
+    assert model.session_summary.requested_diplomacy_helper_scope == "war-flow"
+    assert model.pages[1].title == "war-flow helper report"
+    assert model.pages[1].status == "ready"
+    assert model.pages[1].sections[1].lines == (
+        "Casus belli definitions: 5",
+        "Wargoal definitions: 1",
+        "Peace treaty definitions: 3",
+        "Subject type definitions: 5",
+        "Casus belli -> wargoal links: 5",
+        "Peace treaty -> casus belli links: 3",
+        "Peace treaty -> subject type links: 2",
+    )
+    assert "Missing wargoal references: none" in model.pages[1].sections[2].lines
+    assert (
+        "Casus belli -> wargoal: cb_conquest -> sample_goal"
+        in model.pages[1].sections[3].lines
+    )
+    assert (
+        "Peace treaty -> subject type: force_tributary -> tributary"
+        in model.pages[1].sections[3].lines
+    )
 
 
 def test_build_browser_model_with_all_systems_loads_all_report_pages(tmp_path: Path) -> None:
@@ -429,12 +477,42 @@ def test_build_shell_message_filter_limits_visible_pages(tmp_path: Path) -> None
 
     assert "Selected page: entities:religion" in message
     assert "Session request: reports=overview only; entity lists=religion; detail=none" in message
+    assert "Session diplomacy helpers: none" in message
     assert "Filter result: 1 matched of 2 loaded pages" in message
     assert "Page filter: catholic" in message
     assert "Available pages (1 of 2 loaded):" in message
     assert "* entities:religion: religion entities" in message
     assert "== religion entities ==" in message
     assert "== Install overview ==" not in message
+
+
+def test_build_shell_message_selected_diplomacy_helper_from_synthetic_install(
+    tmp_path: Path,
+) -> None:
+    install_root = _make_diplomacy_helper_install(tmp_path / "install")
+
+    message = build_shell_message(
+        install_root,
+        selected_diplomacy_helper="diplomacy-graph",
+    )
+
+    assert "Selected page: helper:diplomacy-graph" in message
+    assert (
+        "Session request: reports=overview only; entity lists=none; detail=none"
+        in message
+    )
+    assert "Session diplomacy helpers: diplomacy-graph" in message
+    assert "* helper:diplomacy-graph: diplomacy-graph helper report" in message
+    assert "== diplomacy-graph helper report ==" in message
+    assert "Navigation:" in message
+    assert "- Page key: helper:diplomacy-graph" in message
+    assert "- Direct page flag: --page helper:diplomacy-graph" in message
+    assert "- Selection flags: --diplomacy-helper diplomacy-graph" in message
+    assert "- Country interaction definitions: 2" in message
+    assert (
+        "- Country interaction -> country interaction: request_loan -> sell_icon"
+        in message
+    )
 
 
 def test_build_shell_message_empty_filter_shows_guidance(tmp_path: Path) -> None:
@@ -697,6 +775,28 @@ def test_cli_page_key_can_open_entity_detail_without_explicit_entity_flags(
     assert "== monarchy government_type ==" in captured.out
 
 
+def test_cli_page_key_can_open_diplomacy_helper_without_explicit_helper_flag(
+    tmp_path: Path,
+    capsys,
+) -> None:
+    install_root = _make_diplomacy_helper_install(tmp_path / "install")
+
+    exit_code = main(
+        [
+            "--install-root",
+            str(install_root),
+            "--page",
+            "helper:war-flow",
+        ]
+    )
+
+    captured = capsys.readouterr()
+    assert exit_code == 0
+    assert "Selected page: helper:war-flow" in captured.out
+    assert "* helper:war-flow: war-flow helper report" in captured.out
+    assert "== war-flow helper report ==" in captured.out
+
+
 def test_cli_page_alias_can_open_entity_detail_without_explicit_entity_flags(
     tmp_path: Path,
     capsys,
@@ -830,6 +930,19 @@ def _make_report_install(install_root: Path) -> Path:
         "    stockholm = { timed_modifiers = { } }\n"
         "}\n",
     )
+    return install_root
+
+
+def _make_diplomacy_helper_install(install_root: Path) -> Path:
+    game_dir = install_root / "game"
+    for phase_name in ("loading_screen", "main_menu", "in_game"):
+        (game_dir / phase_name).mkdir(parents=True, exist_ok=True)
+    (game_dir / "dlc").mkdir(parents=True, exist_ok=True)
+    (game_dir / "mod").mkdir(parents=True, exist_ok=True)
+
+    for relative_path, text in _diplomacy_helper_fixture_texts().items():
+        _write_text(game_dir / relative_path, text)
+
     return install_root
 
 
@@ -984,6 +1097,94 @@ def _entity_fixture_texts() -> dict[Path, str]:
         ),
         Path("main_menu/setup/start/21_locations.txt"): (
             "locations = {\n    stockholm = { timed_modifiers = { } }\n}\n"
+        ),
+    }
+
+
+def _diplomacy_helper_fixture_texts() -> dict[Path, str]:
+    return {
+        Path("in_game/common/casus_belli/conquest.txt"): (
+            "cb_conquest = {\n"
+            "    war_goal_type = sample_goal\n"
+            "}\n"
+        ),
+        Path("in_game/common/casus_belli/00_hardcoded.txt"): (
+            "cb_hardcoded = {\n"
+            "    war_goal_type = sample_goal\n"
+            "}\n"
+        ),
+        Path("in_game/common/casus_belli/make_tributary_cb.txt"): (
+            "cb_tributary = {\n"
+            "    war_goal_type = sample_goal\n"
+            "}\n"
+        ),
+        Path("in_game/common/casus_belli/religious_superiority.txt"): (
+            "cb_religious = {\n"
+            "    war_goal_type = sample_goal\n"
+            "}\n"
+        ),
+        Path("in_game/common/casus_belli/trade_conflict.txt"): (
+            "cb_trade = {\n"
+            "    war_goal_type = sample_goal\n"
+            "}\n"
+        ),
+        Path("in_game/common/wargoals/00_default.txt"): (
+            "sample_goal = { type = conquest }\n"
+        ),
+        Path("in_game/common/peace_treaties/humiliate.txt"): (
+            "humiliate = {\n"
+            "    effect = { treaty_reference = casus_belli:cb_conquest }\n"
+            "}\n"
+        ),
+        Path("in_game/common/peace_treaties/force_tributary.txt"): (
+            "force_tributary = {\n"
+            "    effect = {\n"
+            "        treaty_reference = casus_belli:cb_tributary\n"
+            "        treaty_subject = subject_type:tributary\n"
+            "    }\n"
+            "}\n"
+        ),
+        Path("in_game/common/peace_treaties/religious_supremacy.txt"): (
+            "religious_supremacy = {\n"
+            "    effect = {\n"
+            "        treaty_reference = casus_belli:cb_religious\n"
+            "        treaty_subject = subject_type:appanage\n"
+            "    }\n"
+            "}\n"
+        ),
+        Path("in_game/common/subject_types/vassal.txt"): "vassal = { }\n",
+        Path("in_game/common/subject_types/tributary.txt"): "tributary = { }\n",
+        Path("in_game/common/subject_types/colonial_nation.txt"): "colonial_nation = { }\n",
+        Path("in_game/common/subject_types/hre.txt"): "hre = { }\n",
+        Path("in_game/common/subject_types/appanage.txt"): "appanage = { }\n",
+        Path("in_game/common/country_interactions/request_loan.txt"): (
+            "request_loan = {\n"
+            "    effect = {\n"
+            "        casus_belli_reference = casus_belli:cb_trade\n"
+            "        subject_reference = subject_type:vassal\n"
+            "        interaction_reference = country_interaction:sell_icon\n"
+            "    }\n"
+            "}\n"
+        ),
+        Path("in_game/common/country_interactions/sell_icon.txt"): (
+            "sell_icon = {\n"
+            "    effect = { subject_reference = subject_type:tributary }\n"
+            "}\n"
+        ),
+        Path("in_game/common/character_interactions/abdicate.txt"): (
+            "abdicate = {\n"
+            "    effect = { subject_reference = subject_type:vassal }\n"
+            "}\n"
+        ),
+        Path("in_game/common/character_interactions/move_children_to_court.txt"): (
+            "move_children_to_court = {\n"
+            "    effect = { subject_reference = subject_type:colonial_nation }\n"
+            "}\n"
+        ),
+        Path("in_game/common/character_interactions/marry_noble.txt"): (
+            "marry_noble = {\n"
+            "    effect = { subject_reference = subject_type:appanage }\n"
+            "}\n"
         ),
     }
 

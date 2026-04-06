@@ -1,4 +1,4 @@
-"""Read-only browser shell over the stable core inspection facade."""
+"""Read-only browser shell over stable core browse seams."""
 
 from __future__ import annotations
 
@@ -11,6 +11,7 @@ from eu5miner_gui.browser import (
     parse_browser_page_selection,
     render_browser_model,
 )
+from eu5miner_gui.diplomacy_helpers import list_diplomacy_helpers
 
 
 def list_supported_system_names() -> tuple[str, ...]:
@@ -21,12 +22,17 @@ def list_entity_system_names() -> tuple[str, ...]:
     return tuple(system.name for system in inspection.list_entity_systems())
 
 
+def list_diplomacy_helper_names() -> tuple[str, ...]:
+    return tuple(helper.name for helper in list_diplomacy_helpers())
+
+
 def build_shell_message(
     install_root: str | Path | None = None,
     *,
     selected_system: str | None = None,
     selected_entity_system: str | None = None,
     selected_entity_name: str | None = None,
+    selected_diplomacy_helper: str | None = None,
     include_all_systems: bool = False,
     language: str = "english",
     page_key: str | None = None,
@@ -46,12 +52,14 @@ def build_shell_message(
         selected_system,
         selected_entity_system,
         selected_entity_name,
+        selected_diplomacy_helper,
     ) = _resolve_navigation_request(
         install_root,
         page_key=page_key,
         selected_system=selected_system,
         selected_entity_system=selected_entity_system,
         selected_entity_name=selected_entity_name,
+        selected_diplomacy_helper=selected_diplomacy_helper,
     )
     return render_browser_model(
         build_browser_model(
@@ -59,6 +67,7 @@ def build_shell_message(
             selected_system=selected_system,
             selected_entity_system=selected_entity_system,
             selected_entity_name=selected_entity_name,
+            selected_diplomacy_helper=selected_diplomacy_helper,
             include_all_systems=include_all_systems,
             language=language,
             entity_list_sort=entity_list_sort,
@@ -82,6 +91,7 @@ def launch_app(
     selected_system: str | None = None,
     selected_entity_system: str | None = None,
     selected_entity_name: str | None = None,
+    selected_diplomacy_helper: str | None = None,
     include_all_systems: bool = False,
     language: str = "english",
     page_key: str | None = None,
@@ -101,6 +111,7 @@ def launch_app(
         selected_system=selected_system,
         selected_entity_system=selected_entity_system,
         selected_entity_name=selected_entity_name,
+        selected_diplomacy_helper=selected_diplomacy_helper,
         include_all_systems=include_all_systems,
         language=language,
         page_key=page_key,
@@ -124,10 +135,17 @@ def _resolve_navigation_request(
     selected_system: str | None,
     selected_entity_system: str | None,
     selected_entity_name: str | None,
-) -> tuple[str | None, str | None, str | None, str | None]:
+    selected_diplomacy_helper: str | None,
+) -> tuple[str | None, str | None, str | None, str | None, str | None]:
     requested_page_key = _normalize_optional_text(page_key)
     if requested_page_key is None:
-        return (None, selected_system, selected_entity_system, selected_entity_name)
+        return (
+            None,
+            selected_system,
+            selected_entity_system,
+            selected_entity_name,
+            selected_diplomacy_helper,
+        )
 
     page_selection = parse_browser_page_selection(requested_page_key)
     if page_selection.requires_install and install_root is None:
@@ -151,12 +169,19 @@ def _resolve_navigation_request(
         explicit_value=selected_entity_name,
         page_value=page_selection.selected_entity_name,
     )
+    _validate_navigation_conflict(
+        requested_page_key,
+        option_name="diplomacy-helper",
+        explicit_value=selected_diplomacy_helper,
+        page_value=page_selection.selected_diplomacy_helper,
+    )
 
     return (
         page_selection.page_key,
         selected_system or page_selection.selected_system,
         selected_entity_system or page_selection.selected_entity_system,
         selected_entity_name or page_selection.selected_entity_name,
+        selected_diplomacy_helper or page_selection.selected_diplomacy_helper,
     )
 
 

@@ -10,6 +10,7 @@ The current preview baseline now includes:
 - a launchable CLI and app shell
 - a structured read-only browser model with an overview page and per-system report pages
 - browsing for one selected system or all supported systems from a chosen install
+- thin diplomacy helper pages over grouped `eu5miner.domains.diplomacy` war-flow and diplomacy-graph seams using representative install files
 - explicit page-key focus, page index mode, lightweight filtering, and concrete reopen hints when filters hide the current session selection
 - page-index windowing, section truncation, and navigation hints for larger browser sessions
 - entity-list sorting, dedicated entity windowing, detail mode, and concrete list-to-detail jump hints
