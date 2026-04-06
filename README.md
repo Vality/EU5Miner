@@ -228,7 +228,7 @@ government_catalog = build_government_catalog(
 religion_document = parse_religion_document("example_faith = { group = abrahamic }\n")
 religion_catalog = build_religion_catalog(religion_documents=(religion_document,))
 
-default_map_document = parse_default_map_document('definitions = "definitions.txt"\n')
+default_map_document = parse_default_map_document('setup = "definitions.txt"\n')
 localization_bundle = build_localization_bundle(
 	(("sample.yml", 'l_english:\nSAMPLE_KEY: "Sample"\n'),)
 )

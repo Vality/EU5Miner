@@ -342,7 +342,7 @@ def test_grouped_diplomacy_package_exports_both_helper_layers() -> None:
 
 
 def test_grouped_map_and_localization_packages_support_inline_usage() -> None:
-    default_map_document = parse_default_map_document('definitions = "definitions.txt"\n')
+    default_map_document = parse_default_map_document('setup = "definitions.txt"\n')
     hierarchy_document = parse_location_hierarchy_document(
         "world = { region = { area = { province = { stockholm } } } }\n"
     )

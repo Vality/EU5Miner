@@ -35,6 +35,8 @@ The intended `1.0` compatibility boundary is the current curated surface, not ev
 
 The broad `eu5miner.domains` convenience import remains available during preview, but grouped packages are the preferred stable seam. Internal implementation modules and standalone convenience imports are not part of the preferred `1.0` contract.
 
+The current narrow pre-release blocker set for that contract lives in `documents/v1-release-readiness.md`.
+
 ## Why this cut
 
 This scope captures the file families that matter most for modding and data mining while keeping the implementation small enough to stay test-heavy and extensible. It also avoids locking the project into brittle binary reverse engineering before the text core is reliable.

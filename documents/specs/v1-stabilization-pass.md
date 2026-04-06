@@ -67,6 +67,7 @@ Treat this pass as complete when all of the following are true:
 - define the blockers that must be cleared before an actual `1.0` release is proposed
 - keep that gate narrow: explicit contract, aligned docs, stable validation, and targeted manual sanity checks on representative install-backed workflows
 - treat downstream GUI and MCP consumption as coordination checks for release readiness, not as a reason to widen the core contract ad hoc
+- keep the concrete gate grounded in current checked-in behavior; the current working definition lives in `documents/v1-release-readiness.md`
 
 ## Acceptance Criteria
 

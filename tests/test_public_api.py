@@ -511,7 +511,7 @@ def test_domains_package_exports_curated_entrypoints() -> None:
     )
     war_report = build_war_flow_report(war_catalog)
     script_value_document = parse_script_value_document("my_value = { value = 5 }\n")
-    default_map_document = parse_default_map_document('definitions = "definitions.txt"\n')
+    default_map_document = parse_default_map_document('setup = "definitions.txt"\n')
 
     assert trigger_document.names() == ("test_trigger",)
     assert setup_document.definitions[0].tag == "FRA"
@@ -578,14 +578,14 @@ def test_domains_package_exports_curated_entrypoints() -> None:
         "rivers": None,
         "topology": None,
         "adjacencies": None,
-        "setup": None,
+        "setup": '"definitions.txt"',
         "ports": None,
         "location_templates": None,
     }
-    definitions_entry = default_map_document.semantic_document.first_entry("definitions")
-    assert definitions_entry is not None
-    assert isinstance(definitions_entry.value, SemanticScalar)
-    assert definitions_entry.value.text == '"definitions.txt"'
+    setup_entry = default_map_document.semantic_document.first_entry("setup")
+    assert setup_entry is not None
+    assert isinstance(setup_entry.value, SemanticScalar)
+    assert setup_entry.value.text == '"definitions.txt"'
     assert callable(build_on_action_catalog_document)
     assert callable(build_war_flow_catalog)
     assert callable(build_diplomacy_graph_catalog)
