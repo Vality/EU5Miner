@@ -10,6 +10,7 @@ from eu5miner_gui.app import (
     launch_app,
     list_diplomacy_helper_names,
     list_entity_system_names,
+    list_religion_helper_names,
     list_supported_system_names,
 )
 
@@ -54,6 +55,15 @@ def main(argv: Sequence[str] | None = None) -> int:
         ),
     )
     parser.add_argument(
+        "--religion-helper",
+        choices=list_religion_helper_names(),
+        default=None,
+        help=(
+            "Optional religion helper page to load from representative install files, "
+            "such as religion-overview."
+        ),
+    )
+    parser.add_argument(
         "--all-systems",
         action="store_true",
         help=(
@@ -67,7 +77,9 @@ def main(argv: Sequence[str] | None = None) -> int:
         help=(
             "Explicit page key to focus, such as overview or home, report:map or "
             "system:map, entities:religion or list:religion, helper:war-flow or "
-            "diplomacy-helper:war-flow, or entity:map:stockholm or detail:map:stockholm."
+            "diplomacy-helper:war-flow, helper:religion-overview or "
+            "religion-helper:religion-overview, or entity:map:stockholm or "
+            "detail:map:stockholm."
         ),
     )
     parser.add_argument(
@@ -168,6 +180,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 selected_entity_system=args.entity_system,
                 selected_entity_name=args.entity,
                 selected_diplomacy_helper=args.diplomacy_helper,
+                selected_religion_helper=args.religion_helper,
                 include_all_systems=args.all_systems,
                 language=args.language,
                 page_key=args.page,

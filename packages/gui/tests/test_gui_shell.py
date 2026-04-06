@@ -9,6 +9,7 @@ from eu5miner_gui.app import (
     build_shell_message,
     list_diplomacy_helper_names,
     list_entity_system_names,
+    list_religion_helper_names,
     list_supported_system_names,
 )
 from eu5miner_gui.browser import build_browser_model, parse_browser_page_selection
@@ -51,6 +52,7 @@ def test_app_system_name_helpers_follow_inspection_facade() -> None:
     )
     assert list_entity_system_names() == tuple(info.name for info in _entity_system_infos())
     assert list_diplomacy_helper_names() == ("war-flow", "diplomacy-graph")
+    assert list_religion_helper_names() == ("religion-overview",)
 
 
 def test_build_shell_message_lists_supported_systems_without_install() -> None:
@@ -68,6 +70,7 @@ def test_build_shell_message_lists_supported_systems_without_install() -> None:
     assert "Supported systems:" in message
     assert "Browsable entity systems:" in message
     assert "Diplomacy helper pages:" in message
+    assert "Religion helper pages:" in message
     for info in _supported_system_infos():
         assert f"- {info.name}: {info.description}" in message
     for info in _entity_system_infos():
@@ -81,6 +84,10 @@ def test_build_shell_message_lists_supported_systems_without_install() -> None:
     assert (
         "- diplomacy-graph: Representative diplomacy-graph coverage built from "
         "eu5miner.domains.diplomacy over install sample files."
+    ) in message
+    assert (
+        "- religion-overview: Representative religion coverage built from "
+        "eu5miner.domains.religion over install sample files."
     ) in message
     assert "Install summary:" in message
     assert "- Not loaded." in message
@@ -110,8 +117,18 @@ def test_parse_browser_page_selection_supports_aliases() -> None:
     assert parse_browser_page_selection("list:religion").page_key == "entities:religion"
     assert parse_browser_page_selection("helper:war-flow").page_key == "helper:war-flow"
     assert (
+        parse_browser_page_selection("helper:religion-overview").selected_religion_helper
+        == "religion-overview"
+    )
+    assert (
         parse_browser_page_selection("diplomacy-helper:war-flow").selected_diplomacy_helper
         == "war-flow"
+    )
+    assert (
+        parse_browser_page_selection(
+            "religion-helper:religion-overview"
+        ).selected_religion_helper
+        == "religion-overview"
     )
 
     detail_selection = parse_browser_page_selection("detail:map:stockholm")
@@ -149,6 +166,51 @@ def test_build_browser_model_with_selected_diplomacy_helper_builds_helper_page(
     )
     assert (
         "Peace treaty -> subject type: force_tributary -> tributary"
+        in model.pages[1].sections[3].lines
+    )
+
+
+def test_build_browser_model_with_selected_religion_helper_builds_helper_page(
+    tmp_path: Path,
+) -> None:
+    install_root = _make_religion_helper_install(tmp_path / "install")
+
+    model = build_browser_model(install_root, selected_religion_helper="religion-overview")
+
+    assert model.selected_page_key == "helper:religion-overview"
+    assert model.page_keys() == ("overview", "helper:religion-overview")
+    assert model.session_summary.requested_religion_helper_scope == "religion-overview"
+    assert model.pages[1].title == "religion-overview helper report"
+    assert model.pages[1].status == "ready"
+    assert model.pages[1].sections[1].lines == (
+        "Religion definitions: 5",
+        "Religious aspect definitions: 2",
+        "Religious faction definitions: 1",
+        "Religious focus definitions: 1",
+        "Religious school definitions: 2",
+        "Religious figure definitions: 2",
+        "Holy site type definitions: 1",
+        "Holy site definitions: 2",
+        "Religion -> aspect links: 2",
+        "Religion -> faction links: 1",
+        "Religion -> focus links: 2",
+        "Religion -> school links: 3",
+        "Religion -> holy site links: 2",
+        "Religion -> figure links: 3",
+    )
+    assert "Missing religious faction references: none" in model.pages[1].sections[2].lines
+    assert "Missing religious focus references: none" in model.pages[1].sections[2].lines
+    assert "Missing religious school references: none" in model.pages[1].sections[2].lines
+    assert (
+        "Religion -> aspect: catholic -> sample_aspect"
+        in model.pages[1].sections[3].lines
+    )
+    assert (
+        "Religion -> holy site: hindu -> secondary_site"
+        in model.pages[1].sections[3].lines
+    )
+    assert (
+        "Religion -> figure: orthodox -> sample_figure"
         in model.pages[1].sections[3].lines
     )
 
@@ -515,6 +577,33 @@ def test_build_shell_message_selected_diplomacy_helper_from_synthetic_install(
     )
 
 
+def test_build_shell_message_selected_religion_helper_from_synthetic_install(
+    tmp_path: Path,
+) -> None:
+    install_root = _make_religion_helper_install(tmp_path / "install")
+
+    message = build_shell_message(
+        install_root,
+        selected_religion_helper="religion-overview",
+    )
+
+    assert "Selected page: helper:religion-overview" in message
+    assert (
+        "Session request: reports=overview only; entity lists=none; detail=none"
+        in message
+    )
+    assert "Session diplomacy helpers: none" in message
+    assert "Session religion helpers: religion-overview" in message
+    assert "* helper:religion-overview: religion-overview helper report" in message
+    assert "== religion-overview helper report ==" in message
+    assert "Navigation:" in message
+    assert "- Page key: helper:religion-overview" in message
+    assert "- Direct page flag: --page helper:religion-overview" in message
+    assert "- Selection flags: --religion-helper religion-overview" in message
+    assert "- Religion definitions: 5" in message
+    assert "- Religion -> school: sunni -> sample_school" in message
+
+
 def test_build_shell_message_empty_filter_shows_guidance(tmp_path: Path) -> None:
     install_root = _make_report_install(tmp_path / "install")
     expected_loaded_page_count = len(_expected_all_system_page_keys())
@@ -797,6 +886,28 @@ def test_cli_page_key_can_open_diplomacy_helper_without_explicit_helper_flag(
     assert "== war-flow helper report ==" in captured.out
 
 
+def test_cli_page_alias_can_open_religion_helper_without_explicit_helper_flag(
+    tmp_path: Path,
+    capsys,
+) -> None:
+    install_root = _make_religion_helper_install(tmp_path / "install")
+
+    exit_code = main(
+        [
+            "--install-root",
+            str(install_root),
+            "--page",
+            "religion-helper:religion-overview",
+        ]
+    )
+
+    captured = capsys.readouterr()
+    assert exit_code == 0
+    assert "Selected page: helper:religion-overview" in captured.out
+    assert "* helper:religion-overview: religion-overview helper report" in captured.out
+    assert "== religion-overview helper report ==" in captured.out
+
+
 def test_cli_page_alias_can_open_entity_detail_without_explicit_entity_flags(
     tmp_path: Path,
     capsys,
@@ -941,6 +1052,19 @@ def _make_diplomacy_helper_install(install_root: Path) -> Path:
     (game_dir / "mod").mkdir(parents=True, exist_ok=True)
 
     for relative_path, text in _diplomacy_helper_fixture_texts().items():
+        _write_text(game_dir / relative_path, text)
+
+    return install_root
+
+
+def _make_religion_helper_install(install_root: Path) -> Path:
+    game_dir = install_root / "game"
+    for phase_name in ("loading_screen", "main_menu", "in_game"):
+        (game_dir / phase_name).mkdir(parents=True, exist_ok=True)
+    (game_dir / "dlc").mkdir(parents=True, exist_ok=True)
+    (game_dir / "mod").mkdir(parents=True, exist_ok=True)
+
+    for relative_path, text in _religion_helper_fixture_texts().items():
         _write_text(game_dir / relative_path, text)
 
     return install_root
@@ -1184,6 +1308,99 @@ def _diplomacy_helper_fixture_texts() -> dict[Path, str]:
         Path("in_game/common/character_interactions/marry_noble.txt"): (
             "marry_noble = {\n"
             "    effect = { subject_reference = subject_type:appanage }\n"
+            "}\n"
+        ),
+    }
+
+
+def _religion_helper_fixture_texts() -> dict[Path, str]:
+    return {
+        Path("in_game/common/religions/christian.txt"): (
+            "catholic = {\n"
+            "    group = christian\n"
+            "    factions = { sample_faction }\n"
+            "    religious_focuses = { sample_focus }\n"
+            "    religious_school = sample_school\n"
+            "    religious_aspects = { sample_aspect }\n"
+            "    tags = { catholic_gfx }\n"
+            "}\n"
+        ),
+        Path("in_game/common/religions/buddhist.txt"): "orthodox = { group = christian }\n",
+        Path("in_game/common/religions/muslim.txt"): (
+            "sunni = {\n"
+            "    group = muslim\n"
+            "    religious_school = sample_school\n"
+            "}\n"
+        ),
+        Path("in_game/common/religions/tonal.txt"): (
+            "nahuatl = {\n"
+            "    group = tonal\n"
+            "    religious_focuses = { sample_focus }\n"
+            "}\n"
+        ),
+        Path("in_game/common/religions/dharmic.txt"): (
+            "hindu = {\n"
+            "    group = dharmic\n"
+            "    religious_school = sample_school\n"
+            "}\n"
+        ),
+        Path("in_game/common/religious_aspects/common.txt"): (
+            "sample_aspect = {\n"
+            "    religion = catholic\n"
+            "    enabled = { always = yes }\n"
+            "    modifier = { add = 1 }\n"
+            "    opinions = {\n"
+            "        sample_aspect = 10\n"
+            "    }\n"
+            "}\n"
+        ),
+        Path("in_game/common/religious_aspects/protestant.txt"): (
+            "secondary_aspect = {\n"
+            "    religion = orthodox\n"
+            "    enabled = { always = yes }\n"
+            "    modifier = { add = 1 }\n"
+            "}\n"
+        ),
+        Path("in_game/common/religious_factions/shinto.txt"): (
+            "sample_faction = { visible = { always = yes } enabled = { always = yes } "
+            "actions = { action_a action_b } }\n"
+        ),
+        Path("in_game/common/religious_focuses/nahuatl.txt"): (
+            "sample_focus = { monthly_progress = { add = 1 } modifier_on_completion = "
+            "{ add = 1 } }\n"
+        ),
+        Path("in_game/common/religious_schools/sunni.txt"): (
+            "sample_school = { color = rgb { 1 2 3 } enabled_for_country = { always = "
+            "yes } modifier = { add = 1 } }\n"
+        ),
+        Path("in_game/common/religious_schools/hinduism.txt"): (
+            "secondary_school = { color = rgb { 3 2 1 } enabled_for_country = { "
+            "always = yes } modifier = { add = 1 } }\n"
+        ),
+        Path("in_game/common/religious_figures/00_muslim.txt"): (
+            "sample_figure = { enabled_for_religion = { group = religion_group:christian } }\n"
+        ),
+        Path("in_game/common/religious_figures/01_hindu.txt"): (
+            "secondary_figure = { enabled_for_religion = { group = religion_group:dharmic } }\n"
+        ),
+        Path("in_game/common/holy_site_types/00_holy_site_types.txt"): (
+            "temple = { location_modifier = { add = 1 } }\n"
+        ),
+        Path("in_game/common/holy_sites/catholic.txt"): (
+            "sample_site = {\n"
+            "    location = rome\n"
+            "    type = temple\n"
+            "    importance = 4\n"
+            "    religions = { catholic }\n"
+            "}\n"
+        ),
+        Path("in_game/common/holy_sites/hindu.txt"): (
+            "secondary_site = {\n"
+            "    location = varanasi\n"
+            "    type = temple\n"
+            "    importance = 3\n"
+            "    religions = { hindu }\n"
+            "    god = vishnu_god\n"
             "}\n"
         ),
     }

@@ -4,7 +4,7 @@ These specs are the execution layer under `ROADMAP.md`.
 
 ## Current Status
 
-The shell, browser, and browse-refinement specs in this folder now describe landed preview behavior.
+The shell, browser, and browse-refinement specs in this folder now describe landed preview behavior. The first two explicit checked step-2 implementation slices are the diplomacy helper page family over the stable grouped core diplomacy package and the single-page religion helper follow-on over the stable grouped core religion package.
 
 ## Landed Baseline Specs
 
@@ -15,13 +15,16 @@ The shell, browser, and browse-refinement specs in this folder now describe land
 - `browser-session-ergonomics.md`: completed refinement for large-session readability, page-window controls, and navigation hints in the lightweight shell
 - `large-entity-list-browsing.md`: completed refinement for large entity-list sorting, windowing, mode selection, and clearer list-to-detail jumps
 - `browser-page-context.md`: completed refinement for session-position hints, unavailable-page recovery guidance, and hidden-selection reopen hints over the loaded browser session
-- `diplomacy-helper-pages.md`: completed step-2 slice for thin war-flow and diplomacy-graph helper pages over the stable `eu5miner.domains.diplomacy` grouped package
+- `diplomacy-helper-pages.md`: completed first checked step-2 slice for thin `war-flow` and `diplomacy-graph` helper pages over the stable `eu5miner.domains.diplomacy` grouped package
+- `religion-helper-pages.md`: completed second checked step-2 slice for one thin `religion-overview` helper page over the stable `eu5miner.domains.religion` grouped package
 
 Treat the browse-refinement specs above as closed baseline scope. Reopen them only when a core contract change forces a narrow follow-up.
 
 ## Next Active Slice
 
 - `preview-alignment.md`: execution-ready round-six slice for keeping GUI tests, docs, and `--all-systems` behavior aligned with the stable `eu5miner.inspection` supported-system and browseable-entity-system contract
+
+Future helper-page follow-ons should stay as narrow as the shipped diplomacy helper slice instead of turning helper pages into a generic second browse surface.
 
 ## Rules
 

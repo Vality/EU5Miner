@@ -15,6 +15,12 @@ from eu5miner_gui.diplomacy_helpers import (
     get_diplomacy_helper_info,
     list_diplomacy_helpers,
 )
+from eu5miner_gui.religion_helpers import (
+    ReligionHelperInfo,
+    build_religion_helper_view,
+    get_religion_helper_info,
+    list_religion_helpers,
+)
 
 
 @dataclass(frozen=True)
@@ -41,6 +47,7 @@ class BrowserPageSelection:
     selected_entity_system: str | None = None
     selected_entity_name: str | None = None
     selected_diplomacy_helper: str | None = None
+    selected_religion_helper: str | None = None
 
     @property
     def requires_install(self) -> bool:
@@ -56,6 +63,7 @@ class BrowserSessionSummary:
     requested_entity_scope: str
     requested_entity_detail: str
     requested_diplomacy_helper_scope: str
+    requested_religion_helper_scope: str
     install_summary_loaded: bool
 
 
@@ -64,6 +72,7 @@ class BrowserModel:
     supported_systems: tuple[inspection.SystemInfo, ...]
     entity_systems: tuple[inspection.EntitySystemInfo, ...]
     diplomacy_helpers: tuple[DiplomacyHelperInfo, ...]
+    religion_helpers: tuple[ReligionHelperInfo, ...]
     session_summary: BrowserSessionSummary
     pages: tuple[BrowserPage, ...]
     selected_page_key: str
@@ -113,12 +122,17 @@ def parse_browser_page_selection(page_key: str) -> BrowserPageSelection:
                 page_key=_entity_list_page_key(selected_entity_system),
                 selected_entity_system=selected_entity_system,
             )
-    if len(page_parts) == 2 and page_prefix in {"helper", "diplomacy-helper"}:
-        selected_diplomacy_helper = page_parts[1].strip()
-        if selected_diplomacy_helper:
+    if len(page_parts) == 2 and page_prefix in {"helper", "diplomacy-helper", "religion-helper"}:
+        helper_name = page_parts[1].strip()
+        if helper_name:
+            if page_prefix == "religion-helper" or _is_religion_helper_name(helper_name):
+                return BrowserPageSelection(
+                    page_key=_religion_helper_page_key(helper_name),
+                    selected_religion_helper=helper_name,
+                )
             return BrowserPageSelection(
-                page_key=_diplomacy_helper_page_key(selected_diplomacy_helper),
-                selected_diplomacy_helper=selected_diplomacy_helper,
+                page_key=_diplomacy_helper_page_key(helper_name),
+                selected_diplomacy_helper=helper_name,
             )
     if len(page_parts) >= 3 and page_prefix in {"entity", "detail"}:
         selected_entity_system = page_parts[1].strip()
@@ -133,7 +147,9 @@ def parse_browser_page_selection(page_key: str) -> BrowserPageSelection:
     raise KeyError(
         "Unknown page key format. Valid examples: overview or home, report:map or "
         "system:map, entities:religion or list:religion, helper:war-flow or "
-        "diplomacy-helper:war-flow, entity:map:stockholm or detail:map:stockholm"
+        "diplomacy-helper:war-flow, helper:religion-overview or "
+        "religion-helper:religion-overview, entity:map:stockholm or "
+        "detail:map:stockholm"
     )
 
 
@@ -144,6 +160,7 @@ def build_browser_model(
     selected_entity_system: str | None = None,
     selected_entity_name: str | None = None,
     selected_diplomacy_helper: str | None = None,
+    selected_religion_helper: str | None = None,
     include_all_systems: bool = False,
     language: str = "english",
     entity_list_sort: str = "name",
@@ -154,10 +171,12 @@ def build_browser_model(
     supported_systems = inspection.list_supported_systems()
     entity_systems = inspection.list_entity_systems()
     diplomacy_helpers = list_diplomacy_helpers()
+    religion_helpers = list_religion_helpers()
     _validate_selected_system(supported_systems, selected_system)
     _validate_selected_entity_system(entity_systems, selected_entity_system)
     _validate_selected_entity_name(selected_entity_system, selected_entity_name)
     _validate_selected_diplomacy_helper(diplomacy_helpers, selected_diplomacy_helper)
+    _validate_selected_religion_helper(religion_helpers, selected_religion_helper)
     normalized_entity_list_sort = _normalize_entity_list_sort(entity_list_sort)
     normalized_entity_list_mode = _normalize_entity_list_mode(entity_list_mode)
     normalized_entity_list_limit = _normalize_limit(
@@ -174,6 +193,7 @@ def build_browser_model(
     entity_list_pages: list[BrowserPage] = []
     entity_detail_pages: list[BrowserPage] = []
     diplomacy_helper_pages: list[BrowserPage] = []
+    religion_helper_pages: list[BrowserPage] = []
     ready_report_names: tuple[str, ...] = ()
     unavailable_report_names: tuple[str, ...] = ()
     ready_entity_list_names: tuple[str, ...] = ()
@@ -182,6 +202,8 @@ def build_browser_model(
     unavailable_entity_detail_names: tuple[str, ...] = ()
     ready_diplomacy_helper_names: tuple[str, ...] = ()
     unavailable_diplomacy_helper_names: tuple[str, ...] = ()
+    ready_religion_helper_names: tuple[str, ...] = ()
+    unavailable_religion_helper_names: tuple[str, ...] = ()
 
     systems_to_load = _resolve_systems_to_load(
         supported_systems,
@@ -250,12 +272,21 @@ def build_browser_model(
             else:
                 unavailable_diplomacy_helper_names = (helper_page.key,)
 
+        if selected_religion_helper is not None:
+            helper_page = _build_religion_helper_page(install, selected_religion_helper)
+            religion_helper_pages = [helper_page]
+            if helper_page.status == "ready":
+                ready_religion_helper_names = (helper_page.key,)
+            else:
+                unavailable_religion_helper_names = (helper_page.key,)
+
     loaded_page_count = (
         1
         + len(report_pages)
         + len(entity_list_pages)
         + len(entity_detail_pages)
         + len(diplomacy_helper_pages)
+        + len(religion_helper_pages)
     )
 
     ready_page_count = (
@@ -264,12 +295,14 @@ def build_browser_model(
         + len(ready_entity_list_names)
         + len(ready_entity_detail_names)
         + len(ready_diplomacy_helper_names)
+        + len(ready_religion_helper_names)
     )
     unavailable_page_count = (
         len(unavailable_report_names)
         + len(unavailable_entity_list_names)
         + len(unavailable_entity_detail_names)
         + len(unavailable_diplomacy_helper_names)
+        + len(unavailable_religion_helper_names)
     )
     session_summary = BrowserSessionSummary(
         loaded_page_count=loaded_page_count,
@@ -287,6 +320,7 @@ def build_browser_model(
         ),
         requested_entity_detail=selected_entity_name or "none",
         requested_diplomacy_helper_scope=selected_diplomacy_helper or "none",
+        requested_religion_helper_scope=selected_religion_helper or "none",
         install_summary_loaded=summary is not None,
     )
 
@@ -294,12 +328,14 @@ def build_browser_model(
         supported_systems,
         entity_systems,
         diplomacy_helpers,
+        religion_helpers,
         summary,
         session_summary=session_summary,
         selected_system=selected_system,
         selected_entity_system=selected_entity_system,
         selected_entity_name=selected_entity_name,
         selected_diplomacy_helper=selected_diplomacy_helper,
+        selected_religion_helper=selected_religion_helper,
         include_all_systems=include_all_systems,
         ready_report_names=ready_report_names,
         unavailable_report_names=unavailable_report_names,
@@ -309,6 +345,8 @@ def build_browser_model(
         unavailable_entity_detail_names=unavailable_entity_detail_names,
         ready_diplomacy_helper_names=ready_diplomacy_helper_names,
         unavailable_diplomacy_helper_names=unavailable_diplomacy_helper_names,
+        ready_religion_helper_names=ready_religion_helper_names,
+        unavailable_religion_helper_names=unavailable_religion_helper_names,
     )
     pages = (
         overview_page,
@@ -316,6 +354,7 @@ def build_browser_model(
         *entity_list_pages,
         *entity_detail_pages,
         *diplomacy_helper_pages,
+        *religion_helper_pages,
     )
     selected_page_key = _resolve_selected_page_key(
         pages,
@@ -323,11 +362,13 @@ def build_browser_model(
         selected_entity_system=selected_entity_system,
         selected_entity_name=selected_entity_name,
         selected_diplomacy_helper=selected_diplomacy_helper,
+        selected_religion_helper=selected_religion_helper,
     )
     return BrowserModel(
         supported_systems=supported_systems,
         entity_systems=entity_systems,
         diplomacy_helpers=diplomacy_helpers,
+        religion_helpers=religion_helpers,
         session_summary=session_summary,
         pages=pages,
         selected_page_key=selected_page_key,
@@ -549,6 +590,26 @@ def _validate_selected_diplomacy_helper(
         )
 
 
+def _validate_selected_religion_helper(
+    religion_helpers: tuple[ReligionHelperInfo, ...],
+    selected_religion_helper: str | None,
+) -> None:
+    if selected_religion_helper is None:
+        return
+
+    valid_helper_names = {info.name for info in religion_helpers}
+    if selected_religion_helper not in valid_helper_names:
+        valid_helpers = ", ".join(sorted(valid_helper_names))
+        suggestion = _format_candidate_suggestion(
+            selected_religion_helper,
+            valid_helper_names,
+        )
+        raise KeyError(
+            "Unknown religion helper "
+            f"'{selected_religion_helper}'.{suggestion} Valid helpers: {valid_helpers}"
+        )
+
+
 def _resolve_systems_to_load(
     supported_systems: tuple[inspection.SystemInfo, ...],
     *,
@@ -579,6 +640,7 @@ def _build_overview_page(
     supported_systems: tuple[inspection.SystemInfo, ...],
     entity_systems: tuple[inspection.EntitySystemInfo, ...],
     diplomacy_helpers: tuple[DiplomacyHelperInfo, ...],
+    religion_helpers: tuple[ReligionHelperInfo, ...],
     summary: inspection.InstallSummary | None,
     *,
     session_summary: BrowserSessionSummary,
@@ -586,6 +648,7 @@ def _build_overview_page(
     selected_entity_system: str | None,
     selected_entity_name: str | None,
     selected_diplomacy_helper: str | None,
+    selected_religion_helper: str | None,
     include_all_systems: bool,
     ready_report_names: tuple[str, ...],
     unavailable_report_names: tuple[str, ...],
@@ -595,6 +658,8 @@ def _build_overview_page(
     unavailable_entity_detail_names: tuple[str, ...],
     ready_diplomacy_helper_names: tuple[str, ...],
     unavailable_diplomacy_helper_names: tuple[str, ...],
+    ready_religion_helper_names: tuple[str, ...],
+    unavailable_religion_helper_names: tuple[str, ...],
 ) -> BrowserPage:
     sections = [
         BrowserSection(
@@ -611,6 +676,8 @@ def _build_overview_page(
                 f"Requested entity detail: {session_summary.requested_entity_detail}",
                 "Requested diplomacy helper scope: "
                 f"{session_summary.requested_diplomacy_helper_scope}",
+                "Requested religion helper scope: "
+                f"{session_summary.requested_religion_helper_scope}",
                 (
                     "Install summary loaded: "
                     f"{'yes' if session_summary.install_summary_loaded else 'no'}"
@@ -647,6 +714,14 @@ def _build_overview_page(
                     "Unavailable diplomacy helper pages: "
                     f"{_format_page_name_list(unavailable_diplomacy_helper_names)}"
                 ),
+                (
+                    "Ready religion helper pages: "
+                    f"{_format_page_name_list(ready_religion_helper_names)}"
+                ),
+                (
+                    "Unavailable religion helper pages: "
+                    f"{_format_page_name_list(unavailable_religion_helper_names)}"
+                ),
             ),
         ),
         BrowserSection(
@@ -664,6 +739,10 @@ def _build_overview_page(
             title="Diplomacy helper pages",
             lines=tuple(f"{info.name}: {info.description}" for info in diplomacy_helpers),
         ),
+        BrowserSection(
+            title="Religion helper pages",
+            lines=tuple(f"{info.name}: {info.description}" for info in religion_helpers),
+        ),
     ]
 
     if summary is None:
@@ -678,6 +757,8 @@ def _build_overview_page(
             unavailable_lines.append("Entity list and detail pages require an install root.")
         if selected_diplomacy_helper is not None:
             unavailable_lines.append("Diplomacy helper pages require an install root.")
+        if selected_religion_helper is not None:
+            unavailable_lines.append("Religion helper pages require an install root.")
         sections.append(
             BrowserSection(
                 title="Install summary",
@@ -715,7 +796,7 @@ def _build_overview_page(
         title="Install overview",
         description=(
             "Browse one install summary, stable inspection-backed report and entity pages, "
-            "plus thin diplomacy helper pages over grouped core seams."
+            "plus thin diplomacy and religion helper pages over grouped core seams."
         ),
         status="ready",
         sections=tuple(sections),
@@ -888,6 +969,33 @@ def _build_diplomacy_helper_page(
     )
 
 
+def _build_religion_helper_page(
+    install: GameInstall,
+    helper_name: str,
+) -> BrowserPage:
+    info = _religion_helper_info(helper_name)
+    try:
+        helper_view = build_religion_helper_view(install, helper_name)
+    except (FileNotFoundError, KeyError, ValueError) as exc:
+        return _build_unavailable_religion_helper_page(info, str(exc))
+
+    return BrowserPage(
+        key=_religion_helper_page_key(helper_view.info.name),
+        title=helper_view.info.title,
+        description=helper_view.info.description,
+        status="ready",
+        sections=tuple(
+            BrowserSection(
+                title=section.title,
+                lines=section.lines,
+                use_section_line_limit=section.use_section_line_limit,
+            )
+            for section in helper_view.sections
+        ),
+        navigation_hints=helper_view.navigation_hints,
+    )
+
+
 def _build_unavailable_system_page(info: inspection.SystemInfo, reason: str) -> BrowserPage:
     return BrowserPage(
         key=_report_page_key(info.name),
@@ -958,6 +1066,24 @@ def _build_unavailable_diplomacy_helper_page(
     )
 
 
+def _build_unavailable_religion_helper_page(
+    info: ReligionHelperInfo,
+    reason: str,
+) -> BrowserPage:
+    return BrowserPage(
+        key=_religion_helper_page_key(info.name),
+        title=info.title,
+        description=info.description,
+        status="unavailable",
+        sections=(
+            BrowserSection(
+                title="Status",
+                lines=_unavailable_page_status_lines(reason),
+            ),
+        ),
+    )
+
+
 def _entity_system_info(
     entity_systems: tuple[inspection.EntitySystemInfo, ...],
     selected_entity_system: str,
@@ -975,6 +1101,13 @@ def _diplomacy_helper_info(selected_diplomacy_helper: str) -> DiplomacyHelperInf
     return helper_info
 
 
+def _religion_helper_info(selected_religion_helper: str) -> ReligionHelperInfo:
+    helper_info = get_religion_helper_info(selected_religion_helper)
+    if helper_info is None:
+        raise AssertionError(selected_religion_helper)
+    return helper_info
+
+
 def _report_page_key(system: str) -> str:
     return f"report:{system}"
 
@@ -987,8 +1120,22 @@ def _entity_detail_page_key(system: str, entity_name: str) -> str:
     return f"entity:{system}:{entity_name}"
 
 
-def _diplomacy_helper_page_key(helper_name: str) -> str:
+def _helper_page_key(helper_name: str) -> str:
     return f"helper:{helper_name}"
+
+
+def _diplomacy_helper_page_key(helper_name: str) -> str:
+    return _helper_page_key(helper_name)
+
+
+def _religion_helper_page_key(helper_name: str) -> str:
+    return _helper_page_key(helper_name)
+
+
+def _is_religion_helper_name(helper_name: str) -> bool:
+    return get_religion_helper_info(helper_name) is not None or helper_name.startswith(
+        "religion-"
+    )
 
 
 def _format_entity_summary(
@@ -1188,6 +1335,7 @@ def _build_session_summary_lines(
             f"detail={session_summary.requested_entity_detail}"
         ),
         f"Session diplomacy helpers: {session_summary.requested_diplomacy_helper_scope}",
+        f"Session religion helpers: {session_summary.requested_religion_helper_scope}",
     ]
     if page_filter is not None:
         lines.append(
@@ -1324,8 +1472,12 @@ def _build_navigation_lines(model: BrowserModel, page: BrowserPage) -> tuple[str
             lines.append(f"Related entity list page: {list_key}")
     elif page.key.startswith("helper:"):
         _, helper_name = page.key.split(":", maxsplit=1)
-        lines.append(f"Selection flags: --diplomacy-helper {helper_name}")
-        report_key = _report_page_key("diplomacy")
+        if _is_religion_helper_name(helper_name):
+            lines.append(f"Selection flags: --religion-helper {helper_name}")
+            report_key = _report_page_key("religion")
+        else:
+            lines.append(f"Selection flags: --diplomacy-helper {helper_name}")
+            report_key = _report_page_key("diplomacy")
         if model.get_page(report_key) is not None:
             lines.append(f"Related system report page: {report_key}")
 
@@ -1438,6 +1590,7 @@ def _resolve_selected_page_key(
     selected_entity_system: str | None,
     selected_entity_name: str | None,
     selected_diplomacy_helper: str | None,
+    selected_religion_helper: str | None,
 ) -> str:
     page_keys = {page.key for page in pages}
 
@@ -1445,6 +1598,11 @@ def _resolve_selected_page_key(
         detail_key = _entity_detail_page_key(selected_entity_system, selected_entity_name)
         if detail_key in page_keys:
             return detail_key
+
+    if selected_religion_helper is not None:
+        helper_key = _religion_helper_page_key(selected_religion_helper)
+        if helper_key in page_keys:
+            return helper_key
 
     if selected_diplomacy_helper is not None:
         helper_key = _diplomacy_helper_page_key(selected_diplomacy_helper)
