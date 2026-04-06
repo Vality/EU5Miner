@@ -26,6 +26,9 @@ dev = [
 [project.scripts]
 eu5miner-gui = "eu5miner_gui.cli:main"
 
+[tool.uv.sources]
+eu5miner = { path = "../EU5Miner" }
+
 [tool.hatch.build.targets.wheel]
 packages = ["src/eu5miner_gui"]
 

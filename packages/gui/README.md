@@ -14,7 +14,7 @@ The `0.5.x` line should be treated as a public preview.
 - The current surface is a read-only text shell over stable `eu5miner.inspection` APIs, including install overview, system reports, and covered entity list/detail browsing.
 - GUI-specific product work should continue here, while parsing, VFS, and domain-model logic stay in the core `eu5miner` library.
 
-This workspace slice currently tracks the core `eu5miner` `main` branch so the GUI can consume the new inspection entity-browsing seam ahead of the next preview release.
+The published dependency continues to track the core `eu5miner` `main` branch. In this multi-repo workspace, local `uv` resolution also points `eu5miner` at the sibling `../EU5Miner` checkout so GUI validation follows the current inspection facade during preview alignment work.
 
 ## Current Browser Shell
 
@@ -23,7 +23,7 @@ The current preview command prints a structured read-only browser view backed by
 - Without a local install, it renders the overview page with the supported system list and an unloaded install-summary section.
 - With `--install-root`, it renders an install overview page with roots, phases, and merged content sources.
 - With both `--install-root` and `--system`, it loads the selected stable system report page, such as `map`, and focuses that page by default.
-- With `--install-root` and `--entity-system`, it loads an entity list page for one covered system: `economy`, `diplomacy`, `government`, `religion`, or `map`.
+- With `--install-root` and `--entity-system`, it loads an entity list page for one currently browseable inspection system, such as `diplomacy`, `religion`, or `map`.
 - With `--install-root --entity-system ... --entity ...`, it loads the corresponding entity detail page with generic fields and cross-system references from `eu5miner.inspection`.
 - Entity list pages now sort by entity name by default, keep their own explicit entity window, and can switch between compact rows and detail rows with embedded detail-page keys.
 - Use `--entity-list-sort`, `--entity-list-limit`, `--entity-list-offset`, and `--entity-list-mode` when large covered systems need a narrower or more detail-oriented list view.
@@ -32,7 +32,7 @@ The current preview command prints a structured read-only browser view backed by
 - The page index now windows large sessions by default. Use `--page-list-limit`, `--page-list-offset`, or `0` to disable page-index truncation when you need a wider index dump.
 - The shell header now prints a compact session summary with loaded, ready, and unavailable page counts plus the current browse request scope, so page-focused views keep their broader session context.
 - Rendered page sections still truncate long generic sections by default. Use `--section-line-limit 0` for full non-entity output, while entity list pages use their own entity-window controls instead of the generic section truncation.
-- With `--install-root --all-systems`, it loads one install overview, all supported report pages, and all covered entity list pages, while still rendering only the selected page by default.
+- With `--install-root --all-systems`, it loads one install overview, all supported report pages, and all current browseable entity list pages exposed by `eu5miner.inspection`, while still rendering only the selected page by default.
 - `--show-all-pages` restores the full multi-page dump when you want to inspect the whole loaded session at once.
 - Rendered pages now include lightweight navigation hints such as the current page key, session position, neighboring page keys, overview page, related list page, or detail-page pattern.
 - Rendered pages now also include concrete CLI reopen hints for the current page, including direct `--page ...` targets and matching `--system` or `--entity-system/--entity` selection flags when available.
@@ -77,6 +77,8 @@ uv run ruff check .
 uv run mypy src
 uv build
 ```
+
+Inside this workspace, `uv` resolves `eu5miner` from the sibling core checkout. That keeps GUI tests and shell output aligned with the latest `eu5miner.inspection` supported-system and entity-browsing contract before the next preview release is cut.
 
 ## Documentation
 

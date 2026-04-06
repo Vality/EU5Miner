@@ -22,6 +22,12 @@ The repository includes workspace settings in `.vscode/settings.json` that:
 - point VS Code at `~/.venvs` when searching for interpreters
 - default the interpreter path to `%USERPROFILE%\.venvs\EU5MinerGUI\Scripts\python.exe`
 
+## Local Core Alignment
+
+`pyproject.toml` keeps the published dependency pointed at the core `main` branch and also uses `[tool.uv.sources]` to resolve `eu5miner` from `../EU5Miner` inside this multi-repo workspace.
+
+That local source override keeps GUI validation aligned with the sibling core checkout's current `eu5miner.inspection` supported-system and browseable-entity-system contract.
+
 ## Validation
 
 Run these before closing substantial work:

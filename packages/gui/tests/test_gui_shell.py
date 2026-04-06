@@ -2,10 +2,53 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import eu5miner.inspection as inspection
+
 from eu5miner_gui.__main__ import main as package_main
-from eu5miner_gui.app import build_shell_message
+from eu5miner_gui.app import (
+    build_shell_message,
+    list_entity_system_names,
+    list_supported_system_names,
+)
 from eu5miner_gui.browser import build_browser_model, parse_browser_page_selection
 from eu5miner_gui.cli import main
+
+
+def _supported_system_infos() -> tuple[inspection.SystemInfo, ...]:
+    return inspection.list_supported_systems()
+
+
+def _entity_system_infos() -> tuple[inspection.EntitySystemInfo, ...]:
+    return inspection.list_entity_systems()
+
+
+def _expected_all_system_page_keys() -> tuple[str, ...]:
+    return (
+        "overview",
+        *(f"report:{info.name}" for info in _supported_system_infos()),
+        *(f"entities:{info.name}" for info in _entity_system_infos()),
+    )
+
+
+def _format_page_name_list(values: tuple[str, ...]) -> str:
+    return ", ".join(values) if values else "none"
+
+
+def _all_systems_summary_line(model) -> str:
+    return (
+        "Session summary: "
+        f"{model.session_summary.loaded_page_count} loaded, "
+        f"{model.session_summary.ready_page_count} ready, "
+        f"{model.session_summary.unavailable_page_count} unavailable; install summary "
+        f"loaded: {'yes' if model.session_summary.install_summary_loaded else 'no'}"
+    )
+
+
+def test_app_system_name_helpers_follow_inspection_facade() -> None:
+    assert list_supported_system_names() == tuple(
+        info.name for info in _supported_system_infos()
+    )
+    assert list_entity_system_names() == tuple(info.name for info in _entity_system_infos())
 
 
 def test_build_shell_message_lists_supported_systems_without_install() -> None:
@@ -22,11 +65,12 @@ def test_build_shell_message_lists_supported_systems_without_install() -> None:
     assert "== Install overview ==" in message
     assert "Supported systems:" in message
     assert "Browsable entity systems:" in message
-    assert "- map: Map text, map CSV, and linked setup-location coverage." in message
-    assert (
-        "- economy: good - Browse goods definitions with market-facing fields and related "
-        "good links." in message
-    )
+    for info in _supported_system_infos():
+        assert f"- {info.name}: {info.description}" in message
+    for info in _entity_system_infos():
+        assert (
+            f"- {info.name}: {info.primary_entity_kind} - {info.description}" in message
+        )
     assert "Install summary:" in message
     assert "- Not loaded." in message
 
@@ -65,41 +109,64 @@ def test_build_browser_model_with_all_systems_loads_all_report_pages(tmp_path: P
     install_root = _make_report_install(tmp_path / "install")
 
     model = build_browser_model(install_root, include_all_systems=True)
+    expected_page_keys = _expected_all_system_page_keys()
+    ready_report_pages = tuple(
+        page.key
+        for page in model.pages
+        if page.key.startswith("report:") and page.status == "ready"
+    )
+    unavailable_report_pages = tuple(
+        page.key
+        for page in model.pages
+        if page.key.startswith("report:") and page.status != "ready"
+    )
+    ready_entity_list_pages = tuple(
+        page.key
+        for page in model.pages
+        if page.key.startswith("entities:") and page.status == "ready"
+    )
+    unavailable_entity_list_pages = tuple(
+        page.key
+        for page in model.pages
+        if page.key.startswith("entities:") and page.status != "ready"
+    )
 
     assert model.selected_page_key == "overview"
-    assert model.session_summary.loaded_page_count == 11
-    assert model.session_summary.ready_page_count == 3
-    assert model.session_summary.unavailable_page_count == 8
+    assert model.session_summary.loaded_page_count == len(expected_page_keys)
+    assert model.session_summary.ready_page_count == 1 + len(ready_report_pages) + len(
+        ready_entity_list_pages
+    )
+    assert model.session_summary.unavailable_page_count == len(unavailable_report_pages) + len(
+        unavailable_entity_list_pages
+    )
     assert model.session_summary.requested_report_scope == "all supported reports"
     assert model.session_summary.requested_entity_scope == "all covered entity lists"
     assert model.session_summary.requested_entity_detail == "none"
     assert model.session_summary.install_summary_loaded is True
-    assert model.page_keys() == (
-        "overview",
-        "report:economy",
-        "report:diplomacy",
-        "report:government",
-        "report:religion",
-        "report:interface",
-        "report:map",
-        "entities:economy",
-        "entities:government",
-        "entities:religion",
-        "entities:map",
-    )
-    assert "Loaded pages: 11 total, 3 ready, 8 unavailable" in model.pages[0].sections[0].lines
-    assert "Ready report pages: report:map" in model.pages[0].sections[0].lines
+    assert model.page_keys() == expected_page_keys
     assert (
-        "Unavailable report pages: report:economy, report:diplomacy, report:government, "
-        "report:religion, report:interface"
+        "Loaded pages: "
+        f"{model.session_summary.loaded_page_count} total, "
+        f"{model.session_summary.ready_page_count} ready, "
+        f"{model.session_summary.unavailable_page_count} unavailable"
     ) in model.pages[0].sections[0].lines
-    assert "Ready entity list pages: entities:map" in model.pages[0].sections[0].lines
     assert (
-        "Unavailable entity list pages: entities:economy, entities:government, "
-        "entities:religion"
-    )
-    assert model.pages[1].status == "unavailable"
-    assert model.pages[-1].status == "ready"
+        f"Ready report pages: {_format_page_name_list(ready_report_pages)}"
+    ) in model.pages[0].sections[0].lines
+    assert (
+        f"Unavailable report pages: {_format_page_name_list(unavailable_report_pages)}"
+    ) in model.pages[0].sections[0].lines
+    assert (
+        f"Ready entity list pages: {_format_page_name_list(ready_entity_list_pages)}"
+    ) in model.pages[0].sections[0].lines
+    assert (
+        "Unavailable entity list pages: "
+        f"{_format_page_name_list(unavailable_entity_list_pages)}"
+    ) in model.pages[0].sections[0].lines
+    assert model.get_page("report:economy") is not None
+    assert model.get_page("report:economy").status == "unavailable"
+    assert model.get_page("entities:map") is not None
+    assert model.get_page("entities:map").status == "ready"
 
 
 def test_build_browser_model_with_selected_entity_system_builds_list_page(tmp_path: Path) -> None:
@@ -164,6 +231,11 @@ def test_build_browser_model_entity_pages_cover_curated_systems(tmp_path: Path) 
     install_root = _make_entity_browsing_install(tmp_path / "install")
 
     expectations = {
+        "diplomacy": (
+            "cb_example [sample_goal]: speed=3",
+            "war_goal_type: sample_goal",
+            "wargoal -> diplomacy/wargoal: sample_goal",
+        ),
         "economy": (
             "iron [raw_material]: method=mining; default_market_price=3",
             "default_market_price: 3",
@@ -283,22 +355,21 @@ def test_cli_selected_system_report_from_synthetic_install(tmp_path: Path, capsy
 
 def test_cli_all_systems_from_synthetic_install(tmp_path: Path, capsys) -> None:
     install_root = _make_report_install(tmp_path / "install")
+    model = build_browser_model(install_root, include_all_systems=True)
 
     exit_code = main(["--install-root", str(install_root), "--all-systems"])
 
     captured = capsys.readouterr()
     assert exit_code == 0
     assert "Selected page: overview" in captured.out
-    assert (
-        "Session summary: 11 loaded, 3 ready, 8 unavailable; install summary loaded: yes"
-        in captured.out
-    )
+    assert _all_systems_summary_line(model) in captured.out
     assert (
         "Session request: reports=all supported reports; "
         "entity lists=all covered entity lists; detail=none"
     ) in captured.out
     assert "* overview: Install overview" in captured.out
     assert "- report:economy: economy system report (unavailable)" in captured.out
+    assert "- entities:diplomacy: diplomacy entities (unavailable)" in captured.out
     assert "- report:map: map system report" in captured.out
     assert "- entities:map: map entities" in captured.out
     assert "== Install overview ==" in captured.out
@@ -368,6 +439,7 @@ def test_build_shell_message_filter_limits_visible_pages(tmp_path: Path) -> None
 
 def test_build_shell_message_empty_filter_shows_guidance(tmp_path: Path) -> None:
     install_root = _make_report_install(tmp_path / "install")
+    expected_loaded_page_count = len(_expected_all_system_page_keys())
 
     message = build_shell_message(
         install_root,
@@ -376,7 +448,7 @@ def test_build_shell_message_empty_filter_shows_guidance(tmp_path: Path) -> None
     )
 
     assert "Selected page: none" in message
-    assert "Available pages (0 of 11 loaded):" in message
+    assert f"Available pages (0 of {expected_loaded_page_count} loaded):" in message
     assert "No pages matched the current filter." in message
     assert "Page filters only search already-loaded pages." in message
 
@@ -418,6 +490,9 @@ def test_build_shell_message_list_pages_only_hides_page_content(tmp_path: Path) 
 
 def test_build_shell_message_page_window_keeps_selected_page_visible(tmp_path: Path) -> None:
     install_root = _make_report_install(tmp_path / "install")
+    expected_page_keys = _expected_all_system_page_keys()
+    expected_loaded_page_count = len(expected_page_keys)
+    expected_window_start = expected_loaded_page_count - 2
 
     message = build_shell_message(
         install_root,
@@ -426,14 +501,26 @@ def test_build_shell_message_page_window_keeps_selected_page_visible(tmp_path: P
         page_list_limit=3,
     )
 
-    assert "Available pages (showing 9-11 of 11 loaded):" in message
-    assert "Page window: showing 9-11 of 11 matched pages." in message
+    assert (
+        f"Available pages (showing {expected_window_start}-{expected_loaded_page_count} "
+        f"of {expected_loaded_page_count} loaded):"
+    ) in message
+    assert (
+        f"Page window: showing {expected_window_start}-{expected_loaded_page_count} "
+        f"of {expected_loaded_page_count} matched pages."
+    ) in message
     assert "* entities:map: map entities" in message
     assert "- overview: Install overview" not in message
 
 
 def test_build_shell_message_page_window_offset_can_hide_selected_page(tmp_path: Path) -> None:
     install_root = _make_report_install(tmp_path / "install")
+    expected_page_keys = _expected_all_system_page_keys()
+    expected_loaded_page_count = len(expected_page_keys)
+    expected_keep_visible_offset = min(
+        expected_page_keys.index("entities:map"),
+        expected_loaded_page_count - 3,
+    )
 
     message = build_shell_message(
         install_root,
@@ -443,13 +530,13 @@ def test_build_shell_message_page_window_offset_can_hide_selected_page(tmp_path:
         page_list_offset=0,
     )
 
-    assert "Available pages (showing 1-3 of 11 loaded):" in message
-    assert "Page window: showing 1-3 of 11 matched pages." in message
+    assert f"Available pages (showing 1-3 of {expected_loaded_page_count} loaded):" in message
+    assert f"Page window: showing 1-3 of {expected_loaded_page_count} matched pages." in message
     assert "Selected page is outside the current page window: entities:map." in message
     assert "Direct page flag: --page entities:map" in message
     assert (
         "Index reopen hint: omit --page-list-offset to keep the selected page visible, "
-        "or use --page-list-offset 8."
+        f"or use --page-list-offset {expected_keep_visible_offset}."
     ) in message
     assert "Full index hint: use --page-list-limit 0 to disable page-index windowing." in message
     assert "* entities:map: map entities" not in message
@@ -497,6 +584,8 @@ def test_build_shell_message_entity_detail_navigation_hints_parent_page(tmp_path
 
 def test_build_shell_message_report_navigation_shows_neighboring_pages(tmp_path: Path) -> None:
     install_root = _make_report_install(tmp_path / "install")
+    expected_loaded_page_count = len(_expected_all_system_page_keys())
+    expected_page_position = _expected_all_system_page_keys().index("report:map") + 1
 
     message = build_shell_message(
         install_root,
@@ -505,7 +594,10 @@ def test_build_shell_message_report_navigation_shows_neighboring_pages(tmp_path:
     )
 
     assert "Selected page: report:map" in message
-    assert "- Session position: 7 of 11 loaded pages" in message
+    assert (
+        f"- Session position: {expected_page_position} of {expected_loaded_page_count} "
+        "loaded pages"
+    ) in message
     assert "- Previous page: report:interface" in message
     assert "- Next page: entities:economy" in message
 
@@ -514,6 +606,7 @@ def test_build_shell_message_unavailable_page_adds_recovery_guidance(
     tmp_path: Path,
 ) -> None:
     install_root = _make_report_install(tmp_path / "install")
+    expected_loaded_page_count = len(_expected_all_system_page_keys())
 
     message = build_shell_message(
         install_root,
@@ -524,7 +617,7 @@ def test_build_shell_message_unavailable_page_adds_recovery_guidance(
     assert "== economy system report ==" in message
     assert "- Direct page flag: --page report:economy" in message
     assert "- Selection flags: --system economy" in message
-    assert "- Session position: 2 of 11 loaded pages" in message
+    assert f"- Session position: 2 of {expected_loaded_page_count} loaded pages" in message
     assert "- Next page: report:diplomacy" in message
     assert "- Unavailable from selected install." in message
     assert "- Check the overview page for install roots and loaded content sources." in message
@@ -656,6 +749,7 @@ def test_cli_show_all_pages_restores_full_page_dump(tmp_path: Path, capsys) -> N
     assert "== religion system report ==" in captured.out
     assert "== interface system report ==" in captured.out
     assert "== map system report ==" in captured.out
+    assert "== diplomacy entities ==" in captured.out
     assert "== map entities ==" in captured.out
 
 
@@ -766,6 +860,20 @@ def _make_large_entity_browsing_install(install_root: Path) -> Path:
 
 def _entity_fixture_texts() -> dict[Path, str]:
     return {
+        Path("in_game/common/casus_belli/00_casus_belli.txt"): (
+            "cb_example = {\n"
+            "    war_goal_type = sample_goal\n"
+            "    speed = 3\n"
+            "}\n"
+        ),
+        Path("in_game/common/wargoals/00_wargoals.txt"): (
+            "sample_goal = { type = superiority }\n"
+        ),
+        Path("in_game/common/country_interactions/00_country_interactions.txt"): (
+            "country_link = {\n"
+            "    effect = { add_casus_belli = { type = casus_belli:cb_example } }\n"
+            "}\n"
+        ),
         Path("in_game/common/goods/00_goods.txt"): (
             "iron = {\n"
             "    method = mining\n"
@@ -882,6 +990,7 @@ def _entity_fixture_texts() -> dict[Path, str]:
 
 def _first_entity_name_for(system: str) -> str:
     names = {
+        "diplomacy": "cb_example",
         "economy": "iron",
         "government": "monarchy",
         "religion": "catholic",

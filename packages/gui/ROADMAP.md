@@ -27,6 +27,7 @@ Use this slice for:
 
 - docs and examples that match the shipped browser behavior
 - test updates when the core inspection facade gains or tightens stable behavior
+- local source alignment and contract-locking around supported-system and browseable-entity-system coverage
 - dependency and release alignment with the core preview contract
 
 ### 2. Defer Editing Workflows
