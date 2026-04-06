@@ -23,12 +23,16 @@ That means the next work should keep the shipped browser aligned with the core p
 
 Goal: keep the GUI thin over the intended stable seams as the preview line evolves.
 
+Execution spec: `documents/specs/preview-alignment.md`
+
 Use this slice for:
 
-- docs and examples that match the shipped browser behavior
-- test updates when the core inspection facade gains or tightens stable behavior
+- docs and examples that match the shipped inspection-backed browser behavior
+- focused test updates when the core inspection facade changes or tightens its stable catalog contract
 - local source alignment and contract-locking around supported-system and browseable-entity-system coverage
 - dependency and release alignment with the core preview contract
+
+Do not reopen landed browse-refinement slices unless a core contract change forces a narrow follow-up.
 
 ### 2. Defer Editing Workflows
 
