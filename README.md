@@ -29,7 +29,7 @@ The `0.5.x` line should be treated as a public preview.
 
 In practice, this release is suitable for install inspection, virtual filesystem queries, representative parsing, typed domain reads, and the current mod update planning and application workflow. It is not yet a promise that every exported helper will remain unchanged across future minor releases.
 
-The recent stabilization rounds already locked the main preview contract around the narrow root package, grouped domain packages, `eu5miner.inspection`, `eu5miner.mods`, and the documented thin CLI workflow. The remaining path to a truthful `1.0` proposal is narrower: keep those docs and examples aligned, keep the default validation gate green, and close any last compatibility audit gaps without reopening feature scope.
+The recent stabilization rounds already locked the main preview contract around the narrow root package, grouped domain packages, `eu5miner.inspection`, `eu5miner.mods`, and the documented thin CLI workflow. That close-out work is now reflected in the checked-in docs and tests: the public-API and grouped-package contract tests, inspection contract coverage, thin CLI contract coverage, README contract examples, and the default no-install validation gate all point at the same boundary. A later `1.0` proposal should treat the remaining work as release execution plus targeted manual sanity checks against a local install and representative mod workspace, not as another feature phase.
 
 ## Development
 
@@ -41,7 +41,7 @@ Initialize or refresh the centralized environment with:
 .\scripts\setup-centralized-uv.ps1
 ```
 
-That script points `UV_PROJECT_ENVIRONMENT` at `%USERPROFILE%\.venvs\EU5Miner` and runs `uv sync --extra dev` there.
+That script points `UV_PROJECT_ENVIRONMENT` at `%USERPROFILE%\.venvs\EU5Miner`, sets `UV_LINK_MODE=copy` for OneDrive-safe `uv` operations, and runs `uv sync --extra dev` there.
 
 If you need a one-off local setup instead, install development dependencies with `uv`:
 
@@ -53,6 +53,7 @@ Run the required baseline validation:
 
 ```powershell
 $env:UV_PROJECT_ENVIRONMENT = "$env:USERPROFILE\.venvs\EU5Miner"
+$env:UV_LINK_MODE = "copy"
 uv run pytest
 uv run ruff check .
 uv run mypy src

@@ -129,6 +129,7 @@ When running commands manually in a fresh shell, set:
 
 ```powershell
 $env:UV_PROJECT_ENVIRONMENT = Join-Path $env:USERPROFILE '.venvs\EU5Miner'
+$env:UV_LINK_MODE = 'copy'
 ```
 
 ## Validation Commands
@@ -141,6 +142,8 @@ uv run ruff check .
 uv run mypy src
 uv build
 ```
+
+With the centralized environment, keep `UV_LINK_MODE=copy` set in the shell so `uv build` stays reliable in the OneDrive-backed workspace.
 
 Run the broader optional sweep explicitly when you need wider install-backed coverage:
 

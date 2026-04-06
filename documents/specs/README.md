@@ -24,18 +24,20 @@ Recent stabilization work has also landed for the documented thin CLI mod workfl
 
 Recent stabilization work has also landed for the inspection-facing public seam: focused compatibility coverage now locks the supported-system ordering and descriptions, the curated browsable-entity ordering and descriptions, and the intended import split between the root package and `eu5miner.inspection`.
 
+Recent stabilization work has also landed for the thin CLI surface: focused parser-contract and workflow-contract coverage now locks the documented command set, key option surface, and the intended stdout or stderr split for mod workflow diagnostics.
+
 Use them in two ways:
 
 - as reference when polishing or extending the shipped preview seams
 - as a record of what is already complete, so new work does not restart foundation slices
 
-At this point, the main remaining core work is a narrow close-out pass: release-readiness alignment across the checked-in docs and any final compatibility audits that discover a real gap in the current curated contract.
+That narrow close-out pass is now reflected in the checked-in core repo: docs, examples, and compatibility-focused tests align around the same curated `1.0` boundary. Remaining pre-release work is the later release step plus targeted manual install-backed sanity checks, not another round of core feature work.
 
 ## Next Core Milestone
 
-- `v1-stabilization-pass.md`: the next major core milestone; use it to define the explicit `1.0` contract on the current architecture without treating the spec itself as release execution
+- `v1-stabilization-pass.md`: the reference milestone for the explicit `1.0` contract on the current architecture; use it to keep later release work grounded in the checked-in boundary rather than to reopen feature scope
 
-Current remaining focus under that milestone is release-readiness alignment and any final compatibility audits over the already-shipped seams.
+The remaining focus under that milestone is now operational rather than architectural: keep the automated gate green and complete the documented manual checks before an actual release proposal.
 
 Do not use that milestone to recreate the already-landed CLI or inspection stabilization rounds unless a verified regression or contract ambiguity requires follow-up.
 
@@ -52,7 +54,7 @@ Do not use that milestone to recreate the already-landed CLI or inspection stabi
 
 The older core specs remain useful guardrails, but the stabilization pass is now the main planning entry for core work that is explicitly about the path to `1.0`.
 
-In practice, that now means a small number of truthfulness checks over current behavior rather than another broad hardening phase.
+In practice, that now means preserving the current truthfulness checks over behavior rather than starting another broad hardening phase.
 
 ## Agent Rules
 

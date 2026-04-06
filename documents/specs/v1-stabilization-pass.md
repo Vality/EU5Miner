@@ -29,7 +29,9 @@ Most of the first stabilization hardening work for this pass has already landed 
 
 - focused compatibility coverage now locks the documented thin CLI mod workflow around mixed content inputs and stdout or stderr diagnostics
 - focused compatibility coverage now locks the intended inspection-facing public seam, including supported-system metadata, browsable-system metadata, and the import boundary between the root package and `eu5miner.inspection`
-- the remaining work is expected to stay narrow: release-readiness doc alignment, example truthfulness checks, and any final compatibility audits that uncover a concrete gap in the current curated contract
+- release-readiness doc alignment, README example truthfulness checks, grouped-package export coverage, thin CLI parser coverage, and the default no-install validation gate now align around the same curated contract
+
+For the current checked-in repo state, this leaves only the later release step and the targeted manual install-backed sanity checks outside the scope of this spec.
 
 ## Stabilization Criteria
 
@@ -79,7 +81,7 @@ Treat this pass as complete when all of the following are true:
 - treat downstream GUI and MCP consumption as coordination checks for release readiness, not as a reason to widen the core contract ad hoc
 - keep the concrete gate grounded in current checked-in behavior; the current working definition lives in `documents/v1-release-readiness.md`
 
-At the current stage, most tasks under this work package should be clarification or close-out tasks rather than new capability work.
+At the current stage, most tasks under this work package should be operational release-readiness checks rather than new capability work.
 
 ## Acceptance Criteria
 

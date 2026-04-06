@@ -39,6 +39,7 @@ The completed preview baseline now includes:
 
 - the core integration pass, validation expansion, and three-repo alignment work
 - the recent preview hardening follow-up over the already-curated library seams
+- a completed core `1.0` stabilization close-out over public-contract docs, example truthfulness, and compatibility-focused CLI and inspection coverage
 - a completed stabilization hardening slice for the thin CLI mod workflow contract around mixed intended or content inputs and stdout or stderr diagnostics
 - a completed stabilization hardening slice for inspection-facing compatibility coverage and explicit import-boundary locking around `eu5miner.inspection` versus root imports
 - install discovery, merged VFS support, CST and semantic parsing helpers, and broad typed domain coverage in the core library
@@ -49,7 +50,7 @@ The completed preview baseline now includes:
 
 The next work should build on those shipped seams instead of repeating foundation or repo-setup slices.
 
-Post-round-five, the remaining core stabilization work is intentionally narrow. The main open work is release-readiness alignment around the already-curated seams plus any final compatibility audit gaps that turn up while checking the current contract.
+For the checked-in core repo state, the stabilization close-out is now effectively complete. Remaining work before proposing an actual `1.0` release is the later release step plus the targeted manual install-backed sanity checks documented in `documents/v1-release-readiness.md`.
 
 ## Completed Preview Slices
 
@@ -59,10 +60,13 @@ Post-round-five, the remaining core stabilization work is intentionally narrow. 
 4. First GUI foundation plus structured read-only browsing
 5. First MCP foundation plus initial inspect, file, system, and mod workflow tools
 6. Core preview hardening follow-up over the current stable seams
+7. Core `1.0` stabilization close-out over the checked-in compatibility boundary
 
 ## Next Recommended Slices
 
 ### 1. Core V1 Stabilization Pass
+
+Status: complete for the current checked-in core repo state; keep this slice as the reference boundary for later release work rather than reopening it for new feature scope.
 
 Goal: turn the current preview seams into one explicit `1.0` compatibility boundary without broadening the architecture or cutting the release in this slice.
 
@@ -79,7 +83,7 @@ Reference spec:
 
 The earlier integration and validation specs remain useful reference material for follow-up polish, but they are no longer the primary milestone definition.
 
-The current remaining stabilization focus is to keep release-readiness alignment and any last compatibility audits tight around the already-curated seams without widening the CLI or reopening foundation work.
+The checked-in repo now reflects that release-readiness alignment and compatibility-audit work. The remaining release-readiness work lives outside this slice: keep the automated gate green, run the documented manual install-backed sanity checks, and handle the eventual version bump and release execution separately.
 
 Treat this as a close-out pass on the current preview contract, not as a new feature phase. If a proposed task needs a broader API or new capability to justify itself, it does not belong in this slice.
 

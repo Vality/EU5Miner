@@ -37,7 +37,7 @@ The broad `eu5miner.domains` convenience import remains available during preview
 
 The current narrow pre-release blocker set for that contract lives in `documents/v1-release-readiness.md`.
 
-Most stabilization work for that boundary has already landed in the preview hardening rounds. The remaining work before a truthful `1.0` proposal is to keep the checked-in docs aligned to the same boundary, keep the default validation gate green, and close any final compatibility audit gaps that show the current contract is still underspecified.
+Most stabilization work for that boundary has already landed in the preview hardening rounds, and the checked-in docs and tests now align around that same curated contract. The remaining work before a truthful `1.0` proposal is to keep the automated gate green, run the targeted manual install-backed checks in `documents/v1-release-readiness.md`, and handle the later release step separately.
 
 ## Why this cut
 

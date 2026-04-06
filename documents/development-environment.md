@@ -4,7 +4,7 @@
 
 This repository lives in a OneDrive-backed folder, which can interfere with `uv` when a project-local `.venv` contains many small files or when hardlink behavior is restricted.
 
-The project-level workaround is to keep the environment outside OneDrive and point `uv` at that location.
+The project-level workaround is to keep the environment outside OneDrive, point `uv` at that location, and force `uv` to copy instead of hardlinking when build isolation touches cached wheels.
 
 ## Recommended Path
 
@@ -19,6 +19,7 @@ Use this environment path for the workspace:
 The repository includes workspace settings in `.vscode/settings.json` that:
 
 - set `UV_PROJECT_ENVIRONMENT` for integrated terminals
+- set `UV_LINK_MODE=copy` for OneDrive-safe `uv` operations
 - point VS Code at `~/.venvs` when searching for interpreters
 - default the interpreter path to `%USERPROFILE%\.venvs\EU5Miner\Scripts\python.exe`
 
@@ -33,11 +34,13 @@ Run:
 This script:
 
 1. sets `UV_PROJECT_ENVIRONMENT` for the current session
-2. creates or refreshes the centralized environment with `uv sync --extra dev`
-3. reports the interpreter path to use
+2. sets `UV_LINK_MODE=copy` for the current session
+3. creates or refreshes the centralized environment with `uv sync --extra dev`
+4. reports the interpreter path to use
 
 ## Notes
 
 - Existing `.venv` usage remains a fallback if needed.
 - New terminals opened in this workspace should pick up the centralized environment setting automatically.
 - If you work on another machine, the same workspace settings and script should be reused there.
+- If you run `uv build` or other isolated `uv` commands in a fresh external shell, set both `UV_PROJECT_ENVIRONMENT` and `UV_LINK_MODE=copy` first.

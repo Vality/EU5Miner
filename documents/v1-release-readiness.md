@@ -17,9 +17,16 @@ Within the test suite, these areas are the compatibility gate for the current cu
 
 - `tests/test_public_api.py` for the narrow root package, `eu5miner.inspection`, and `eu5miner.mods` export contracts
 - `tests/test_grouped_package_api.py` for grouped domain package entrypoints
+- `tests/test_inspection_contract.py` for the stabilized supported-system metadata, browsable-entity metadata, and the explicit import boundary between the root package and `eu5miner.inspection`
 - `tests/test_inspection.py` for install-independent inspection and entity-browsing workflows
+- `tests/test_cli_contract.py` for the documented thin CLI command set and parser surface
+- `tests/test_cli_mod_workflow_contract.py` for thin CLI mod workflow contract details such as mixed content inputs and stdout or stderr diagnostics
 - `tests/test_mod_workflow_integration.py` for the stable mod planning, application, and CLI workflow behavior
 - `tests/test_readme_contract_examples.py` for the documented root, inspection, and grouped-package examples that downstream users are told to copy
+
+## Current Checked-In Status
+
+The checked-in core repo now aligns the docs, examples, and automated compatibility coverage around the same curated `1.0` boundary. When the baseline validation stays green, the remaining blockers before a real release proposal are the manual checks below and the later release execution step, not additional core-library feature work.
 
 ## Manual Check Before A Real Release Proposal
 

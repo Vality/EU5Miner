@@ -4,6 +4,7 @@
   "python-envs.terminal.autoActivationType": "off",
   "python.useEnvironmentsExtension": true,
   "terminal.integrated.env.windows": {
-    "UV_PROJECT_ENVIRONMENT": "${env:USERPROFILE}\\.venvs\\EU5Miner"
+    "UV_PROJECT_ENVIRONMENT": "${env:USERPROFILE}\\.venvs\\EU5Miner",
+    "UV_LINK_MODE": "copy"
   }
 }
