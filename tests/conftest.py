@@ -14,6 +14,14 @@ from tests.integration_support import (
 )
 
 
+def pytest_configure(config: pytest.Config) -> None:
+    if not config.pluginmanager.hasplugin("timeout"):
+        return
+
+    config.option.timeout = 30
+    config.option.timeout_method = "thread"
+
+
 @pytest.fixture(scope="session")
 def install_path() -> Path:
     return resolve_install_path()

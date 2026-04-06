@@ -241,7 +241,9 @@ The broad `eu5miner.domains` convenience export remains available for callers th
 
 ## Testing
 
-The suite includes timeout protection for parser-sensitive tests so future performance regressions fail quickly instead of appearing to hang indefinitely.
+The default baseline keeps `uv run pytest` warning-free even when plugin-specific pytest options are unavailable.
+
+When the development environment includes `pytest-timeout` via `uv sync --extra dev`, the suite also applies a global per-test timeout and preserves the per-test `@pytest.mark.timeout(...)` overrides used by parser-sensitive tests.
 
 ## Configuration
 

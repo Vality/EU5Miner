@@ -78,8 +78,9 @@ As the CST and writer arrive, the suite should add:
 
 ## Timeout Policy
 
-- The suite uses `pytest-timeout` with a global per-test timeout so pathological parser regressions fail quickly.
-- Parser-sensitive real-file tests can override this with tighter but realistic per-test timeouts.
+- The default `uv run pytest` baseline should stay warning-free even when plugin-specific pytest ini options are not active.
+- When `pytest-timeout` is available in the synced development environment, the suite applies a global 30 second per-test timeout during `pytest_configure`.
+- Parser-sensitive real-file tests can override that default with tighter but realistic per-test timeouts.
 - Timeouts should be high enough to avoid flaky failures on slower machines, but low enough to surface accidental algorithmic blowups during development.
 
 ## Real-File Policy
