@@ -86,6 +86,8 @@ eu5miner plan-mod-update --install-root C:\EU5 --mod-root C:\mods\my_mod --phase
 eu5miner apply-mod-update --install-root C:\EU5 --mod-root C:\mods\my_mod --phase in_game --subtree common/buildings --content-root C:\work\content
 ```
 
+For the stabilization pass, treat these seven commands and their documented arguments as the intended thin CLI contract. Higher-level automation should prefer the library facades in `eu5miner.inspection` and `eu5miner.mods` rather than depending on internal CLI helpers.
+
 `list-systems` and `report-system` provide install-backed summaries for the major connected systems currently implemented in the library: `economy`, `diplomacy`, `government`, `religion`, `interface`, and `map`.
 
 The mod workflow commands print a structured report to stdout, `note:` advisories for planned metadata actions such as `replace_path` additions, and `warning:` diagnostics for intended outputs that will still be shadowed by later sources.
