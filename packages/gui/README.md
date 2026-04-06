@@ -33,9 +33,9 @@ The current preview command prints a structured read-only browser view backed by
 - Rendered page sections still truncate long generic sections by default. Use `--section-line-limit 0` for full non-entity output, while entity list pages use their own entity-window controls instead of the generic section truncation.
 - With `--install-root --all-systems`, it loads one install overview, all supported report pages, and all covered entity list pages, while still rendering only the selected page by default.
 - `--show-all-pages` restores the full multi-page dump when you want to inspect the whole loaded session at once.
-- Rendered pages now include lightweight navigation hints such as the current page key, overview page, related list page, or detail-page pattern.
+- Rendered pages now include lightweight navigation hints such as the current page key, session position, neighboring page keys, overview page, related list page, or detail-page pattern.
 - Entity list pages now also surface visible detail-page examples so you can jump directly from a large list page into specific entity detail pages.
-- When a selected install is partial or synthetic, the browser keeps the overview and marks unavailable system pages instead of aborting the whole session.
+- When a selected install is partial or synthetic, the browser keeps the overview and marks unavailable system pages instead of aborting the whole session, while unavailable pages now explain how to recover context from the overview.
 
 ```powershell
 eu5miner-gui

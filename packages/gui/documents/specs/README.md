@@ -14,6 +14,7 @@ The two specs in this folder describe the baseline that has already landed for t
 - `browser-navigation.md`: completed navigation refinement for explicit page focus, page listing, and lightweight filtering over the existing browser model
 - `browser-session-ergonomics.md`: current refinement slice for large-session readability, page-window controls, and navigation hints in the lightweight shell
 - `large-entity-list-browsing.md`: current refinement slice for large entity-list sorting, windowing, mode selection, and clearer list-to-detail jumps
+- `browser-page-context.md`: current refinement slice for session-position hints and clearer unavailable-page guidance over the loaded browser session
 
 The next spec for this repo should continue refining presentation on top of the existing browser model rather than reopening shell, scaffolding, or core-data plumbing work.
 

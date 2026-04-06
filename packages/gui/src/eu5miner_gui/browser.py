@@ -199,6 +199,8 @@ def build_browser_model(
             else:
                 unavailable_entity_detail_names = (detail_page.key,)
 
+    loaded_page_count = 1 + len(report_pages) + len(entity_list_pages) + len(entity_detail_pages)
+
     overview_page = _build_overview_page(
         supported_systems,
         entity_systems,
@@ -213,6 +215,7 @@ def build_browser_model(
         unavailable_entity_list_names=unavailable_entity_list_names,
         ready_entity_detail_names=ready_entity_detail_names,
         unavailable_entity_detail_names=unavailable_entity_detail_names,
+        loaded_page_count=loaded_page_count,
     )
     pages = (
         overview_page,
@@ -434,7 +437,19 @@ def _build_overview_page(
     unavailable_entity_list_names: tuple[str, ...],
     ready_entity_detail_names: tuple[str, ...],
     unavailable_entity_detail_names: tuple[str, ...],
+    loaded_page_count: int,
 ) -> BrowserPage:
+    ready_page_count = (
+        1
+        + len(ready_report_names)
+        + len(ready_entity_list_names)
+        + len(ready_entity_detail_names)
+    )
+    unavailable_page_count = (
+        len(unavailable_report_names)
+        + len(unavailable_entity_list_names)
+        + len(unavailable_entity_detail_names)
+    )
     requested_report_scope = (
         "all supported reports"
         if include_all_systems
@@ -449,6 +464,12 @@ def _build_overview_page(
         BrowserSection(
             title="Browser status",
             lines=(
+                (
+                    "Loaded pages: "
+                    f"{loaded_page_count} total, "
+                    f"{ready_page_count} ready, "
+                    f"{unavailable_page_count} unavailable"
+                ),
                 f"Requested report scope: {requested_report_scope}",
                 f"Requested entity scope: {requested_entity_scope}",
                 f"Requested entity detail: {selected_entity_name or 'none'}",
@@ -694,10 +715,7 @@ def _build_unavailable_system_page(info: inspection.SystemInfo, reason: str) -> 
         sections=(
             BrowserSection(
                 title="Status",
-                lines=(
-                    "Unavailable from selected install.",
-                    f"Reason: {reason}",
-                ),
+                lines=_unavailable_page_status_lines(reason),
             ),
         ),
     )
@@ -715,10 +733,7 @@ def _build_unavailable_entity_list_page(
         sections=(
             BrowserSection(
                 title="Status",
-                lines=(
-                    "Unavailable from selected install.",
-                    f"Reason: {reason}",
-                ),
+                lines=_unavailable_page_status_lines(reason),
             ),
         ),
     )
@@ -737,10 +752,7 @@ def _build_unavailable_entity_detail_page(
         sections=(
             BrowserSection(
                 title="Status",
-                lines=(
-                    "Unavailable from selected install.",
-                    f"Reason: {reason}",
-                ),
+                lines=_unavailable_page_status_lines(reason),
             ),
         ),
     )
@@ -811,6 +823,18 @@ def _format_source_summary(source: inspection.InstallSourceSummary) -> str:
 
 def _format_page_name_list(page_names: tuple[str, ...]) -> str:
     return ", ".join(page_names) if page_names else "none"
+
+
+def _unavailable_page_status_lines(reason: str) -> tuple[str, ...]:
+    return (
+        "Unavailable from selected install.",
+        f"Reason: {reason}",
+        "Check the overview page for install roots and loaded content sources.",
+        (
+            "Unavailable pages stay indexed so partial or synthetic installs keep a "
+            "stable session."
+        ),
+    )
 
 
 def _normalize_optional_text(value: str | None) -> str | None:
@@ -932,7 +956,15 @@ def _format_page_index_title(
 
 
 def _build_navigation_lines(model: BrowserModel, page: BrowserPage) -> tuple[str, ...]:
-    lines = [f"Page key: {page.key}"]
+    page_index = model.pages.index(page)
+    lines = [
+        f"Page key: {page.key}",
+        f"Session position: {page_index + 1} of {len(model.pages)} loaded pages",
+    ]
+    if page_index > 0:
+        lines.append(f"Previous page: {model.pages[page_index - 1].key}")
+    if page_index + 1 < len(model.pages):
+        lines.append(f"Next page: {model.pages[page_index + 1].key}")
     if page.key == "overview":
         return tuple(lines)
 
