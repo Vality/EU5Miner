@@ -13,6 +13,7 @@ from eu5miner import GameInstall
 class BrowserSection:
     title: str
     lines: tuple[str, ...]
+    use_section_line_limit: bool = True
 
 
 @dataclass(frozen=True)
@@ -22,6 +23,7 @@ class BrowserPage:
     description: str
     status: str
     sections: tuple[BrowserSection, ...]
+    navigation_hints: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -106,12 +108,26 @@ def build_browser_model(
     selected_entity_name: str | None = None,
     include_all_systems: bool = False,
     language: str = "english",
+    entity_list_sort: str = "name",
+    entity_list_mode: str = "compact",
+    entity_list_limit: int | None = 25,
+    entity_list_offset: int | None = None,
 ) -> BrowserModel:
     supported_systems = inspection.list_supported_systems()
     entity_systems = inspection.list_entity_systems()
     _validate_selected_system(supported_systems, selected_system)
     _validate_selected_entity_system(entity_systems, selected_entity_system)
     _validate_selected_entity_name(selected_entity_system, selected_entity_name)
+    normalized_entity_list_sort = _normalize_entity_list_sort(entity_list_sort)
+    normalized_entity_list_mode = _normalize_entity_list_mode(entity_list_mode)
+    normalized_entity_list_limit = _normalize_limit(
+        entity_list_limit,
+        option_name="entity_list_limit",
+    )
+    normalized_entity_list_offset = _normalize_offset(
+        entity_list_offset,
+        option_name="entity_list_offset",
+    )
 
     summary: inspection.InstallSummary | None = None
     report_pages: list[BrowserPage] = []
@@ -152,7 +168,14 @@ def build_browser_model(
 
         if entity_systems_to_load:
             entity_list_pages = [
-                _build_entity_list_page(install, info)
+                _build_entity_list_page(
+                    install,
+                    info,
+                    sort_mode=normalized_entity_list_sort,
+                    list_mode=normalized_entity_list_mode,
+                    list_limit=normalized_entity_list_limit,
+                    list_offset=normalized_entity_list_offset,
+                )
                 for info in entity_systems
                 if info.name in entity_systems_to_load
             ]
@@ -314,7 +337,11 @@ def render_browser_model(
             lines.append(f"{section.title}:")
             displayed_section_lines, hidden_line_count = _truncate_lines(
                 section.lines,
-                line_limit=normalized_section_line_limit,
+                line_limit=(
+                    normalized_section_line_limit
+                    if section.use_section_line_limit
+                    else None
+                ),
             )
             lines.extend(f"- {line}" for line in displayed_section_lines)
             if hidden_line_count > 0:
@@ -551,6 +578,11 @@ def _build_report_page(
 def _build_entity_list_page(
     install: GameInstall,
     info: inspection.EntitySystemInfo,
+    *,
+    sort_mode: str,
+    list_mode: str,
+    list_limit: int | None,
+    list_offset: int | None,
 ) -> BrowserPage:
     try:
         entities = inspection.list_system_entities(install, info.name)
@@ -563,6 +595,20 @@ def _build_entity_list_page(
             "No browseable entities available from selected install.",
         )
 
+    sorted_entities = _sort_entity_summaries(entities, sort_mode=sort_mode)
+    visible_entities, entity_window = _window_entity_summaries(
+        sorted_entities,
+        list_limit=list_limit,
+        list_offset=list_offset,
+    )
+    navigation_hints = [f"Detail page pattern: entity:{info.name}:<entity-name>"]
+    if visible_entities:
+        example_keys = ", ".join(
+            _entity_detail_page_key(info.name, entity.name)
+            for entity in visible_entities[:3]
+        )
+        navigation_hints.append(f"Visible detail-page examples: {example_keys}")
+
     return BrowserPage(
         key=_entity_list_page_key(info.name),
         title=f"{info.name} entities",
@@ -573,14 +619,26 @@ def _build_entity_list_page(
                 title="Browse status",
                 lines=(
                     f"Primary entity kind: {info.primary_entity_kind}",
-                    f"Entity count: {len(entities)}",
+                    f"Entity count: {len(sorted_entities)}",
+                    f"Sort: {sort_mode}",
+                    f"List mode: {list_mode}",
+                    _format_entity_window(entity_window),
                 ),
             ),
             BrowserSection(
                 title="Entities",
-                lines=tuple(_format_entity_summary(entity) for entity in entities),
+                lines=tuple(
+                    _format_entity_summary(
+                        entity,
+                        mode=list_mode,
+                        detail_page_key=_entity_detail_page_key(info.name, entity.name),
+                    )
+                    for entity in visible_entities
+                ),
+                use_section_line_limit=False,
             ),
         ),
+        navigation_hints=tuple(navigation_hints),
     )
 
 
@@ -710,12 +768,19 @@ def _entity_detail_page_key(system: str, entity_name: str) -> str:
     return f"entity:{system}:{entity_name}"
 
 
-def _format_entity_summary(summary: inspection.EntitySummary) -> str:
+def _format_entity_summary(
+    summary: inspection.EntitySummary,
+    *,
+    mode: str = "compact",
+    detail_page_key: str | None = None,
+) -> str:
     line = summary.name
     if summary.group is not None:
         line = f"{line} [{summary.group}]"
     if summary.description is not None:
         line = f"{line}: {summary.description}"
+    if mode == "detail" and detail_page_key is not None:
+        line = f"{line} | page: {detail_page_key}"
     return line
 
 
@@ -753,6 +818,28 @@ def _normalize_optional_text(value: str | None) -> str | None:
         return None
     normalized_value = value.strip()
     return normalized_value or None
+
+
+def _normalize_entity_list_sort(value: str) -> str:
+    normalized_value = value.strip().casefold()
+    valid_values = {"name", "group", "source"}
+    if normalized_value not in valid_values:
+        valid_value_list = ", ".join(sorted(valid_values))
+        raise ValueError(
+            f"entity_list_sort must be one of: {valid_value_list}."
+        )
+    return normalized_value
+
+
+def _normalize_entity_list_mode(value: str) -> str:
+    normalized_value = value.strip().casefold()
+    valid_values = {"compact", "detail"}
+    if normalized_value not in valid_values:
+        valid_value_list = ", ".join(sorted(valid_values))
+        raise ValueError(
+            f"entity_list_mode must be one of: {valid_value_list}."
+        )
+    return normalized_value
 
 
 def _filter_pages(
@@ -866,7 +953,57 @@ def _build_navigation_lines(model: BrowserModel, page: BrowserPage) -> tuple[str
         if model.get_page(list_key) is not None:
             lines.append(f"Related entity list page: {list_key}")
 
+    lines.extend(page.navigation_hints)
+
     return tuple(lines)
+
+
+def _sort_entity_summaries(
+    entities: tuple[inspection.EntitySummary, ...],
+    *,
+    sort_mode: str,
+) -> tuple[inspection.EntitySummary, ...]:
+    if sort_mode == "source":
+        return entities
+    if sort_mode == "name":
+        return tuple(sorted(entities, key=lambda entity: entity.name.casefold()))
+    return tuple(
+        sorted(
+            entities,
+            key=lambda entity: (
+                (entity.group or "").casefold(),
+                entity.name.casefold(),
+            ),
+        )
+    )
+
+
+def _window_entity_summaries(
+    entities: tuple[inspection.EntitySummary, ...],
+    *,
+    list_limit: int | None,
+    list_offset: int | None,
+) -> tuple[tuple[inspection.EntitySummary, ...], PageWindow]:
+    total = len(entities)
+    if total == 0:
+        return (), PageWindow(start=0, end=0, total=0)
+
+    if list_limit is None or list_limit >= total:
+        return entities, PageWindow(start=0, end=total, total=total)
+
+    max_start = total - list_limit
+    start = min(list_offset or 0, max_start)
+    end = start + list_limit
+    return entities[start:end], PageWindow(start=start, end=end, total=total)
+
+
+def _format_entity_window(entity_window: PageWindow) -> str:
+    if entity_window.total == 0:
+        return "Entity window: none"
+    return (
+        f"Entity window: showing {entity_window.start + 1}-{entity_window.end} of "
+        f"{entity_window.total}"
+    )
 
 
 def _truncate_lines(

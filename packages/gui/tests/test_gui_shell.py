@@ -89,7 +89,14 @@ def test_build_browser_model_with_selected_entity_system_builds_list_page(tmp_pa
     assert model.pages[1].sections[0].lines == (
         "Primary entity kind: religion",
         "Entity count: 2",
+        "Sort: name",
+        "List mode: compact",
+        "Entity window: showing 1-2 of 2",
     )
+    assert (
+        "Visible detail-page examples: entity:religion:catholic, "
+        "entity:religion:orthodox"
+    ) in model.pages[1].navigation_hints
     assert any(
         line.startswith("catholic [christian]:") for line in model.pages[1].sections[1].lines
     )
@@ -163,6 +170,53 @@ def test_build_browser_model_entity_pages_cover_curated_systems(tmp_path: Path) 
         assert summary_line in model.pages[1].sections[1].lines
         assert field_line in model.pages[2].sections[1].lines
         assert reference_line in model.pages[2].sections[2].lines
+
+
+def test_build_browser_model_entity_list_sorts_by_name_by_default(tmp_path: Path) -> None:
+    install_root = _make_entity_browsing_install(tmp_path / "install")
+
+    model = build_browser_model(install_root, selected_entity_system="economy")
+
+    assert model.pages[1].sections[1].lines[0].startswith("grain")
+    assert model.pages[1].sections[1].lines[1].startswith("iron")
+
+
+def test_build_browser_model_entity_list_can_sort_by_group(tmp_path: Path) -> None:
+    install_root = _make_entity_browsing_install(tmp_path / "install")
+
+    model = build_browser_model(
+        install_root,
+        selected_entity_system="economy",
+        entity_list_sort="group",
+    )
+
+    assert model.pages[1].sections[0].lines[2] == "Sort: group"
+    assert model.pages[1].sections[1].lines[0].startswith("grain")
+    assert model.pages[1].sections[1].lines[1].startswith("iron")
+
+
+def test_build_shell_message_entity_list_window_and_detail_mode(tmp_path: Path) -> None:
+    install_root = _make_large_entity_browsing_install(tmp_path / "install")
+
+    message = build_shell_message(
+        install_root,
+        selected_entity_system="religion",
+        entity_list_mode="detail",
+        entity_list_limit=3,
+        entity_list_offset=4,
+    )
+
+    assert "== religion entities ==" in message
+    assert "- Sort: name" in message
+    assert "- List mode: detail" in message
+    assert "- Entity window: showing 5-7 of 12" in message
+    assert "- faith_05 [group] | page: entity:religion:faith_05" in message
+    assert "- faith_07 [group] | page: entity:religion:faith_07" in message
+    assert "- faith_08 [group] | page: entity:religion:faith_08" not in message
+    assert (
+        "- Visible detail-page examples: entity:religion:faith_05, "
+        "entity:religion:faith_06, entity:religion:faith_07"
+    ) in message
 
 
 def test_cli_main_returns_zero(capsys) -> None:
@@ -352,11 +406,8 @@ def test_build_shell_message_section_line_limit_truncates_large_entity_lists(
     assert "- Entity count: 12" in message
     assert "- faith_01 [group]" in message
     assert "- faith_05 [group]" in message
-    assert "- faith_06 [group]" not in message
-    assert (
-        "- ... 7 more lines hidden; increase --section-line-limit or use 0 for full "
-        "output." in message
-    )
+    assert "- faith_06 [group]" in message
+    assert "- faith_12 [group]" in message
 
 
 def test_build_shell_message_entity_detail_navigation_hints_parent_page(tmp_path: Path) -> None:
@@ -385,6 +436,16 @@ def test_cli_rejects_negative_browser_window_controls(capsys) -> None:
 
     captured = capsys.readouterr()
     assert "page_list_limit cannot be negative." in captured.err
+
+    try:
+        main(["--entity-list-offset", "-1"])
+    except SystemExit as exc:
+        assert exc.code == 2
+    else:
+        raise AssertionError("Expected CLI parse failure")
+
+    captured = capsys.readouterr()
+    assert "entity_list_offset cannot be negative." in captured.err
 
 
 def test_cli_page_key_can_open_entity_detail_without_explicit_entity_flags(
@@ -426,6 +487,33 @@ def test_cli_show_all_pages_restores_full_page_dump(tmp_path: Path, capsys) -> N
     assert "== interface system report ==" in captured.out
     assert "== map system report ==" in captured.out
     assert "== map entities ==" in captured.out
+
+
+def test_cli_entity_list_source_sort_and_limit_controls(tmp_path: Path, capsys) -> None:
+    install_root = _make_large_entity_browsing_install(tmp_path / "install")
+
+    exit_code = main(
+        [
+            "--install-root",
+            str(install_root),
+            "--entity-system",
+            "religion",
+            "--entity-list-sort",
+            "source",
+            "--entity-list-limit",
+            "2",
+            "--entity-list-offset",
+            "1",
+        ]
+    )
+
+    captured = capsys.readouterr()
+    assert exit_code == 0
+    assert "- Sort: source" in captured.out
+    assert "- Entity window: showing 2-3 of 12" in captured.out
+    assert "- faith_02" in captured.out
+    assert "- faith_03" in captured.out
+    assert "- faith_04" not in captured.out
 
 
 def _make_report_install(install_root: Path) -> Path:

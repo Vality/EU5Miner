@@ -105,6 +105,42 @@ def main(argv: Sequence[str] | None = None) -> int:
         ),
     )
     parser.add_argument(
+        "--entity-list-sort",
+        choices=("name", "group", "source"),
+        default="name",
+        help=(
+            "Sort entity list pages by entity name, group then name, or original source "
+            "order. Defaults to name."
+        ),
+    )
+    parser.add_argument(
+        "--entity-list-mode",
+        choices=("compact", "detail"),
+        default="compact",
+        help=(
+            "Render entity list pages as compact summaries or include explicit detail-page "
+            "keys. Defaults to compact."
+        ),
+    )
+    parser.add_argument(
+        "--entity-list-limit",
+        type=int,
+        default=25,
+        help=(
+            "Maximum entity rows to show on entity list pages before windowing. Use 0 to "
+            "disable truncation. Defaults to 25."
+        ),
+    )
+    parser.add_argument(
+        "--entity-list-offset",
+        type=int,
+        default=None,
+        help=(
+            "Optional zero-based entity-list window offset. Defaults to the start of the "
+            "sorted entity list."
+        ),
+    )
+    parser.add_argument(
         "--language",
         default="english",
         help="Localization language used by language-backed system reports.",
@@ -129,6 +165,10 @@ def main(argv: Sequence[str] | None = None) -> int:
                 page_list_limit=args.page_list_limit,
                 page_list_offset=args.page_list_offset,
                 section_line_limit=args.section_line_limit,
+                entity_list_sort=args.entity_list_sort,
+                entity_list_mode=args.entity_list_mode,
+                entity_list_limit=args.entity_list_limit,
+                entity_list_offset=args.entity_list_offset,
             )
         )
     except (KeyError, ValueError) as exc:

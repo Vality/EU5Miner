@@ -36,6 +36,10 @@ def build_shell_message(
     page_list_limit: int | None = 12,
     page_list_offset: int | None = None,
     section_line_limit: int | None = 25,
+    entity_list_sort: str = "name",
+    entity_list_mode: str = "compact",
+    entity_list_limit: int | None = 25,
+    entity_list_offset: int | None = None,
 ) -> str:
     (
         normalized_page_key,
@@ -57,6 +61,10 @@ def build_shell_message(
             selected_entity_name=selected_entity_name,
             include_all_systems=include_all_systems,
             language=language,
+            entity_list_sort=entity_list_sort,
+            entity_list_mode=entity_list_mode,
+            entity_list_limit=entity_list_limit,
+            entity_list_offset=entity_list_offset,
         ),
         page_key=normalized_page_key,
         page_filter=page_filter,
@@ -83,6 +91,10 @@ def launch_app(
     page_list_limit: int | None = 12,
     page_list_offset: int | None = None,
     section_line_limit: int | None = 25,
+    entity_list_sort: str = "name",
+    entity_list_mode: str = "compact",
+    entity_list_limit: int | None = 25,
+    entity_list_offset: int | None = None,
 ) -> str:
     return build_shell_message(
         install_root,
@@ -98,6 +110,10 @@ def launch_app(
         page_list_limit=page_list_limit,
         page_list_offset=page_list_offset,
         section_line_limit=section_line_limit,
+        entity_list_sort=entity_list_sort,
+        entity_list_mode=entity_list_mode,
+        entity_list_limit=entity_list_limit,
+        entity_list_offset=entity_list_offset,
     )
 
 
