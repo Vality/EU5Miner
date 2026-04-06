@@ -39,6 +39,7 @@ The completed preview baseline now includes:
 
 - the core integration pass, validation expansion, and three-repo alignment work
 - the recent preview hardening follow-up over the already-curated library seams
+- a completed stabilization hardening slice for the thin CLI mod workflow contract around mixed intended or content inputs and stdout or stderr diagnostics
 - install discovery, merged VFS support, CST and semantic parsing helpers, and broad typed domain coverage in the core library
 - a stable read-only inspection facade and thin CLI over the intended library seams
 - initial mod planning and apply workflows in the core library
@@ -74,6 +75,8 @@ Reference spec:
 - `documents/specs/v1-stabilization-pass.md`
 
 The earlier integration and validation specs remain useful reference material for follow-up polish, but they are no longer the primary milestone definition.
+
+The current remaining stabilization focus is to keep tightening the already-curated seams around public import contracts, inspection compatibility coverage, and release-readiness documentation without widening the CLI or reopening foundation work.
 
 ### 2. GUI Read-Only Browsing Refinement
 
