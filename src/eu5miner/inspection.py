@@ -12,6 +12,7 @@ from eu5miner.domains.diplomacy import (
     build_diplomacy_graph_report,
     build_war_flow_catalog,
     build_war_flow_report,
+    collect_casus_belli_references,
     parse_casus_belli_document,
     parse_character_interaction_document,
     parse_country_interaction_document,
@@ -166,6 +167,26 @@ class EntityDetail:
     references: tuple[EntityReference, ...]
 
 
+@dataclass(frozen=True)
+class _EntityQueryCacheKey:
+    install_root: Path
+    system: str
+    mod_roots: tuple[Path, ...]
+
+
+@dataclass(frozen=True)
+class _EntityQueryIndex:
+    details: tuple[EntityDetail, ...]
+    summaries: tuple[EntitySummary, ...]
+    by_name: dict[str, EntityDetail]
+
+
+@dataclass(frozen=True)
+class _EntitySystemSourceRoot:
+    phase: ContentPhase
+    relative_root: Path
+
+
 _SUPPORTED_SYSTEMS: tuple[SystemInfo, ...] = (
     SystemInfo(
         name="economy",
@@ -226,6 +247,55 @@ _BROWSABLE_SYSTEMS: tuple[EntitySystemInfo, ...] = (
         primary_entity_kind="location",
     ),
 )
+
+_ENTITY_QUERY_CACHE: dict[_EntityQueryCacheKey, _EntityQueryIndex] = {}
+
+_ENTITY_SYSTEM_SOURCE_ROOTS: dict[str, tuple[_EntitySystemSourceRoot, ...]] = {
+    "economy": (
+        _EntitySystemSourceRoot(ContentPhase.IN_GAME, Path("common") / "goods"),
+        _EntitySystemSourceRoot(ContentPhase.IN_GAME, Path("common") / "prices"),
+        _EntitySystemSourceRoot(ContentPhase.IN_GAME, Path("common") / "generic_actions"),
+        _EntitySystemSourceRoot(ContentPhase.IN_GAME, Path("common") / "attribute_columns"),
+    ),
+    "diplomacy": (
+        _EntitySystemSourceRoot(ContentPhase.IN_GAME, Path("common") / "casus_belli"),
+        _EntitySystemSourceRoot(ContentPhase.IN_GAME, Path("common") / "wargoals"),
+        _EntitySystemSourceRoot(ContentPhase.IN_GAME, Path("common") / "peace_treaties"),
+        _EntitySystemSourceRoot(ContentPhase.IN_GAME, Path("common") / "subject_types"),
+        _EntitySystemSourceRoot(ContentPhase.IN_GAME, Path("common") / "country_interactions"),
+        _EntitySystemSourceRoot(ContentPhase.IN_GAME, Path("common") / "character_interactions"),
+    ),
+    "government": (
+        _EntitySystemSourceRoot(ContentPhase.IN_GAME, Path("common") / "government_types"),
+        _EntitySystemSourceRoot(ContentPhase.IN_GAME, Path("common") / "government_reforms"),
+        _EntitySystemSourceRoot(ContentPhase.IN_GAME, Path("common") / "laws"),
+        _EntitySystemSourceRoot(ContentPhase.IN_GAME, Path("common") / "estates"),
+        _EntitySystemSourceRoot(ContentPhase.IN_GAME, Path("common") / "estate_privileges"),
+        _EntitySystemSourceRoot(ContentPhase.IN_GAME, Path("common") / "parliament_types"),
+        _EntitySystemSourceRoot(ContentPhase.IN_GAME, Path("common") / "parliament_agendas"),
+        _EntitySystemSourceRoot(ContentPhase.IN_GAME, Path("common") / "parliament_issues"),
+    ),
+    "religion": (
+        _EntitySystemSourceRoot(ContentPhase.IN_GAME, Path("common") / "religions"),
+        _EntitySystemSourceRoot(ContentPhase.IN_GAME, Path("common") / "religious_aspects"),
+        _EntitySystemSourceRoot(ContentPhase.IN_GAME, Path("common") / "religious_factions"),
+        _EntitySystemSourceRoot(ContentPhase.IN_GAME, Path("common") / "religious_focuses"),
+        _EntitySystemSourceRoot(ContentPhase.IN_GAME, Path("common") / "religious_schools"),
+        _EntitySystemSourceRoot(ContentPhase.IN_GAME, Path("common") / "religious_figures"),
+        _EntitySystemSourceRoot(ContentPhase.IN_GAME, Path("common") / "holy_sites"),
+    ),
+    "map": (
+        _EntitySystemSourceRoot(ContentPhase.IN_GAME, Path("map_data") / "definitions.txt"),
+        _EntitySystemSourceRoot(
+            ContentPhase.MAIN_MENU,
+            Path("setup") / "start" / "10_countries.txt",
+        ),
+        _EntitySystemSourceRoot(
+            ContentPhase.MAIN_MENU,
+            Path("setup") / "start" / "21_locations.txt",
+        ),
+    ),
+}
 
 
 def inspect_install(
@@ -299,8 +369,26 @@ def list_system_entities(
     *,
     mod_roots: Sequence[Path] | None = None,
 ) -> tuple[EntitySummary, ...]:
-    details = _load_system_entity_details(install, system, mod_roots)
-    return tuple(detail.summary for detail in details)
+    return _load_system_entity_index(install, system, mod_roots).summaries
+
+
+def invalidate_system_entity_cache(
+    install: GameInstall | str | Path,
+    system: str,
+    *,
+    mod_root: Path | None = None,
+) -> int:
+    """Invalidate cached entity queries for one system and install context."""
+
+    _entity_description_for(system)
+    install_root = _resolved_install_root(install)
+    resolved_mod_root = mod_root.resolve() if mod_root is not None else None
+
+    return _invalidate_entity_query_cache(
+        lambda cache_key: cache_key.install_root == install_root
+        and cache_key.system == system
+        and (resolved_mod_root is None or resolved_mod_root in cache_key.mod_roots)
+    )
 
 
 def get_system_entity(
@@ -310,9 +398,9 @@ def get_system_entity(
     *,
     mod_roots: Sequence[Path] | None = None,
 ) -> EntityDetail:
-    for detail in _load_system_entity_details(install, system, mod_roots):
-        if detail.summary.name == name:
-            return detail
+    detail = _load_system_entity_index(install, system, mod_roots).by_name.get(name)
+    if detail is not None:
+        return detail
 
     raise KeyError(f"Unknown entity '{name}' for system '{system}'")
 
@@ -949,6 +1037,101 @@ def _load_system_entity_details(
     system: str,
     mod_roots: Sequence[Path] | None,
 ) -> tuple[EntityDetail, ...]:
+    return _load_system_entity_index(install, system, mod_roots).details
+
+
+def _invalidate_entity_caches_for_mutated_subtree(
+    install: GameInstall | str | Path,
+    *,
+    phase: ContentPhase,
+    relative_root: Path,
+    mod_root: Path | None = None,
+) -> tuple[str, ...]:
+    invalidated_systems: list[str] = []
+    for system in _entity_systems_for_mutated_subtree(phase, relative_root):
+        if invalidate_system_entity_cache(install, system, mod_root=mod_root) > 0:
+            invalidated_systems.append(system)
+    return tuple(invalidated_systems)
+
+
+def _load_system_entity_index(
+    install: GameInstall,
+    system: str,
+    mod_roots: Sequence[Path] | None,
+) -> _EntityQueryIndex:
+    cache_key = _entity_query_cache_key(install, system, mod_roots)
+    cached = _ENTITY_QUERY_CACHE.get(cache_key)
+    if cached is not None:
+        return cached
+
+    details = _build_system_entity_details(install, system, mod_roots)
+    index = _EntityQueryIndex(
+        details=details,
+        summaries=tuple(detail.summary for detail in details),
+        by_name=_index_entity_details_by_name(details),
+    )
+    _ENTITY_QUERY_CACHE[cache_key] = index
+    return index
+
+
+def _entity_query_cache_key(
+    install: GameInstall,
+    system: str,
+    mod_roots: Sequence[Path] | None,
+) -> _EntityQueryCacheKey:
+    return _EntityQueryCacheKey(
+        install_root=install.root.resolve(),
+        system=system,
+        mod_roots=tuple(path.resolve() for path in mod_roots) if mod_roots is not None else (),
+    )
+
+
+def _invalidate_entity_query_cache(
+    matcher: Callable[[_EntityQueryCacheKey], bool],
+) -> int:
+    matching_keys = [cache_key for cache_key in _ENTITY_QUERY_CACHE if matcher(cache_key)]
+    for cache_key in matching_keys:
+        _ENTITY_QUERY_CACHE.pop(cache_key, None)
+    return len(matching_keys)
+
+
+def _entity_systems_for_mutated_subtree(
+    phase: ContentPhase,
+    relative_root: Path,
+) -> tuple[str, ...]:
+    systems: list[str] = []
+    for system, source_roots in _ENTITY_SYSTEM_SOURCE_ROOTS.items():
+        if any(
+            source_root.phase is phase
+            and _relative_paths_overlap(relative_root, source_root.relative_root)
+            for source_root in source_roots
+        ):
+            systems.append(system)
+    return tuple(systems)
+
+
+def _relative_paths_overlap(left: Path, right: Path) -> bool:
+    return left == right or left in right.parents or right in left.parents
+
+
+def _resolved_install_root(install: GameInstall | str | Path) -> Path:
+    if isinstance(install, GameInstall):
+        return install.root.resolve()
+    return Path(install).resolve()
+
+
+def _index_entity_details_by_name(details: Sequence[EntityDetail]) -> dict[str, EntityDetail]:
+    by_name: dict[str, EntityDetail] = {}
+    for detail in details:
+        by_name.setdefault(detail.summary.name, detail)
+    return by_name
+
+
+def _build_system_entity_details(
+    install: GameInstall,
+    system: str,
+    mod_roots: Sequence[Path] | None,
+) -> tuple[EntityDetail, ...]:
     _entity_description_for(system)
     vfs = VirtualFilesystem.from_install(
         install,
@@ -1102,8 +1285,25 @@ def _build_diplomacy_entities(vfs: VirtualFilesystem) -> tuple[EntityDetail, ...
 
     details: list[EntityDetail] = []
     war_flow_catalog = catalog.war_flow_catalog
+    wargoals_by_name = {
+        definition.name: definition for definition in war_flow_catalog.wargoal_definitions
+    }
+    peace_treaties_by_casus_belli = _group_items_by_keys(
+        war_flow_catalog.peace_treaty_definitions,
+        lambda definition: collect_casus_belli_references(definition.body),
+    )
+    country_interactions_by_casus_belli = _group_items_by_keys(
+        catalog.country_interaction_definitions,
+        lambda definition: collect_casus_belli_references(definition.body),
+    )
     for definition in sorted(war_flow_catalog.casus_belli_definitions, key=lambda item: item.name):
-        linked_wargoal = war_flow_catalog.get_wargoal_for_casus_belli(definition.name)
+        linked_wargoal = (
+            wargoals_by_name.get(definition.war_goal_type)
+            if definition.war_goal_type is not None
+            else None
+        )
+        peace_treaties = peace_treaties_by_casus_belli.get(definition.name, ())
+        country_interactions = country_interactions_by_casus_belli.get(definition.name, ())
         summary = EntitySummary(
             system="diplomacy",
             entity_kind="casus_belli",
@@ -1165,9 +1365,7 @@ def _build_diplomacy_entities(vfs: VirtualFilesystem) -> tuple[EntityDetail, ...
                             entity_kind="peace_treaty",
                             target_name=peace_treaty.name,
                         )
-                        for peace_treaty in war_flow_catalog.get_peace_treaties_for_casus_belli(
-                            definition.name
-                        )
+                        for peace_treaty in peace_treaties
                     ]
                     + [
                         EntityReference(
@@ -1176,9 +1374,7 @@ def _build_diplomacy_entities(vfs: VirtualFilesystem) -> tuple[EntityDetail, ...
                             entity_kind="country_interaction",
                             target_name=interaction.name,
                         )
-                        for interaction in catalog.get_country_interactions_for_casus_belli(
-                            definition.name
-                        )
+                        for interaction in country_interactions
                     ]
                 ),
             )
@@ -1240,7 +1436,17 @@ def _build_government_entities(vfs: VirtualFilesystem) -> tuple[EntityDetail, ..
     )
 
     details: list[EntityDetail] = []
+    reforms_by_government = _group_items_by_keys(
+        catalog.government_reform_definitions,
+        lambda definition: (definition.government,) if definition.government is not None else (),
+    )
+    laws_by_government = _group_items_by_keys(
+        catalog.law_definitions,
+        lambda definition: definition.law_gov_groups,
+    )
     for definition in sorted(catalog.government_type_definitions, key=lambda item: item.name):
+        reforms = reforms_by_government.get(definition.name, ())
+        laws = laws_by_government.get(definition.name, ())
         summary = EntitySummary(
             system="government",
             entity_kind="government_type",
@@ -1293,7 +1499,7 @@ def _build_government_entities(vfs: VirtualFilesystem) -> tuple[EntityDetail, ..
                             entity_kind="government_reform",
                             target_name=reform.name,
                         )
-                        for reform in catalog.get_reforms_for_government(definition.name)
+                        for reform in reforms
                     ]
                     + [
                         EntityReference(
@@ -1302,7 +1508,7 @@ def _build_government_entities(vfs: VirtualFilesystem) -> tuple[EntityDetail, ..
                             entity_kind="law",
                             target_name=law.name,
                         )
-                        for law in catalog.get_laws_for_government(definition.name)
+                        for law in laws
                     ]
                 ),
             )
@@ -1358,23 +1564,43 @@ def _build_religion_entities(vfs: VirtualFilesystem) -> tuple[EntityDetail, ...]
     )
 
     details: list[EntityDetail] = []
+    aspect_definitions_by_religion = _group_items_by_keys(
+        catalog.religious_aspect_definitions,
+        lambda definition: definition.religions,
+    )
+    focus_definitions_by_name = {
+        definition.name: definition for definition in catalog.religious_focus_definitions
+    }
+    faction_definitions_by_name = {
+        definition.name: definition for definition in catalog.religious_faction_definitions
+    }
+    holy_site_definitions_by_religion = _group_items_by_keys(
+        catalog.holy_site_definitions,
+        lambda definition: definition.religions,
+    )
     for definition in sorted(catalog.religion_definitions, key=lambda item: item.name):
+        aspects = aspect_definitions_by_religion.get(definition.name, ())
+        factions = tuple(
+            resolved_faction
+            for faction_name in definition.factions
+            if (resolved_faction := faction_definitions_by_name.get(faction_name)) is not None
+        )
+        focuses = tuple(
+            resolved_focus
+            for focus_name in definition.religious_focuses
+            if (resolved_focus := focus_definitions_by_name.get(focus_name)) is not None
+        )
+        schools = catalog.get_religious_schools_for_religion(definition.name)
+        figures = catalog.get_religious_figures_for_religion(definition.name)
+        holy_sites = holy_site_definitions_by_religion.get(definition.name, ())
         summary = EntitySummary(
             system="religion",
             entity_kind="religion",
             name=definition.name,
             group=definition.group,
             description=_join_summary_parts(
-                (
-                    f"focuses={len(catalog.get_religious_focuses_for_religion(definition.name))}"
-                    if catalog.get_religious_focuses_for_religion(definition.name)
-                    else None
-                ),
-                (
-                    f"holy_sites={len(catalog.get_holy_sites_for_religion(definition.name))}"
-                    if catalog.get_holy_sites_for_religion(definition.name)
-                    else None
-                ),
+                f"focuses={len(focuses)}" if focuses else None,
+                f"holy_sites={len(holy_sites)}" if holy_sites else None,
             ),
         )
         details.append(
@@ -1398,7 +1624,7 @@ def _build_religion_entities(vfs: VirtualFilesystem) -> tuple[EntityDetail, ...]
                             entity_kind="religious_aspect",
                             target_name=aspect.name,
                         )
-                        for aspect in catalog.get_religious_aspects_for_religion(definition.name)
+                        for aspect in aspects
                     ]
                     + [
                         EntityReference(
@@ -1407,7 +1633,7 @@ def _build_religion_entities(vfs: VirtualFilesystem) -> tuple[EntityDetail, ...]
                             entity_kind="religious_faction",
                             target_name=faction.name,
                         )
-                        for faction in catalog.get_religious_factions_for_religion(definition.name)
+                        for faction in factions
                     ]
                     + [
                         EntityReference(
@@ -1416,7 +1642,7 @@ def _build_religion_entities(vfs: VirtualFilesystem) -> tuple[EntityDetail, ...]
                             entity_kind="religious_focus",
                             target_name=focus.name,
                         )
-                        for focus in catalog.get_religious_focuses_for_religion(definition.name)
+                        for focus in focuses
                     ]
                     + [
                         EntityReference(
@@ -1425,7 +1651,7 @@ def _build_religion_entities(vfs: VirtualFilesystem) -> tuple[EntityDetail, ...]
                             entity_kind="religious_school",
                             target_name=school.name,
                         )
-                        for school in catalog.get_religious_schools_for_religion(definition.name)
+                        for school in schools
                     ]
                     + [
                         EntityReference(
@@ -1434,7 +1660,7 @@ def _build_religion_entities(vfs: VirtualFilesystem) -> tuple[EntityDetail, ...]
                             entity_kind="religious_figure",
                             target_name=figure.name,
                         )
-                        for figure in catalog.get_religious_figures_for_religion(definition.name)
+                        for figure in figures
                     ]
                     + [
                         EntityReference(
@@ -1443,7 +1669,7 @@ def _build_religion_entities(vfs: VirtualFilesystem) -> tuple[EntityDetail, ...]
                             entity_kind="holy_site",
                             target_name=site.name,
                         )
-                        for site in catalog.get_holy_sites_for_religion(definition.name)
+                        for site in holy_sites
                     ]
                 ),
             )
@@ -1565,6 +1791,17 @@ def _load_single_document[DocumentT](
     return parser(_read_text(merged_file.winner.absolute_path))
 
 
+def _group_items_by_keys[ItemT](
+    items: Sequence[ItemT],
+    key_selector: Callable[[ItemT], Sequence[str]],
+) -> dict[str, tuple[ItemT, ...]]:
+    grouped: dict[str, list[ItemT]] = {}
+    for item in items:
+        for key in key_selector(item):
+            grouped.setdefault(key, []).append(item)
+    return {key: tuple(values) for key, values in grouped.items()}
+
+
 def _compact_fields(
     *pairs: tuple[str, BrowseValue | None],
 ) -> tuple[EntityField, ...]:
@@ -1614,6 +1851,7 @@ __all__ = [
     "format_system_report",
     "get_system_entity",
     "get_system_report",
+    "invalidate_system_entity_cache",
     "inspect_install",
     "list_entity_systems",
     "list_system_entities",

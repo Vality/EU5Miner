@@ -7,6 +7,7 @@ from dataclasses import dataclass, field
 from enum import StrEnum
 from pathlib import Path
 
+import eu5miner.inspection as inspection_api
 from eu5miner.domains.mod_project import (
     MaterializedWriteStatus,
     TargetedModEmission,
@@ -14,7 +15,7 @@ from eu5miner.domains.mod_project import (
     plan_targeted_mod_emission,
 )
 from eu5miner.source import ContentPhase
-from eu5miner.vfs import EmissionEntryActionKind, ModEmissionPlan, VirtualFilesystem
+from eu5miner.vfs import EmissionEntryActionKind, ModEmissionPlan, SourceKind, VirtualFilesystem
 
 
 class ModUpdateWriteKind(StrEnum):
@@ -91,6 +92,7 @@ class PlannedModUpdate:
     metadata_write: ModUpdateWrite
     content_writes: tuple[ModUpdateWrite, ...]
     _targeted_emission: TargetedModEmission = field(repr=False, compare=False)
+    _install_root: Path | None = field(default=None, repr=False, compare=False)
 
     @property
     def writes(self) -> tuple[ModUpdateWrite, ...]:
@@ -206,6 +208,7 @@ def plan_mod_update(
         metadata_write=metadata_write,
         content_writes=content_writes,
         _targeted_emission=targeted_emission,
+        _install_root=_install_root_for_vfs(vfs),
     )
 
 
@@ -214,10 +217,20 @@ def apply_mod_update(
     *,
     overwrite: bool = True,
 ) -> AppliedModUpdate:
+    """Materialize a planned update and invalidate affected inspection caches when possible."""
+
     materialized = materialize_targeted_mod_emission(
         planned_update._targeted_emission,
         overwrite=overwrite,
     )
+
+    if planned_update._install_root is not None:
+        inspection_api._invalidate_entity_caches_for_mutated_subtree(
+            planned_update._install_root,
+            phase=planned_update.phase,
+            relative_root=planned_update.relative_root,
+            mod_root=planned_update.root,
+        )
 
     metadata_write = AppliedModWrite(
         path=materialized.metadata_write.path,
@@ -257,6 +270,16 @@ def _normalize_content_mapping(
     return {
         Path(relative_path): content for relative_path, content in content_by_relative_path.items()
     }
+
+
+def _install_root_for_vfs(vfs: VirtualFilesystem) -> Path | None:
+    vanilla_source = next(
+        (source for source in vfs.sources if source.kind is SourceKind.VANILLA),
+        None,
+    )
+    if vanilla_source is None:
+        return None
+    return vanilla_source.root.parent.resolve()
 
 
 def _collect_replace_paths(emission_plan: ModEmissionPlan) -> tuple[str, ...]:

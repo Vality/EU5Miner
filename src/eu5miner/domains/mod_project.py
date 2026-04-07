@@ -194,6 +194,8 @@ def materialize_targeted_mod_emission(
     *,
     overwrite: bool = True,
 ) -> MaterializedModEmission:
+    """Write a targeted emission to disk without higher-level cache side effects."""
+
     created_directories: list[Path] = []
     for directory in targeted_emission.directories:
         if not directory.exists():

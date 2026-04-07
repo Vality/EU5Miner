@@ -167,6 +167,8 @@ iron = get_system_entity(
 
 This inspection facade is the stable public entrypoint for install summaries, available system listing, install-backed system report retrieval, and a deliberately narrow entity-browsing seam. The current browseable subset is intentionally limited to one primary entity family per system: `economy` goods, `diplomacy` casus belli, `government` government types, `religion` religions, and `map` linked locations. That keeps the preview API useful for GUI and MCP read-only flows without overcommitting to a generic graph API across every catalog family yet. The CLI remains a thin wrapper over the same library surface.
 
+Repeated inspection entity queries are cached process-locally per install, system, and mod-root context. If a mutating workflow can change inspection results, invalidate the affected system entries with `eu5miner.inspection.invalidate_system_entity_cache(...)` or otherwise refresh the inspection cache state before querying again.
+
 For domain adapters and higher-level helpers, prefer grouped package entrypoints when you are working within one concept area. They are the clearest stable seam for downstream library consumers:
 
 ```python
@@ -247,6 +249,8 @@ unit_category_document = parse_unit_category_document(
 ```
 
 For mod update workflows in the preview release, `eu5miner.mods` remains the stable higher-level seam, while the CLI stays a thin wrapper over the same plan/apply/report operations.
+
+The built-in `apply_mod_update(...)` flow already invalidates matching inspection entity caches when the planned update still carries install-backed context. Lower-level direct write helpers such as `materialize_targeted_mod_emission(...)` remain inspection-agnostic on purpose, so callers using those helpers directly must own any required inspection cache refresh or invalidation themselves.
 
 The broad `eu5miner.domains` convenience export remains available for callers that genuinely want one import hub across many domains, but grouped packages are the preferred stable seam when the concept area is clear. Avoid reaching into internal implementation modules such as `eu5miner.domains.diplomacy.casus_belli` or `eu5miner.domains.map.map_text` from downstream code.
 

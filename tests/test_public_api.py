@@ -178,6 +178,7 @@ from eu5miner.inspection import (
     get_system_entity,
     get_system_report,
     inspect_install,
+    invalidate_system_entity_cache,
     list_entity_systems,
     list_supported_systems,
     list_system_entities,
@@ -222,6 +223,7 @@ EXPECTED_INSPECTION_EXPORTS = {
     "format_system_report",
     "get_system_entity",
     "get_system_report",
+    "invalidate_system_entity_cache",
     "inspect_install",
     "list_entity_systems",
     "list_system_entities",
@@ -278,6 +280,7 @@ def test_inspection_module_exports_stable_read_only_facade() -> None:
     assert InstallSourceSummary.__name__ == "InstallSourceSummary"
     assert InstallSummary.__name__ == "InstallSummary"
     assert SystemInfo.__name__ == "SystemInfo"
+    assert callable(invalidate_system_entity_cache)
     assert SystemReport.__name__ == "SystemReport"
     assert callable(inspect_install)
     assert callable(summarize_install)

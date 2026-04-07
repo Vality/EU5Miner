@@ -3,9 +3,11 @@ from __future__ import annotations
 from pathlib import Path
 
 from eu5miner import apply_mod_update, format_mod_update_report, plan_mod_update
+from eu5miner.inspection import list_system_entities
 from eu5miner.mods import ModUpdateAdvisoryKind, ModUpdateWarningKind, ModUpdateWriteKind
 from eu5miner.source import ContentPhase
 from eu5miner.vfs import ContentSource, SourceKind, VirtualFilesystem
+from tests.integration_support import build_synthetic_install
 
 
 def _write_file(path: Path, text: str) -> None:
@@ -231,3 +233,85 @@ def test_apply_mod_update_reports_updated_and_unchanged_write_counts(tmp_path: P
     assert "unchanged writes: 1" in report
     assert "updated:" in report
     assert "unchanged:" in report
+
+
+def test_apply_mod_update_invalidates_matching_entity_cache(tmp_path: Path) -> None:
+    install = _build_economy_entity_install(tmp_path / "economy")
+    mod_root = tmp_path / "my_mod"
+    relative_path = Path("common") / "goods" / "coal.txt"
+    vfs = VirtualFilesystem.from_install(install, mod_roots=[mod_root])
+
+    before = list_system_entities(install, "economy", mod_roots=[mod_root])
+    planned = plan_mod_update(
+        vfs,
+        mod_root.name,
+        ContentPhase.IN_GAME,
+        Path("common") / "goods",
+        intended_relative_paths=(relative_path,),
+        content_by_relative_path={
+            relative_path: (
+                "coal = { method = mining category = raw_material default_market_price = 5 }\n"
+            )
+        },
+    )
+
+    apply_mod_update(planned)
+    after = list_system_entities(install, "economy", mod_roots=[mod_root])
+
+    assert all(summary.name != "coal" for summary in before)
+    assert any(summary.name == "coal" for summary in after)
+
+
+def _build_economy_entity_install(root: Path):
+    install = build_synthetic_install(root / "install")
+    representative_files = install.representative_files()
+    fixture_texts = {
+        "goods_sample": (
+            "iron = {\n"
+            "    method = mining\n"
+            "    category = raw_material\n"
+            "    default_market_price = 3\n"
+            "}\n"
+        ),
+        "goods_secondary_sample": "grain = { method = farming category = food }\n",
+        "price_sample": "build_road = { gold = 10 }\n",
+        "price_secondary_sample": "granary = { tools = 5 }\n",
+        "generic_action_market_sample": (
+            "create_market = {\n"
+            "    type = owncountry\n"
+            "    select_trigger = { looking_for_a = market }\n"
+            "}\n"
+        ),
+        "generic_action_secondary_sample": (
+            "open_employment = {\n"
+            "    type = owncountry\n"
+            "    select_trigger = { looking_for_a = employment_system }\n"
+            "}\n"
+        ),
+        "generic_action_loan_sample": (
+            "take_loan = {\n"
+            "    type = owncountry\n"
+            "    select_trigger = { looking_for_a = bank_loan }\n"
+            "}\n"
+        ),
+        "attribute_column_default_sample": (
+            "defaults = { name = { widget = default_text_column } }\n"
+        ),
+        "attribute_column_market_sample": (
+            "market = { name = { widget = default_text_column } }\n"
+        ),
+        "attribute_column_trade_sample": (
+            "trade = { route = { widget = default_text_column } }\n"
+        ),
+        "attribute_column_secondary_sample": (
+            "goods = { price = { widget = default_numeric_column } }\n"
+        ),
+        "attribute_column_loan_sample": (
+            "loan = { size = { widget = default_numeric_column } }\n"
+        ),
+    }
+
+    for key, text in fixture_texts.items():
+        _write_file(representative_files[key], text)
+
+    return install

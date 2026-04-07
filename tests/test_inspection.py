@@ -5,12 +5,17 @@ from pathlib import Path
 
 import pytest
 
+import eu5miner.inspection as inspection_module
 from eu5miner.inspection import (
+    EntityDetail,
+    EntityField,
+    EntitySummary,
     format_install_summary,
     format_system_report,
     get_system_entity,
     get_system_report,
     inspect_install,
+    invalidate_system_entity_cache,
     list_entity_systems,
     list_supported_systems,
     list_system_entities,
@@ -174,6 +179,183 @@ def test_get_system_entity_rejects_unknown_name(tmp_path: Path) -> None:
         get_system_entity(install, "economy", "missing_good")
 
 
+def test_entity_queries_cache_repeated_list_and_get_for_same_install_and_system(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    install = _make_synthetic_report_install(tmp_path / "map", "map")
+    original = inspection_module._build_system_entity_details
+    call_count = 0
+
+    inspection_module._ENTITY_QUERY_CACHE.clear()
+
+    def counting_builder(
+        install_arg: GameInstall,
+        system: str,
+        mod_roots: tuple[Path, ...] | list[Path] | None,
+    ) -> tuple[EntityDetail, ...]:
+        nonlocal call_count
+        call_count += 1
+        return original(install_arg, system, mod_roots)
+
+    monkeypatch.setattr(inspection_module, "_build_system_entity_details", counting_builder)
+
+    summaries = list_system_entities(install, "map")
+    detail = get_system_entity(install, "map", "stockholm")
+    repeated_summaries = list_system_entities(install, "map")
+
+    assert call_count == 1
+    assert any(summary.name == "stockholm" for summary in summaries)
+    assert detail.summary.name == "stockholm"
+    assert repeated_summaries == summaries
+
+
+def test_entity_query_cache_is_keyed_by_mod_roots(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    install_root = _make_test_install(tmp_path / "install")
+    install = GameInstall.discover(install_root)
+    first_mod_root = tmp_path / "mods" / "first"
+    second_mod_root = tmp_path / "mods" / "second"
+    _make_mod_root(first_mod_root)
+    _make_mod_root(second_mod_root)
+
+    original = inspection_module._build_system_entity_details
+    call_count = 0
+
+    inspection_module._ENTITY_QUERY_CACHE.clear()
+
+    def counting_builder(
+        install_arg: GameInstall,
+        system: str,
+        mod_roots: tuple[Path, ...] | list[Path] | None,
+    ) -> tuple[EntityDetail, ...]:
+        nonlocal call_count
+        call_count += 1
+        return original(install_arg, system, mod_roots)
+
+    monkeypatch.setattr(inspection_module, "_build_system_entity_details", counting_builder)
+
+    list_system_entities(install, "economy", mod_roots=[first_mod_root])
+    list_system_entities(install, "economy", mod_roots=[first_mod_root])
+    list_system_entities(install, "economy", mod_roots=[second_mod_root])
+
+    assert call_count == 2
+
+
+def test_invalidate_system_entity_cache_invalidates_only_requested_system(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    install_root = _make_test_install(tmp_path / "install")
+    install = GameInstall.discover(install_root)
+    call_counts: dict[str, int] = {}
+
+    inspection_module._ENTITY_QUERY_CACHE.clear()
+
+    def counting_builder(
+        install_arg: GameInstall,
+        system: str,
+        mod_roots: tuple[Path, ...] | list[Path] | None,
+    ) -> tuple[EntityDetail, ...]:
+        del install_arg, mod_roots
+        call_counts[system] = call_counts.get(system, 0) + 1
+        return (_cached_entity_detail(system),)
+
+    monkeypatch.setattr(inspection_module, "_build_system_entity_details", counting_builder)
+
+    list_system_entities(install, "economy")
+    list_system_entities(install, "map")
+
+    assert invalidate_system_entity_cache(install, "map") == 1
+
+    list_system_entities(install, "economy")
+    list_system_entities(install, "map")
+
+    assert call_counts == {"economy": 1, "map": 2}
+
+
+def test_invalidate_system_entity_cache_is_scoped_to_install_and_mod_root(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    install = GameInstall.discover(_make_test_install(tmp_path / "install"))
+    other_install = GameInstall.discover(_make_test_install(tmp_path / "other_install"))
+    first_mod_root = tmp_path / "mods" / "first"
+    second_mod_root = tmp_path / "mods" / "second"
+    _make_mod_root(first_mod_root)
+    _make_mod_root(second_mod_root)
+
+    call_count = 0
+    inspection_module._ENTITY_QUERY_CACHE.clear()
+
+    def counting_builder(
+        install_arg: GameInstall,
+        system: str,
+        mod_roots: tuple[Path, ...] | list[Path] | None,
+    ) -> tuple[EntityDetail, ...]:
+        nonlocal call_count
+        del install_arg, system, mod_roots
+        call_count += 1
+        return (_cached_entity_detail("economy"),)
+
+    monkeypatch.setattr(inspection_module, "_build_system_entity_details", counting_builder)
+
+    list_system_entities(install, "economy", mod_roots=[first_mod_root])
+    list_system_entities(install, "economy", mod_roots=[second_mod_root])
+    list_system_entities(other_install, "economy", mod_roots=[first_mod_root])
+
+    assert invalidate_system_entity_cache(install, "economy", mod_root=first_mod_root) == 1
+
+    list_system_entities(install, "economy", mod_roots=[first_mod_root])
+    list_system_entities(install, "economy", mod_roots=[second_mod_root])
+    list_system_entities(other_install, "economy", mod_roots=[first_mod_root])
+
+    assert call_count == 4
+
+
+def test_get_system_entity_preserves_first_matching_detail_when_cached(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    install_root = _make_test_install(tmp_path / "install")
+    install = GameInstall.discover(install_root)
+    first_detail = EntityDetail(
+        summary=EntitySummary(
+            system="economy",
+            entity_kind="good",
+            name="duplicate",
+            group="first",
+            description="first",
+        ),
+        fields=(EntityField(name="marker", value="first"),),
+        references=(),
+    )
+    second_detail = EntityDetail(
+        summary=EntitySummary(
+            system="economy",
+            entity_kind="good",
+            name="duplicate",
+            group="second",
+            description="second",
+        ),
+        fields=(EntityField(name="marker", value="second"),),
+        references=(),
+    )
+
+    inspection_module._ENTITY_QUERY_CACHE.clear()
+    monkeypatch.setattr(
+        inspection_module,
+        "_build_system_entity_details",
+        lambda _install, _system, _mod_roots: (first_detail, second_detail),
+    )
+
+    detail = get_system_entity(install, "economy", "duplicate")
+
+    assert detail == first_detail
+
+
 def _make_test_install(install_root: Path) -> Path:
     game_dir = install_root / "game"
     for phase_name in ("loading_screen", "main_menu", "in_game"):
@@ -190,6 +372,20 @@ def _make_mod_root(mod_root: Path) -> None:
     metadata_path.write_text(
         json.dumps({"replace_path": ["game/in_game/common/buildings"]}),
         encoding="utf-8",
+    )
+
+
+def _cached_entity_detail(system: str) -> EntityDetail:
+    return EntityDetail(
+        summary=EntitySummary(
+            system=system,
+            entity_kind="cached_entity",
+            name=f"{system}_entity",
+            group=None,
+            description="cached",
+        ),
+        fields=(),
+        references=(),
     )
 
 
