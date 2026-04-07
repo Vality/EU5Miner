@@ -13,6 +13,30 @@ from eu5miner_gui.desktop.navigation import NavigationTarget
 from eu5miner_gui.desktop.widgets.visuals import apply_card_background
 
 
+class SidebarEntryButton(Button):
+    def __init__(self, *, title: str, subtitle: str, **kwargs: Any) -> None:
+        super().__init__(
+            text=f"{title}\n{subtitle}",
+            markup=False,
+            size_hint_y=None,
+            height=64,
+            halign="left",
+            valign="middle",
+            **kwargs,
+        )
+        self.bind(width=self._sync_text_layout, text=self._sync_text_layout)
+        self.bind(texture_size=self._sync_height)
+        self._sync_text_layout()
+        self._sync_height()
+
+    def _sync_text_layout(self, *_: Any) -> None:
+        self.text_size = (max(self.width - 20, 0), None)
+        self.texture_update()
+
+    def _sync_height(self, *_: Any) -> None:
+        self.height = max(64, self.texture_size[1] + 18)
+
+
 class Sidebar(BoxLayout):
     def __init__(self, *, controller: DesktopController, **kwargs: Any) -> None:
         super().__init__(orientation="vertical", size_hint=(0.24, 1), **kwargs)
@@ -46,20 +70,9 @@ class Sidebar(BoxLayout):
             layout = BoxLayout(orientation="vertical", spacing=6, size_hint_y=None, padding=6)
             layout.bind(minimum_height=layout.setter("height"))
             for entry in section.items:
-                button = Button(
-                    text=f"{entry.title}\n{entry.subtitle}",
-                    markup=False,
-                    size_hint_y=None,
-                    height=56,
-                    halign="left",
-                    valign="middle",
-                )
-                button.bind(
-                    size=lambda instance, _: setattr(
-                        instance,
-                        "text_size",
-                        (instance.width - 18, None),
-                    )
+                button = SidebarEntryButton(
+                    title=entry.title,
+                    subtitle=entry.subtitle,
                 )
                 button.bind(on_release=lambda *_args, target=entry.target: self._navigate(target))
                 layout.add_widget(button)

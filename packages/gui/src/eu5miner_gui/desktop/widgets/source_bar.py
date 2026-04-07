@@ -4,54 +4,71 @@ from typing import Any
 
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
-from kivy.uix.label import Label
 from kivy.uix.textinput import TextInput
 
 from eu5miner_gui.desktop.controller import DesktopController
-from eu5miner_gui.desktop.widgets.visuals import apply_card_background
+from .visuals import (
+    apply_card_background,
+    build_wrapped_button,
+    build_wrapped_label,
+)
 
 
 class SourceBar(BoxLayout):
     def __init__(self, *, controller: DesktopController, **kwargs: Any) -> None:
-        super().__init__(orientation="vertical", spacing=8, size_hint_y=None, height=118, **kwargs)
+        super().__init__(orientation="vertical", spacing=8, size_hint_y=None, **kwargs)
+        self.bind(minimum_height=self.setter("height"))
         self._controller = controller
         self._page_host = None
         self._sidebar = None
         self._install_input = TextInput(multiline=False, hint_text="Install root path")
         self._mod_input = TextInput(multiline=False, hint_text="Additional mod folder path")
+        self._status_label = build_wrapped_label(
+            text="",
+            halign="left",
+            valign="middle",
+            min_height=28,
+        )
+        self._remove_mod_button: Button | None = None
         apply_card_background(self, rgb=(0.1, 0.11, 0.14))
-        self._rebuild()
+        self._build_once()
+        self.refresh()
 
     def bind_page_host(self, page_host: Any, sidebar: Any) -> None:
         self._page_host = page_host
         self._sidebar = sidebar
 
     def refresh(self) -> None:
-        self.clear_widgets()
-        self._rebuild()
+        self._sync_state()
 
-    def _rebuild(self) -> None:
-        controls = BoxLayout(orientation="horizontal", spacing=8, size_hint_y=None, height=40)
-        current_install_root = (
-            self._controller.active_install_root
-            or self._controller.source_state.manual_install_root
+    def _build_once(self) -> None:
+        controls = BoxLayout(orientation="horizontal", spacing=8, size_hint_y=None)
+        controls.bind(minimum_height=controls.setter("height"))
+        set_install_button = build_wrapped_button(
+            text="Use install root",
+            size_hint=(None, 1),
+            width=150,
         )
-        self._install_input.text = str(current_install_root or "")
-        set_install_button = Button(text="Use install root", size_hint=(None, 1), width=150)
-        auto_button = Button(text="Auto", size_hint=(None, 1), width=80)
-        reload_button = Button(text="Reload", size_hint=(None, 1), width=90)
+        auto_button = build_wrapped_button(
+            text="Auto",
+            size_hint=(None, 1),
+            width=80,
+        )
+        reload_button = build_wrapped_button(
+            text="Reload",
+            size_hint=(None, 1),
+            width=90,
+        )
         set_install_button.bind(on_release=lambda *_: self._apply_install_root())
         auto_button.bind(on_release=lambda *_: self._reset_to_auto())
         reload_button.bind(on_release=lambda *_: self._reload())
-        install_label = Label(
+        install_label = build_wrapped_label(
             text="Install",
             size_hint=(None, 1),
             width=56,
             halign="left",
             valign="middle",
-        )
-        install_label.bind(
-            size=lambda instance, _: setattr(instance, "text_size", instance.size)
+            min_height=24,
         )
         controls.add_widget(install_label)
         controls.add_widget(self._install_input)
@@ -60,20 +77,28 @@ class SourceBar(BoxLayout):
         controls.add_widget(reload_button)
         self.add_widget(controls)
 
-        mods = BoxLayout(orientation="horizontal", spacing=8, size_hint_y=None, height=36)
-        add_mod_button = Button(text="Add mod folder", size_hint=(None, 1), width=140)
-        remove_mod_button = Button(text="Remove selected", size_hint=(None, 1), width=140)
+        mods = BoxLayout(orientation="horizontal", spacing=8, size_hint_y=None)
+        mods.bind(minimum_height=mods.setter("height"))
+        add_mod_button = build_wrapped_button(
+            text="Add mod folder",
+            size_hint=(None, 1),
+            width=140,
+        )
+        remove_mod_button = build_wrapped_button(
+            text="Remove selected",
+            size_hint=(None, 1),
+            width=140,
+        )
+        self._remove_mod_button = remove_mod_button
         add_mod_button.bind(on_release=lambda *_: self._add_mod_folder())
         remove_mod_button.bind(on_release=lambda *_: self._remove_mod_folder())
-        mods_label = Label(
+        mods_label = build_wrapped_label(
             text="Mods",
             size_hint=(None, 1),
             width=56,
             halign="left",
             valign="middle",
-        )
-        mods_label.bind(
-            size=lambda instance, _: setattr(instance, "text_size", instance.size)
+            min_height=24,
         )
         mods.add_widget(mods_label)
         mods.add_widget(self._mod_input)
@@ -81,15 +106,10 @@ class SourceBar(BoxLayout):
         mods.add_widget(remove_mod_button)
         self.add_widget(mods)
 
-        status = Label(
-            text=self._status_text(),
-            size_hint_y=None,
-            height=28,
-            halign="left",
-            valign="middle",
+        self._status_label.bind(
+            size=lambda instance, _: setattr(instance, "text_size", instance.size)
         )
-        status.bind(size=lambda instance, _: setattr(instance, "text_size", instance.size))
-        self.add_widget(status)
+        self.add_widget(self._status_label)
 
     def _apply_install_root(self) -> None:
         self._controller.set_manual_install_root(self._install_input.text)
@@ -120,6 +140,20 @@ class SourceBar(BoxLayout):
             self._sidebar.refresh()
         if self._page_host is not None:
             self._page_host.refresh()
+
+    def _sync_state(self) -> None:
+        current_install_root = (
+            self._controller.active_install_root
+            or self._controller.source_state.manual_install_root
+        )
+        install_text = str(current_install_root or "")
+        if self._install_input.text != install_text:
+            self._install_input.text = install_text
+        self._status_label.text = self._status_text()
+        if self._remove_mod_button is not None:
+            self._remove_mod_button.disabled = (
+                self._controller.ui_state.selected_mod_folder is None
+            )
 
     def _status_text(self) -> str:
         active_root = self._controller.active_install_root

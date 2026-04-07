@@ -89,8 +89,7 @@ class DesktopController:
             self._attempt_auto_discovery()
         for mod_folder in mod_folders:
             self.add_mod_folder(mod_folder, navigate=False)
-        if self.navigation_state.current_target.requires_install and self._active_install is None:
-            self.navigation_state = NavigationState(current_target=NavigationTarget.overview())
+        self._normalize_navigation_for_source_state()
 
     @property
     def active_install_root(self) -> Path | None:
@@ -179,8 +178,9 @@ class DesktopController:
     def reload(self) -> None:
         if self.source_state.manual_install_root is not None:
             self.set_manual_install_root(self.source_state.manual_install_root, navigate=False)
-            return
-        self._attempt_auto_discovery()
+        else:
+            self._attempt_auto_discovery()
+        self._normalize_navigation_for_source_state()
 
     def set_manual_install_root(
         self,
@@ -191,8 +191,7 @@ class DesktopController:
         if install_root is None or str(install_root).strip() == "":
             self.source_state = replace(self.source_state, manual_install_root=None)
             self._attempt_auto_discovery()
-            if navigate:
-                self.navigate(self.navigation_state.current_target)
+            self._refresh_navigation_after_source_change(navigate=navigate)
             return
         normalized_root = Path(install_root).expanduser().resolve()
         try:
@@ -208,10 +207,10 @@ class DesktopController:
             )
             self._active_install = None
             self._invalidate_cache()
+            self._normalize_navigation_for_source_state()
             return
         self._apply_install(install, manual_root=normalized_root)
-        if navigate:
-            self.navigate(self.navigation_state.current_target)
+        self._refresh_navigation_after_source_change(navigate=navigate)
 
     def add_mod_folder(self, mod_folder: str | Path, *, navigate: bool = True) -> None:
         normalized_mod_folder = Path(mod_folder).expanduser().resolve()
@@ -663,3 +662,14 @@ class DesktopController:
                 "currently change helper coverage."
             )
         return None
+
+    def _normalize_navigation_for_source_state(self) -> None:
+        if self._active_install is None and self.navigation_state.current_target.requires_install:
+            self.navigation_state = NavigationState(current_target=NavigationTarget.overview())
+
+    def _refresh_navigation_after_source_change(self, *, navigate: bool) -> None:
+        if self._active_install is None:
+            self._normalize_navigation_for_source_state()
+            return
+        if navigate:
+            self.navigate(self.navigation_state.current_target)

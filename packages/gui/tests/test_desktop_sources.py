@@ -74,3 +74,26 @@ def test_controller_manual_override_and_mod_folder_reload(tmp_path: Path) -> Non
 
     assert controller.active_mod_folders == ()
     assert fake_inspection.summarize_calls[-1] == (install_root.resolve(), ())
+
+
+def test_controller_reload_recovers_to_overview_when_auto_discovery_fails(
+    tmp_path: Path,
+) -> None:
+    fake_inspection = FakeInspection(tmp_path / "install")
+    controller = DesktopController(
+        inspection_module=fake_inspection,
+        discover_install=fake_inspection.discover,
+        diplomacy_helper_builder=lambda *_args: diplomacy_helper_view(),
+        religion_helper_builder=lambda *_args: religion_helper_view(),
+    )
+
+    controller.initialize(initial_target=NavigationTarget.report("map"))
+    fake_inspection.auto_discover_error = FileNotFoundError("No install was discovered.")
+
+    controller.reload()
+
+    page = controller.current_page()
+    assert controller.active_install_root is None
+    assert controller.navigation_state.current_target == NavigationTarget.overview()
+    assert page.kind == "overview"
+    assert page.notice == "No install was discovered."

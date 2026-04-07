@@ -4,10 +4,78 @@ from typing import Any
 
 from kivy.graphics import Color, RoundedRectangle
 from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.uix.widget import Widget
 
 from eu5miner_gui.desktop.adapters import SourceLayerViewModel, StatViewModel
+
+
+def _bind_wrapped_text(
+    widget: Label | Button,
+    *,
+    width_padding: int = 12,
+    min_height: int = 24,
+) -> None:
+    def _update_text(*_: Any) -> None:
+        widget.text_size = (max(widget.width - width_padding, 0), None)
+        widget.texture_update()
+        widget.height = max(min_height, int(widget.texture_size[1] + 14))
+
+    widget.bind(size=_update_text, texture_size=_update_text, text=_update_text)
+    _update_text()
+
+
+def build_wrapped_label(
+    text: str,
+    *,
+    markup: bool = False,
+    halign: str = "left",
+    valign: str = "middle",
+    width: int | None = None,
+    size_hint: tuple[float, float] = (1, None),
+    min_height: int = 24,
+    **kwargs: Any,
+) -> Label:
+    label = Label(
+        text=text,
+        markup=markup,
+        halign=halign,
+        valign=valign,
+        size_hint=size_hint,
+        **kwargs,
+    )
+    if width is not None:
+        label.width = width
+        label.size_hint_x = None
+    _bind_wrapped_text(label, width_padding=12, min_height=min_height)
+    return label
+
+
+def build_wrapped_button(
+    text: str,
+    *,
+    halign: str = "left",
+    valign: str = "middle",
+    width: int | None = None,
+    size_hint: tuple[float, float] = (1, None),
+    min_height: int = 34,
+    width_padding: int = 24,
+    **kwargs: Any,
+) -> Button:
+    button = Button(
+        text=text,
+        halign=halign,
+        valign=valign,
+        padding=(12, 8),
+        size_hint=size_hint,
+        **kwargs,
+    )
+    if width is not None:
+        button.width = width
+        button.size_hint_x = None
+    _bind_wrapped_text(button, width_padding=width_padding, min_height=min_height)
+    return button
 
 
 def apply_card_background(

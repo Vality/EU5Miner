@@ -7,6 +7,7 @@ from kivy.properties import BooleanProperty, NumericProperty, ObjectProperty, St
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.label import Label
+from kivy.uix.recycleboxlayout import RecycleBoxLayout
 from kivy.uix.recycleview import RecycleView
 from kivy.uix.recycleview.views import RecycleDataViewBehavior
 from kivy.uix.spinner import Spinner
@@ -15,7 +16,7 @@ from kivy.uix.textinput import TextInput
 from eu5miner_gui.desktop.adapters import EntityBrowserPageViewModel
 from eu5miner_gui.desktop.navigation import NavigationTarget
 from eu5miner_gui.desktop.widgets.overview_page import OverviewPageWidget
-from eu5miner_gui.desktop.widgets.visuals import apply_card_background
+from .visuals import apply_card_background
 
 
 class EntityRowButton(RecycleDataViewBehavior, Button):
@@ -24,6 +25,27 @@ class EntityRowButton(RecycleDataViewBehavior, Button):
     entity_name = StringProperty("")
     is_selected = BooleanProperty(False)
 
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(
+            halign="left",
+            valign="middle",
+            size_hint_y=None,
+            height=38,
+            padding=(12, 8),
+            background_normal="",
+            background_down="",
+            background_disabled_normal="",
+            background_disabled_down="",
+            color=(0.93, 0.95, 0.98, 1.0),
+            **kwargs,
+        )
+        self.bind(size=self._update_text_size)
+        self._update_text_size()
+        self.on_is_selected()
+
+    def _update_text_size(self, *_: Any) -> None:
+        self.text_size = (max(self.width - 24, 0), None)
+
     def refresh_view_attrs(
         self,
         rv: RecycleView,
@@ -31,10 +53,17 @@ class EntityRowButton(RecycleDataViewBehavior, Button):
         data: dict[str, Any],
     ) -> dict[str, Any]:
         self.index = index
-        return super().refresh_view_attrs(rv, index, data)
+        refreshed = super().refresh_view_attrs(rv, index, data)
+        self._update_text_size()
+        self.on_is_selected()
+        return refreshed
 
     def on_is_selected(self, *_: Any) -> None:
-        self.background_color = (0.28, 0.35, 0.42, 1.0) if self.is_selected else (1, 1, 1, 1)
+        self.background_color = (
+            (0.28, 0.35, 0.42, 1.0)
+            if self.is_selected
+            else (0.17, 0.2, 0.24, 1.0)
+        )
 
     def on_release(self) -> None:
         if self.callback is not None:
@@ -44,7 +73,19 @@ class EntityRowButton(RecycleDataViewBehavior, Button):
 class EntityListView(RecycleView):
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
-        self.viewclass = "EntityRowButton"
+        self.viewclass = EntityRowButton
+        self.bar_width = 8
+        layout = RecycleBoxLayout(
+            default_size=(None, 38),
+            default_size_hint=(1, None),
+            size_hint=(1, None),
+            orientation="vertical",
+            spacing=4,
+        )
+        layout.viewclass = EntityRowButton
+        layout.bind(minimum_height=layout.setter("height"))
+        self.add_widget(layout)
+        self.layout_manager = layout
 
 
 class EntityBrowserPageWidget(BoxLayout):
