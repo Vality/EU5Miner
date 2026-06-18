@@ -7,6 +7,7 @@ from kivy.uix.label import Label
 from kivy.uix.scrollview import ScrollView
 
 from eu5miner_gui.desktop.adapters import LinkItemViewModel, SectionViewModel, TextPageViewModel
+
 from .visuals import (
     SourceLayerStrip,
     StatChipRow,
