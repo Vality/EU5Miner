@@ -1,8 +1,12 @@
 # Changelog
 
+## 0.6.1 - 2026-06-23
+
+- Added a public `eu5miner.testing` module exposing `build_synthetic_install` and related synthetic-install helpers so downstream consumer packages (`eu5miner-gui`, `eu5miner-mcp`) can run their cross-package contract tests against a deterministic in-memory install layout without a real EU5 install.
+
 ## Unreleased
 
-No unreleased changes recorded after `0.6.0`.
+No unreleased changes recorded after `0.6.1`.
 
 ## 0.6.0 - 2026-04-06
 
