@@ -33,7 +33,7 @@ def build_wrapped_label(
     halign: str = "left",
     valign: str = "middle",
     width: int | None = None,
-    size_hint: tuple[float | None, float | None] = (1, None),
+    size_hint: tuple[float, float] = (1, None),
     min_height: int = 24,
     **kwargs: Any,
 ) -> Label:
@@ -58,7 +58,7 @@ def build_wrapped_button(
     halign: str = "left",
     valign: str = "middle",
     width: int | None = None,
-    size_hint: tuple[float | None, float | None] = (1, None),
+    size_hint: tuple[float, float] = (1, None),
     min_height: int = 34,
     width_padding: int = 24,
     **kwargs: Any,

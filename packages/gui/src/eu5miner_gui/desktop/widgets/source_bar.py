@@ -7,7 +7,6 @@ from kivy.uix.button import Button
 from kivy.uix.textinput import TextInput
 
 from eu5miner_gui.desktop.controller import DesktopController
-
 from .visuals import (
     apply_card_background,
     build_wrapped_button,
