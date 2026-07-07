@@ -1,5 +1,5 @@
 [build-system]
-requires = ["hatchling>=1.27.0"]
+requires = ["hatchling>=1.30.1"]
 build-backend = "hatchling.build"
 
 [project]
@@ -13,22 +13,19 @@ authors = [
   { name = "Val G and GitHub Copilot" },
 ]
 dependencies = [
-  "eu5miner @ git+https://github.com/Vality/EU5Miner.git@v0.6.0",
-  "mcp>=1.27.0,<2",
+  "eu5miner @ git+https://github.com/Vality/EU5Miner.git@v0.6.1",
+  "mcp>=1.28.1,<2",
 ]
 
 [project.optional-dependencies]
 dev = [
-  "mypy>=1.15.0",
-  "pytest>=8.3.0",
-  "ruff>=0.11.0",
+  "mypy>=2.1.0",
+  "pytest>=9.1.1",
+  "ruff>=0.15.20",
 ]
 
 [project.scripts]
 eu5miner-mcp = "eu5miner_mcp.cli:main"
-
-[tool.uv.sources]
-eu5miner = { path = "../EU5Miner" }
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/eu5miner_mcp"]
