@@ -6,6 +6,7 @@ from kivy.uix.boxlayout import BoxLayout
 
 from eu5miner_gui.desktop.adapters import TextPageViewModel
 from eu5miner_gui.desktop.widgets.overview_page import OverviewPageWidget
+
 from .visuals import build_wrapped_button, build_wrapped_label
 
 

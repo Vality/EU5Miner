@@ -16,6 +16,7 @@ from kivy.uix.textinput import TextInput
 from eu5miner_gui.desktop.adapters import EntityBrowserPageViewModel
 from eu5miner_gui.desktop.navigation import NavigationTarget
 from eu5miner_gui.desktop.widgets.overview_page import OverviewPageWidget
+
 from .visuals import apply_card_background
 
 
