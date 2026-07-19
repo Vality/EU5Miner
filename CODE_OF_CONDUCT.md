@@ -1,6 +1,6 @@
 # Code of Conduct
 
-EU5Miner is a small technical project and expects collaboration to stay respectful, specific, and useful. This policy covers the umbrella repository and all three coordinated packages (`eu5miner`, `eu5miner-mcp`, `eu5miner-gui`).
+EU5Miner is a small technical project and expects collaboration to stay respectful, specific, and useful. This policy covers the umbrella repository and the single `eu5miner` distribution, including its optional MCP and GUI submodules.
 
 ## Expected behavior
 
@@ -17,7 +17,7 @@ EU5Miner is a small technical project and expects collaboration to stay respectf
 
 ## Scope
 
-This applies to issues, pull requests, discussions, and other project-managed spaces across all three packages.
+This applies to issues, pull requests, discussions, and other project-managed spaces across the core library and its optional submodules.
 
 ## Reporting
 

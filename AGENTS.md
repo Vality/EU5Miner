@@ -1,39 +1,34 @@
 # Agent Guidelines
 
-This is a single uv workspace with three coordinated Python packages:
-- `packages/core/` — `eu5miner` core library
-- `packages/mcp/` — `eu5miner-mcp` MCP server
-- `packages/gui/` — `eu5miner-gui` Kivy desktop UI
+`packages/core/` is the single Python distribution `eu5miner`. It contains the core library and, under `src/eu5miner/{mcp,gui}/`, the optional MCP server and Kivy desktop UI submodules. Optional extras: `[mcp]`, `[gui]`, `[all]`.
 
 ## Conventions
 
 - Python 3.12, src layout, hatchling.
-- Ruff + mypy strict on all three packages.
-- Pytest per-package; cross-package consumer tests live alongside each downstream package.
-- Version bumps are coordinated across all three packages (lockstep).
-- Workspace root has the lockfile (`uv.lock`) and the `[tool.uv.workspace]` block; per-member `pyproject.toml` files hold the `[project]` metadata.
+- Ruff + mypy strict on the whole `eu5miner` package.
+- Pytest collects everything under `packages/core/tests/`. Cross-package consumer tests live in `packages/core/tests/{mcp,gui}/test_cross_package_consumer.py`.
+- Display names match module paths: `eu5miner-mcp` for `eu5miner.mcp`, `eu5miner-gui` for `eu5miner.gui`.
 
 ## Commands
 
 ```bash
 # Sync everything
-uv sync --all-packages --extra=dev
+uv sync --extra=dev
 
-# Test one package
-cd packages/<name> && uv run pytest
+# Test everything
+cd packages/core && uv run pytest
 
 # Lint everything
 uv run ruff check .
 
-# Type check one package
-uv run mypy packages/<name>/src
+# Type check
+uv run mypy packages/core/src
 
-# Build all wheels
-uv build --all-packages
+# Build the wheel
+(cd packages/core && uv build --out-dir $PWD/dist)
 ```
 
 ## Do not
 
-- Add per-member `uv.lock` files. The single root lockfile is the source of truth.
-- Edit a sibling package's source from another package's PR — open separate PRs.
-- Bump versions independently across the three packages. Lockstep only.
+- Recreate `packages/mcp/` or `packages/gui/` as separate distributions.
+- Edit a sibling submodule from a PR targeted at a different submodule.

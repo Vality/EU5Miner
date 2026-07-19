@@ -15,15 +15,13 @@ jobs:
         with:
           python-version: "3.12"
       - uses: astral-sh/setup-uv@v7
-      - run: uv sync --all-packages --extra=dev
+      - run: uv sync --extra=dev
 
-      - name: Build all member wheels
+      - name: Build the unified wheel
         run: |
-          for m in core mcp gui; do
-            echo "::group::Building $m"
-            (cd packages/$m && uv build --out-dir $PWD/dist)
-            echo "::endgroup::"
-          done
+          echo "::group::Building core"
+          (cd packages/core && uv build --out-dir $PWD/dist)
+          echo "::endgroup::"
 
       - name: Attach all wheels and sdists to release
         if: github.event_name == 'release'

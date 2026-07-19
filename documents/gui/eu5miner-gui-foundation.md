@@ -26,7 +26,7 @@ The repo should validate through smoke tests, import tests, and basic command or
 
 ```text
 src/
-  eu5miner_gui/
+  eu5miner.gui/
     __init__.py
     app.py
     cli.py
