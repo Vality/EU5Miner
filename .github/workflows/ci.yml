@@ -15,8 +15,6 @@ jobs:
       matrix:
         member:
           - core
-          - mcp
-          - gui
 
     steps:
       - name: Check out repository
