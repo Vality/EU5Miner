@@ -58,12 +58,12 @@ jobs:
       - name: Publish eu5miner to PyPI
         env:
           UV_PUBLISH_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
-        run: uv publish dist/eu5miner-*.whl dist/eu5miner-*.tar.gz
+        run: uv publish dist/core/dist/eu5miner-*.whl dist/core/dist/eu5miner-*.tar.gz
       - name: Publish eu5miner-mcp to PyPI
         env:
           UV_PUBLISH_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
-        run: uv publish dist/eu5miner_mcp-*.whl dist/eu5miner_mcp-*.tar.gz
+        run: uv publish dist/mcp/dist/eu5miner_mcp-*.whl dist/mcp/dist/eu5miner_mcp-*.tar.gz
       - name: Publish eu5miner-gui to PyPI
         env:
           UV_PUBLISH_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
-        run: uv publish dist/eu5miner_gui-*.whl dist/eu5miner_gui-*.tar.gz
+        run: uv publish dist/gui/dist/eu5miner_gui-*.whl dist/gui/dist/eu5miner_gui-*.tar.gz
