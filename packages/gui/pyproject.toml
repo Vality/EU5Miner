@@ -1,0 +1,76 @@
+[build-system]
+requires = ["hatchling>=1.31.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "eu5miner-gui"
+version = "0.6.0"
+description = "Public-preview read-only inspection shell built on the EU5Miner library"
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+authors = [
+  { name = "Val G and GitHub Copilot" },
+]
+dependencies = [
+  "eu5miner @ git+https://github.com/Vality/EU5Miner.git@v0.6.1",
+  "kivy>=2.3,<3",
+]
+
+[project.optional-dependencies]
+dev = [
+  "mypy>=2.2.0",
+  "pytest>=9.1.1",
+  "ruff>=0.15.21",
+]
+
+[project.scripts]
+eu5miner-gui = "eu5miner_gui.cli:main"
+eu5miner-gui-shell = "eu5miner_gui.cli:shell_main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/eu5miner_gui"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"src/eu5miner_gui/__main__.py" = "__main__.py"
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = [
+  "E",
+  "F",
+  "I",
+  "UP",
+  "B",
+  "SIM",
+]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+packages = ["eu5miner_gui"]
+warn_unused_configs = true
+
+[[tool.mypy.overrides]]
+module = ["kivy.*"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["eu5miner_gui.desktop.widgets.*"]
+disallow_subclassing_any = false
+warn_return_any = false
+
+[[tool.mypy.overrides]]
+module = ["eu5miner_gui.desktop.bootstrap"]
+disallow_subclassing_any = false
