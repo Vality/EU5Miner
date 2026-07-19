@@ -4,8 +4,8 @@ build-backend = "hatchling.build"
 
 [project]
 name = "eu5miner"
-version = "0.7.0"
-description = "Text-first parsing and modding support library for Europa Universalis V data files"
+version = "0.8.0"
+description = "Text-first parsing and modding support library for Europa Universalis V data files, with optional MCP server and Kivy desktop GUI"
 readme = "README.md"
 requires-python = ">=3.12"
 license = { text = "MIT" }
@@ -21,16 +21,15 @@ dev = [
   "pytest-timeout>=2.3.1",
   "ruff>=0.15.21",
 ]
-mcp = ["eu5miner-mcp>=0.7,<0.8"]
-gui = ["eu5miner-gui>=0.7,<0.8"]
-all = ["eu5miner-mcp>=0.7,<0.8", "eu5miner-gui>=0.7,<0.8"]
+mcp = ["mcp>=1.28.1,<2"]
+gui = ["kivy>=2.3,<3"]
+all = ["mcp>=1.28.1,<2", "kivy>=2.3,<3"]
 
 [project.scripts]
-eu5miner = "eu5miner.cli:main"
-
-[tool.uv.sources]
-eu5miner-mcp = { workspace = true }
-eu5miner-gui = { workspace = true }
+eu5miner           = "eu5miner.cli:main"
+eu5miner-mcp       = "eu5miner.mcp.cli:main"
+eu5miner-gui       = "eu5miner.gui.cli:main"
+eu5miner-gui-shell = "eu5miner.gui.cli:shell_main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/eu5miner"]
@@ -64,3 +63,16 @@ python_version = "3.12"
 strict = true
 packages = ["eu5miner"]
 warn_unused_configs = true
+
+[[tool.mypy.overrides]]
+module = ["kivy.*"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["eu5miner.gui.desktop.widgets.*"]
+disallow_subclassing_any = false
+warn_return_any = false
+
+[[tool.mypy.overrides]]
+module = ["eu5miner.gui.desktop.bootstrap"]
+disallow_subclassing_any = false

@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.8.0 — Single-wheel consolidation
+
+### Breaking changes
+
+- `eu5miner-mcp` and `eu5miner-gui` are no longer published as separate PyPI wheels. Install the MCP surface with `pip install eu5miner[mcp]`, the GUI surface with `pip install eu5miner[gui]`, or both with `pip install eu5miner[all]`.
+- The MCP and GUI source trees now live as submodules under `eu5miner.mcp` and `eu5miner.gui` inside the single `eu5miner` wheel. Replace `from eu5miner_mcp.X import Y` with `from eu5miner.mcp.X import Y`, and `from eu5miner_gui.X import Y` with `from eu5miner.gui.X import Y`.
+- The four console scripts (`eu5miner`, `eu5miner-mcp`, `eu5miner-gui`, `eu5miner-gui-shell`) now resolve from the unified wheel.
+- `packages/mcp/` and `packages/gui/` source trees are removed. Tests moved under `packages/core/tests/{mcp,gui}/`.
+- Removed workspace members in root `pyproject.toml` (the umbrella now has a single Python project).
+- Display strings updated: `EU5MinerMCP` → `eu5miner-mcp`, `EU5MinerGUI` → `eu5miner-gui`, to match the new module paths.
+
+### Migration
+
+See [RENAMING.md](RENAMING.md).
+
+---
+
 ## 0.7.0 — Workspace consolidation
 
 EU5MinerMCP and EU5MinerGUI have been merged into this repository as a uv workspace. Three coordinated Python packages are now published from this single repo:

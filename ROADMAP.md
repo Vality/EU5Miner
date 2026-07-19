@@ -1,6 +1,12 @@
 # Roadmap
 
+## v0.8.x — Single-wheel consolidation
+- [x] Merge `packages/mcp/` and `packages/gui/` into `packages/core/` as `eu5miner.mcp` and `eu5miner.gui` submodules.
+- [x] Publish a single `eu5miner` wheel to PyPI with optional extras `[mcp]`, `[gui]`, `[all]`.
+- [x] Drop the per-package `eu5miner-mcp` and `eu5miner-gui` PyPI distributions.
+
 ## v0.7.x — Workspace consolidation
+
 - [x] Merge `EU5MinerMCP` and `EU5MinerGUI` into `Vality/EU5Miner` as a uv workspace
 - [x] Three coordinated wheels: `eu5miner`, `eu5miner-mcp`, `eu5miner-gui`
 - [x] Optional extras on `eu5miner`: `[mcp]`, `[gui]`, `[all]`

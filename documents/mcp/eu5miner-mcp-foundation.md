@@ -27,7 +27,7 @@ Use synthetic fixtures and smoke tests for the first milestones.
 
 ```text
 src/
-  eu5miner_mcp/
+  eu5miner.mcp/
     __init__.py
     cli.py
     server.py

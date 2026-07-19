@@ -1,6 +1,6 @@
 # EU5Miner (core)
 
-Part of the [EU5Miner workspace](https://github.com/Vality/EU5Miner). See the umbrella [README.md](../../README.md) for install and layout.
+The core library of the [EU5Miner umbrella](https://github.com/Vality/EU5Miner). See the umbrella [README.md](../../README.md) for install and layout.
 
 EU5Miner is a text-first Python library for reading, indexing, and planning edits to Europa Universalis V data and mod files.
 
@@ -8,7 +8,7 @@ This is an unofficial community project. It is not affiliated with, endorsed by,
 
 The repository and published package do not include game assets. Real-file validation and many install-backed workflows expect a locally available EU5 installation.
 
-Release `0.7.0` is the current umbrella release; the previous `0.6.x` line stays supported.
+Release `0.8.0` is the current umbrella release; the previous `0.7.x` and `0.6.x` lines stay supported.
 
 The current release focuses on the major moddable text-based file families:
 
@@ -20,9 +20,19 @@ The current release focuses on the major moddable text-based file families:
 
 The project is intentionally test-heavy. Core functionality is validated against representative real EU5 install files so later parser work is anchored in observed game behavior instead of assumptions.
 
+## Module paths and extras
+
+This package is the single `eu5miner` distribution. It exposes three Python modules:
+
+- `eu5miner` — core library and CLI (always available).
+- `eu5miner.mcp` — MCP server (requires the `[mcp]` extra).
+- `eu5miner.gui` — Kivy desktop UI (requires the `[gui]` extra).
+
+Without the matching extra, importing `eu5miner.mcp` or `eu5miner.gui` raises an `ImportError` directing you to install the extra.
+
 ## Status
 
-The `0.7.x` line is published from this umbrella workspace with two coordinated downstream packages (`eu5miner-mcp` and `eu5miner-gui`) and optional extras (`pip install eu5miner[mcp]`, `eu5miner[gui]`, `eu5miner[all]`).
+The `0.8.x` line is published from this umbrella as a single `eu5miner` wheel with optional extras (`pip install eu5miner[mcp]`, `eu5miner[gui]`, `eu5miner[all]`). The MCP server and GUI are submodules inside the unified package rather than separate distributions.
 
 Compared with `0.5.0`, the `0.6.x` line expanded the stable read-only inspection seam with initial entity browsing for economy, diplomacy, government, religion, and map while keeping the public API deliberately curated.
 
@@ -39,11 +49,11 @@ In practice, this release is suitable for install inspection, virtual filesystem
 pip install eu5miner
 ```
 
-Or from the workspace extras:
+Or with the optional surfaces:
 
 ```bash
-pip install eu5miner[mcp]   # also pulls in eu5miner-mcp
-pip install eu5miner[gui]   # also pulls in eu5miner-gui
+pip install eu5miner[mcp]   # adds eu5miner.mcp
+pip install eu5miner[gui]   # adds eu5miner.gui
 pip install eu5miner[all]
 ```
 
@@ -55,7 +65,7 @@ Within the umbrella workspace:
 
 ```bash
 cd EU5Miner
-uv sync --all-packages --extra=dev
+uv sync --extra=dev
 cd packages/core
 uv run pytest
 uv run ruff check .
