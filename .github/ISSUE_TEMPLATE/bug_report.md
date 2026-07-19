@@ -4,6 +4,12 @@ about: Report a reproducible problem in the EU5Miner library or CLI
 title: "[Bug]: "
 ---
 
+**Package**
+- [ ] Core (`eu5miner`)
+- [ ] MCP (`eu5miner-mcp`)
+- [ ] GUI (`eu5miner-gui`)
+- [ ] Umbrella / repo / docs
+
 ## Summary
 
 Describe the problem.

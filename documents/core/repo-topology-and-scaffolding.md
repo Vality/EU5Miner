@@ -1,63 +1,34 @@
-# Spec: Three-Repo Workspace And Shared Scaffolding
+# Repo topology and scaffolding
 
-## Objective
+EU5Miner is a uv workspace with three coordinated Python packages:
 
-Reshape the working setup into a coordinated three-repo workspace:
+```
+EU5Miner/
+├── pyproject.toml             # workspace-only (no [project])
+├── uv.lock                    # single root lockfile
+├── packages/
+│   ├── core/                  # eu5miner library + CLI
+│   │   ├── pyproject.toml
+│   │   ├── src/eu5miner/
+│   │   └── tests/
+│   ├── mcp/                   # eu5miner-mcp MCP server
+│   │   ├── pyproject.toml
+│   │   ├── src/eu5miner_mcp/
+│   │   └── tests/
+│   └── gui/                   # eu5miner-gui Kivy desktop UI
+│       ├── pyproject.toml
+│       ├── src/eu5miner_gui/
+│       └── tests/
+├── documents/                 # umbrella-level design docs
+├── .github/                   # CI, issue templates, dependabot
+├── scripts/                   # dev setup helpers
+└── README.md
+```
 
-- `EU5Miner`
-- `EU5MinerGUI`
-- `EU5MinerMCP`
+## Conventions
 
-The goal is parallel development with cloud agents, consistent CI or Dependabot behavior, and matching docs structure across repos.
-
-## Repo Scope
-
-- `EU5Miner`
-- `EU5MinerGUI`
-- `EU5MinerMCP`
-
-## In Scope
-
-- clone or initialize the GUI and MCP repos locally as siblings of the library repo
-- create a multi-root workspace file covering all three repos
-- standardize baseline repo structure where appropriate:
-  - `README.md`
-  - `AGENTS.md`
-  - `ROADMAP.md`
-  - `documents/`
-  - `documents/specs/`
-  - `.github/`
-  - `src/`
-  - `tests/`
-  - `pyproject.toml`
-  - `.gitignore`
-- align CI, Dependabot, and Copilot or agent instruction files across repos
-
-## Out Of Scope
-
-- fully implementing MCP or GUI product features
-- forcing all three repos to share identical content where the product goals differ
-
-## Shared Rules
-
-- use the same Python build system and validation shape across repos
-- keep repo-specific docs and specs, not one giant shared document copied verbatim everywhere
-- let each repo depend on the library through a clear package dependency while preserving local parallel development
-- during the preview phase, let GUI and MCP bootstrap CI against `eu5miner` from the GitHub `main` branch until packaged releases exist
-- treat that dependency as a coordination mechanism, not as license to consume internal parser, VFS, or domain modules directly
-- when coordinated work needs a new downstream seam, land the core-library API change first and then consume it from thin GUI or MCP adapters instead of widening the stable boundary ad hoc
-
-## Expected Deliverables
-
-1. local three-repo workspace file
-2. baseline Python app skeleton in GUI repo
-3. baseline Python app skeleton in MCP repo
-4. shared automation shape across all repos
-5. repo-local roadmap and specs in all three repos
-
-## Acceptance Criteria
-
-- each repo can run its own baseline validation in CI
-- each repo has clear agent-facing docs and a roadmap/spec split
-- the workspace structure supports parallel issue dispatch across repos
-- the preview-phase downstream dependency posture is explicit enough that coordinated multi-repo work does not rely on undocumented stable seams
+- All three packages share the same Python version (3.12), build backend (hatchling), test framework (pytest), linter (ruff), and type checker (mypy strict).
+- Per-package `pyproject.toml` holds `[project]` metadata; the root `pyproject.toml` holds the workspace.
+- Versions bump in lockstep: v0.7.0 across all three.
+- Cross-package imports go by name (`from eu5miner import ...`). Never use `..` relative imports across packages.
+- The MCP and GUI packages each declare `eu5miner >=0.7,<0.8` in their `[project].dependencies`. uv workspace resolves this to the local `packages/core/` member during development.

@@ -1,6 +1,8 @@
 # Copilot Instructions
 
-Use this repository as a typed, test-backed Python library first.
+Use this repository as a typed, test-backed Python library first, with thin
+MCP server and GUI integrations layered on top of the core `eu5miner`
+library.
 
 ## Read First
 
@@ -14,18 +16,29 @@ Start with:
 
 ## Working Norms
 
-- Preserve the project layering: install and source discovery, VFS, generic format readers, semantic parsing, then domain adapters.
-- Do not push EU5-specific behavior into the CST or semantic layers unless it is genuinely reusable.
+- Preserve the project layering: install and source discovery, VFS, generic
+  format readers, semantic parsing, then domain adapters.
+- Do not push EU5-specific behavior into the CST or semantic layers unless it
+  is genuinely reusable.
 - Prefer small, typed, test-backed changes.
 - Keep helper layers above the parser families they compose.
 - Treat `src/eu5miner/domains/__init__.py` as the curated public surface.
-- Grouped package entrypoints such as `eu5miner.domains.diplomacy`, `...economy`, `...government`, `...religion`, `...map`, `...localization`, and `...units` are intended for concept-local imports.
+- Grouped package entrypoints such as `eu5miner.domains.diplomacy`,
+  `...economy`, `...government`, `...religion`, `...map`, `...localization`,
+  and `...units` are intended for concept-local imports.
+- Keep parser, VFS, and domain-model logic in the core `eu5miner` library.
+- Prefer thin server / tool / UI integrations over duplicating backend
+  behavior.
+- Keep work buildable and testable without a local EU5 install.
 
 ## Validation
 
-Run these required baseline checks before closing substantial work:
+Run these required baseline checks before closing substantial work. Run
+them per affected workspace member (`packages/core`, `packages/mcp`,
+`packages/gui`):
 
 ```powershell
+uv sync --all-packages --extra=dev
 uv run pytest
 uv run ruff check .
 uv run mypy src
@@ -35,11 +48,16 @@ uv build
 Notes:
 
 - The optional broader install sweep lives behind `uv run python -m pytest -m broad`.
-- Real-file validation against a local EU5 install is preferred whenever a new domain or helper layer is introduced.
-- Most roadmap and spec work should remain executable without a local EU5 install unless the spec explicitly requires one.
+- Real-file validation against a local EU5 install is preferred whenever a
+  new domain or helper layer is introduced.
+- Most roadmap and spec work should remain executable without a local EU5
+  install unless the spec explicitly requires one.
 
 ## Release Posture
 
 - The current public line is a preview release, not a frozen `1.0` API.
-- Root package imports, grouped domain packages, and `eu5miner.mods` are the main public seams to preserve.
-- MCP and GUI work should stay outside the core `eu5miner` package until they are ready to become separate packages.
+- Root package imports, grouped domain packages, and `eu5miner.mods` are the
+  main public seams to preserve.
+- MCP and GUI work live in their own workspace members
+  (`packages/mcp`, `packages/gui`) and depend on the core `eu5miner`
+  package; they should not duplicate core logic.

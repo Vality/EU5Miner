@@ -1,29 +1,27 @@
-# EU5MinerMCP
+# EU5Miner MCP server (`eu5miner-mcp`)
 
-EU5MinerMCP is an unofficial MCP application repo for exposing selected `eu5miner` capabilities through a thin server surface for Europa Universalis V installs and mods.
+Part of the [EU5Miner workspace](https://github.com/Vality/EU5Miner). See the umbrella [README.md](../../README.md) for install and layout. This package is also installable as `pip install eu5miner-mcp` or as an extra on core: `pip install eu5miner[mcp]`.
 
-Release `0.6.0` is the current coordinated public preview release.
+EU5Miner-mcp is an unofficial MCP application for exposing selected `eu5miner` capabilities through a thin server surface for Europa Universalis V installs and mods.
 
-EU5MinerMCP is not affiliated with Paradox Interactive or the Europa Universalis franchise.
+EU5Miner-mcp is not affiliated with Paradox Interactive or the Europa Universalis franchise.
 
-No game files, extracted assets, or other proprietary game content are included in this repository. The tool surface is intended to inspect a user's own local install and mod directories.
+No game files, extracted assets, or other proprietary game content are included in this package. The tool surface is intended to inspect a user's own local install and mod directories.
 
-The current surface is intentionally narrow: the first real MCP slices wrap stable `eu5miner` inspection, VFS, entity-browsing, grouped helper, and mod workflow seams without duplicating parser or domain logic.
+The current surface is intentionally narrow: the shipped MCP tools wrap stable `eu5miner` inspection, VFS, entity-browsing, grouped helper, and mod workflow seams without duplicating parser or domain logic.
 
 ## Status
 
-- The `0.6.x` line should be treated as a public preview rather than a stable `1.0` API.
-- The current implementation is a typed MCP server shell over stable `eu5miner` inspection, VFS, entity-browsing, grouped helper, and mod workflow seams.
+- The current `0.7.x` line should be treated as a public preview rather than a stable `1.0` API.
+- The implementation is a typed MCP server shell over stable `eu5miner` inspection, VFS, entity-browsing, grouped helper, and mod workflow seams.
 - The active registered tools are `inspect-install`, `list-files`, `list-systems`, `report-system`, `list-entity-systems`, `find-entity`, `describe-entity`, `list-entity-links`, `report-diplomacy-war-flow`, `report-diplomacy-graph`, `report-religion-links`, `plan-mod-update`, `apply-mod-update`, and `describe-server`.
-- The CLI can still print the startup status line, describe the registered tools with `--describe`, and now serve the same registry over real stdio MCP transport with `--stdio`.
-- MCP clients can now call `describe-server` to retrieve display, server, and package names, version, available transports, tool names and counts, write-tool names and counts, stdio instructions, and the live registered tool descriptors from the same shared registry the CLI and stdio transport use.
-- The registry-backed runtime layer now fails fast if duplicate tool names, missing configured write tools, or mismatched `describe-server` descriptor ordering would otherwise publish inconsistent contract metadata.
-- The grouped-helper seam now includes shipped diplomacy war-flow, diplomacy-graph, and religion link reports over representative install files only.
+- The CLI can still print the startup status line, describe the registered tools with `--describe`, and serve the same registry over real stdio MCP transport with `--stdio`.
+- MCP clients can call `describe-server` to retrieve display, server, and package names, version, available transports, tool names and counts, write-tool names and counts, stdio instructions, and the live registered tool descriptors from the same shared registry the CLI and stdio transport use.
+- The registry-backed runtime layer fails fast if duplicate tool names, missing configured write tools, or mismatched `describe-server` descriptor ordering would otherwise publish inconsistent contract metadata.
+- The grouped-helper seam includes shipped diplomacy war-flow, diplomacy-graph, and religion link reports over representative install files only.
 - Parsing, VFS, and domain logic should continue to live in the core `eu5miner` library.
 
-The checked-in repo is now aligned to the coordinated `eu5miner` `v0.6.0` release tag instead of a moving mainline revision.
-
-The `0.6.0` preview line reflects the completed step-2 grouped-helper breadth for the current MCP surface: `report-diplomacy-war-flow`, `report-diplomacy-graph`, and `report-religion-links` are the shipped helper-tool families, and that scope remains the explicit preview boundary for helper-specific MCP work. The immediate post-release phase should keep validation, build, test, and contract coherence green before widening helper scope again.
+The checked-in package is aligned to the coordinated `eu5miner` umbrella release line rather than a moving mainline revision.
 
 ## Current Shell Behavior
 
@@ -54,33 +52,20 @@ At this stage the package is best understood as a thin typed MCP-facing server a
 
 ## Development
 
-This repository is stored under OneDrive, so the recommended setup is to keep the `uv` environment outside the synced tree.
+From the umbrella root:
 
-Initialize or refresh the centralized environment with:
-
-```powershell
-.\scripts\setup-centralized-uv.ps1
-```
-
-That script points `UV_PROJECT_ENVIRONMENT` at `%USERPROFILE%\.venvs\EU5MinerMCP` and runs `uv sync --extra dev` there.
-
-For local workspace validation, `pyproject.toml` also uses `[tool.uv.sources]` to resolve `eu5miner` from `../EU5Miner` while keeping the published dependency pinned to the coordinated `v0.6.0` release tag.
-
-If you need a one-off local setup instead, install development dependencies with `uv`:
-
-```powershell
-uv sync --extra dev
-```
-
-Run the standard checks:
-
-```powershell
-$env:UV_PROJECT_ENVIRONMENT = "$env:USERPROFILE\.venvs\EU5MinerMCP"
+```bash
+git clone https://github.com/Vality/EU5Miner.git
+cd EU5Miner
+uv sync --all-packages --extra=dev
+cd packages/mcp
 uv run pytest
 uv run ruff check .
 uv run mypy src
 uv build
 ```
+
+The Windows setup script at `scripts/setup-centralized-uv.ps1` keeps the centralized `uv` environment usable under OneDrive.
 
 ## CLI
 
@@ -94,7 +79,8 @@ eu5miner-mcp --stdio
 
 ## Documentation
 
-- Planning entrypoint: [ROADMAP.md](ROADMAP.md)
-- Execution-ready specs: [documents/specs/README.md](documents/specs/README.md)
+- Umbrella planning entrypoint: [ROADMAP.md](../../ROADMAP.md)
+- Umbrella release history: [CHANGELOG.md](../../CHANGELOG.md)
+- MCP package execution-ready specs: [documents/specs/README.md](documents/specs/README.md)
 - Architecture notes: [documents/architecture.md](documents/architecture.md)
 - Environment notes: [documents/development-environment.md](documents/development-environment.md)

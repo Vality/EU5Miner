@@ -1,16 +1,14 @@
-## Summary
+## Affected package
+- [ ] Core (`eu5miner`)
+- [ ] MCP (`eu5miner-mcp`)
+- [ ] GUI (`eu5miner-gui`)
+- [ ] Umbrella / docs / CI
 
-Describe the change and why it belongs in EU5Miner.
+## Summary
+<!-- What changed and why -->
 
 ## Validation
-
-- [ ] `uv run pytest`
-- [ ] `uv run ruff check .`
-- [ ] `uv run mypy src`
-- [ ] `uv build`
-
-## Notes
-
-- [ ] The change stays in the correct layer for the core library.
-- [ ] The default workflow remains usable without a local EU5 install when practical.
-- [ ] Tests or docs were updated when public behavior changed.
+- [ ] `uv sync --all-packages --extra=dev` clean
+- [ ] `uv run pytest` passes for affected member(s)
+- [ ] `uv run ruff check .` clean
+- [ ] `uv run mypy packages/<affected>/src` clean

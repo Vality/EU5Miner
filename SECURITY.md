@@ -2,7 +2,7 @@
 
 ## Supported Versions
 
-The current supported public release line is `0.6.x`.
+The current supported line is `0.7.x` for the umbrella and the coordinated per-package releases (`eu5miner`, `eu5miner-mcp`, `eu5miner-gui`). The previous `0.6.x` preview line remains supported for the core package and downstream extras.
 
 Older preview builds may not receive fixes.
 
@@ -15,7 +15,7 @@ If GitHub private vulnerability reporting is enabled for this repository, use th
 If private reporting is not available, contact the maintainer privately through GitHub and include:
 
 - a short description of the issue
-- affected version or commit
+- affected version or commit, including which package (`eu5miner`, `eu5miner-mcp`, or `eu5miner-gui`) is implicated
 - reproduction steps or a proof of concept
 - any suggested remediation or impact details
 
@@ -23,4 +23,4 @@ Please do not publish exploit details until the issue has been reviewed and a fi
 
 ## Scope Notes
 
-EU5Miner is a local, file-oriented library and CLI. The main security-sensitive areas for this project are expected to be file handling, path resolution, and any future workflows that materialize or modify mod content on disk.
+EU5Miner is a local, file-oriented library, an MCP server, and a desktop UI. The main security-sensitive areas for this project are expected to be file handling, path resolution, MCP write workflows that materialize or modify mod content on disk, and any GUI workflows that touch the local filesystem.
