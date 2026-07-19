@@ -50,18 +50,20 @@ jobs:
         with:
           python-version: "3.12"
       - uses: astral-sh/setup-uv@v7
+      - name: Download release artifacts
+        uses: actions/download-artifact@v7
+        with:
+          name: release-dist
+          path: dist
       - name: Publish eu5miner to PyPI
         env:
           UV_PUBLISH_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
-        run: |
-          (cd packages/core && uv publish)
+        run: uv publish dist/eu5miner-*.whl dist/eu5miner-*.tar.gz
       - name: Publish eu5miner-mcp to PyPI
         env:
           UV_PUBLISH_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
-        run: |
-          (cd packages/mcp && uv publish)
+        run: uv publish dist/eu5miner_mcp-*.whl dist/eu5miner_mcp-*.tar.gz
       - name: Publish eu5miner-gui to PyPI
         env:
           UV_PUBLISH_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
-        run: |
-          (cd packages/gui && uv publish)
+        run: uv publish dist/eu5miner_gui-*.whl dist/eu5miner_gui-*.tar.gz
