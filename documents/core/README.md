@@ -31,11 +31,11 @@ Use them in two ways:
 - as reference when polishing or extending the shipped preview seams
 - as a record of what is already complete, so new work does not restart foundation slices
 
-That narrow close-out pass is now reflected in the checked-in core repo: docs, examples, and compatibility-focused tests align around the same curated `1.0` boundary. Remaining post-release work on the path to `1.0` is targeted manual install-backed sanity checks and continued gate discipline, not another round of core feature work.
+That narrow close-out pass is now reflected in the checked-in core package: docs, examples, and compatibility-focused tests align around the same curated `1.0` boundary. Remaining post-release work on the path to `1.0` is targeted manual install-backed sanity checks and continued gate discipline, not another round of core feature work.
 
-That checked-in state also assumes the downstream preview repos have already completed their first narrow grouped-helper breadth through diplomacy and religion. The current cross-repo phase is operational rather than architectural: keep post-release validation, build, test, and contract-truthfulness work aligned across all three repos instead of reopening feature breadth.
+That checked-in state also assumes the downstream preview packages (`packages/mcp/` and `packages/gui/`) have already completed their first narrow grouped-helper breadth through diplomacy and religion. The current cross-package phase is operational rather than architectural: keep post-release validation, build, test, and contract-truthfulness work aligned across all three packages instead of reopening feature breadth.
 
-With the coordinated `0.6.0` preview release now published, use this index as reference material for post-release stabilization and later release-planning work, not as a prompt to restart completed foundation or stabilization slices.
+With the coordinated `0.7.x` umbrella release published, use this index as reference material for post-release stabilization and later release-planning work, not as a prompt to restart completed foundation or stabilization slices.
 
 ## Current Core Reference Milestone
 
@@ -43,7 +43,7 @@ With the coordinated `0.6.0` preview release now published, use this index as re
 
 The remaining focus under that milestone is now operational rather than architectural: keep the automated gate green and complete the documented manual checks before an actual release proposal.
 
-Treat the step-3 coherence sweep across the three preview repos as completed release work. Use the roadmap, changelog, README, and release-readiness docs to keep post-release status language truthful instead of starting a new feature slice.
+Treat the step-3 coherence sweep across the three preview packages as completed release work. Use the umbrella roadmap, changelog, README, and release-readiness docs to keep post-release status language truthful instead of starting a new feature slice.
 
 Do not use that milestone to recreate the already-landed CLI or inspection stabilization rounds unless a verified regression or contract ambiguity requires follow-up.
 
@@ -54,9 +54,9 @@ Do not use that milestone to recreate the already-landed CLI or inspection stabi
 
 ## Landed Baseline Specs
 
-- `repo-topology-and-scaffolding.md`: the three-repo workspace and shared scaffolding baseline are in place
-- `eu5miner-gui-foundation.md`: the downstream GUI foundation has landed in the dedicated repo
-- `eu5miner-mcp-foundation.md`: the downstream MCP foundation has landed in the dedicated repo
+- `repo-topology-and-scaffolding.md`: the workspace and shared scaffolding baseline are in place
+- `eu5miner-gui-foundation.md`: the downstream GUI foundation is now under `packages/gui/` in the umbrella workspace
+- `eu5miner-mcp-foundation.md`: the downstream MCP foundation is now under `packages/mcp/` in the umbrella workspace
 
 The older core specs remain useful guardrails, but the stabilization pass is now the main planning entry for core work that is explicitly about the path to `1.0`.
 
@@ -67,4 +67,4 @@ In practice, that now means preserving the current truthfulness checks over beha
 - Prefer work that can validate with `pytest`, `ruff`, `mypy`, and `uv build` in CI.
 - Treat real-install validation as a follow-up or explicit manual check unless the spec requires it.
 - Do not widen public API seams casually; use the stabilization pass to clarify the intended contract and the older integration and validation specs as supporting guardrails.
-- For downstream follow-on work, prefer the repo-local roadmap and spec docs in `EU5MinerGUI` or `EU5MinerMCP` instead of reopening completed foundation work here.
+- For downstream follow-on work, prefer the package-local roadmap and spec docs in `packages/gui/` and `packages/mcp/` instead of reopening completed foundation work here.

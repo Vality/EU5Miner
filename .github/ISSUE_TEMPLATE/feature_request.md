@@ -4,6 +4,12 @@ about: Suggest an improvement to the EU5Miner library, CLI, or supported data su
 title: "[Feature]: "
 ---
 
+**Package**
+- [ ] Core (`eu5miner`)
+- [ ] MCP (`eu5miner-mcp`)
+- [ ] GUI (`eu5miner-gui`)
+- [ ] Umbrella / repo / docs
+
 ## Summary
 
 Describe the feature you want.

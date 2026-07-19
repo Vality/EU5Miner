@@ -1,19 +1,23 @@
+# Sets up a centralized uv virtual environment for the EU5Miner uv workspace.
+# Run once per machine, or after deleting the central venv.
 $ErrorActionPreference = "Stop"
 
-$projectRoot = Split-Path -Parent $PSScriptRoot
-$env:UV_PROJECT_ENVIRONMENT = Join-Path $env:USERPROFILE ".venvs\EU5Miner"
+$repoRoot = (Resolve-Path "$PSScriptRoot/..").Path
+$venvDir  = Join-Path $env:USERPROFILE ".venvs\EU5Miner"
+
+Write-Host "Using venv: $venvDir"
+Write-Host "Repo root: $repoRoot"
+
+# Tell uv to put the venv outside the workspace (avoids OneDrive sync collisions).
+$env:UV_PROJECT_ENVIRONMENT = $venvDir
+# Force copy-mode linking so OneDrive does not choke on symlinks.
 $env:UV_LINK_MODE = "copy"
 
-Write-Host "Using UV_PROJECT_ENVIRONMENT=$env:UV_PROJECT_ENVIRONMENT"
-Write-Host "Using UV_LINK_MODE=$env:UV_LINK_MODE"
-Write-Host "Project root: $projectRoot"
-
-Push-Location $projectRoot
+Push-Location $repoRoot
 try {
-    uv sync --extra dev
-    $pythonPath = Join-Path $env:UV_PROJECT_ENVIRONMENT "Scripts\python.exe"
-    Write-Host "Centralized environment is ready."
-    Write-Host "Interpreter: $pythonPath"
+    uv sync --all-packages --extra=dev
+    if ($LASTEXITCODE -ne 0) { throw "uv sync failed" }
+    Write-Host "OK. Activate the venv with: & '$venvDir\Scripts\Activate.ps1'"
 }
 finally {
     Pop-Location

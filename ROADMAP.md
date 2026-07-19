@@ -1,64 +1,35 @@
-# EU5Miner Roadmap
+# Roadmap
 
-This roadmap is the top-level planning document for the EU5Miner family of repositories.
+## v0.7.x — Workspace consolidation
+- [x] Merge `EU5MinerMCP` and `EU5MinerGUI` into `Vality/EU5Miner` as a uv workspace
+- [x] Three coordinated wheels: `eu5miner`, `eu5miner-mcp`, `eu5miner-gui`
+- [x] Optional extras on `eu5miner`: `[mcp]`, `[gui]`, `[all]`
+- [x] Archive `Vality/EU5MinerMCP` and `Vality/EU5MinerGUI`
 
-Use it to decide:
+## v0.6.x — Public preview line
 
-- what order major work should happen in
-- when a release bump is justified
-- when a task should stay in the library repo versus move to GUI or MCP
-
-Detailed implementation guidance lives in `documents/specs/`.
+The `0.6.x` line is the public preview baseline published from the three-repo workspace prior to consolidation. It included the core library seam expansion (`eu5miner.inspection`, `eu5miner.mods`), the narrow CLI surface, the MCP shell with install/file/system/mod-workflow tools and grouped-helper reports for diplomacy and religion, and the Kivy desktop GUI plus its read-only text-browser regression seam.
 
 ## Planning Model
 
 The roadmap stays intentionally high level.
 
-- `ROADMAP.md`: sequencing, release posture, and cross-repo order of operations
-- `documents/specs/`: execution-ready work packages and reference specs
-- `documents/architecture.md`: design constraints and layering rules
-- `documents/development-environment.md`: local environment notes and validation commands
+- `ROADMAP.md`: sequencing, release posture, and cross-package order of operations
+- `documents/`: research, architecture, environment notes, and execution-ready spec material
 
 ## Release Posture
 
-- `0.6.x` is the current preview line.
+- `0.6.x` is the current public preview line (still supported on the core package and downstream extras).
 - Patch releases are appropriate for validation fixes, packaging fixes, CI or automation changes, and refactors that do not add new user-facing capability.
-- Minor releases should be reserved for a completed roadmap slice that changes what users can materially do with the library or downstream products.
+- Minor releases should be reserved for a completed roadmap slice that changes what users can materially do with the library or downstream packages.
 
-## Preview Downstream Dependency Posture
+## Preview Posture
 
-During the preview phase, the downstream `EU5MinerGUI` and `EU5MinerMCP` repos should treat the core library as their source of truth and should remain thin product layers over the curated `eu5miner` seams.
+Downstream `packages/mcp/` and `packages/gui/` should treat the core library as their source of truth and remain thin product layers over the curated `eu5miner` seams.
 
-- Downstream repos should prefer documented stable seams such as the root package, grouped domain packages, `eu5miner.inspection`, and `eu5miner.mods` instead of reaching into internal modules.
-- If coordinated work across repos needs a new seam, add or refine it deliberately in the core library first, then update GUI or MCP to consume it.
-- Preview coordination across repos does not make the whole core package a stable free-for-all API surface.
-
-## Current Baseline
-
-The completed preview baseline now includes:
-
-- the core integration pass, validation expansion, and three-repo alignment work
-- the recent preview hardening follow-up over the already-curated library seams
-- a completed core `1.0` stabilization close-out over public-contract docs, example truthfulness, and compatibility-focused CLI and inspection coverage
-- a completed stabilization hardening slice for the thin CLI mod workflow contract around mixed intended or content inputs and stdout or stderr diagnostics
-- a completed stabilization hardening slice for inspection-facing compatibility coverage and explicit import-boundary locking around `eu5miner.inspection` versus root imports
-- install discovery, merged VFS support, CST and semantic parsing helpers, and broad typed domain coverage in the core library
-- a stable read-only inspection facade and thin CLI over the intended library seams
-- initial mod planning and apply workflows in the core library
-- a structured read-only browser model in `EU5MinerGUI`
-- thin grouped-helper GUI pages for diplomacy and religion in `EU5MinerGUI`
-- a typed MCP shell in `EU5MinerMCP` with `inspect-install`, `list-files`, `list-systems`, `report-system`, `plan-mod-update`, and `apply-mod-update`
-- thin grouped-helper MCP tools for diplomacy and religion in `EU5MinerMCP`
-
-The next work should build on those shipped seams instead of repeating foundation or repo-setup slices.
-
-The checked-in three-repo state now covers the completed core step-1 stabilization boundary and the completed downstream step-2 grouped-helper breadth through diplomacy and religion. The coordinated `0.6.0` preview release is now out across the workspace.
-
-The immediate post-release follow-on is stabilization and evidence gathering: keep docs truthful, keep the full validation and build gate green, and run the targeted manual install-backed sanity checks captured in `documents/v1-release-readiness.md`.
-
-Treat the next cross-repo slice as post-release contract maintenance and patch planning rather than a prompt to reopen helper breadth.
-
-For the checked-in core repo state, the stabilization close-out is now effectively complete. Remaining work before proposing an actual `1.0` release is post-release validation discipline plus the targeted manual install-backed sanity checks documented in `documents/v1-release-readiness.md`.
+- Downstream packages should prefer documented stable seams such as the root package, grouped domain packages, `eu5miner.inspection`, and `eu5miner.mods` instead of reaching into internal modules.
+- If coordinated work needs a new seam, add or refine it deliberately in the core library first, then update GUI or MCP to consume it.
+- Preview coordination does not make the whole core package a stable free-for-all API surface.
 
 ## Completed Preview Slices
 
@@ -72,9 +43,23 @@ For the checked-in core repo state, the stabilization close-out is now effective
 
 ## Next Recommended Slices
 
-### 1. Core V1 Stabilization Pass
+### 1. Workspace Consolidation Close-Out (v0.7.x)
 
-Status: complete for the current checked-in core repo state; keep this slice as the reference boundary for later release work rather than reopening it for new feature scope.
+Status: complete for the current checked-in workspace state.
+
+Goal: keep the new uv workspace, three coordinated wheels, and optional extras aligned without expanding scope.
+
+Use this slice for:
+
+- README, ROADMAP, CHANGELOG, and RENAMING truthfulness across the three sub-packages
+- lockstep version bumps across `eu5miner`, `eu5miner-mcp`, and `eu5miner-gui`
+- archived-repo notices and redirects
+
+Do not use this slice to widen API or product surface during the consolidation window.
+
+### 2. Core V1 Stabilization Pass
+
+Status: complete for the previous checked-in core repo state; keep this slice as the reference boundary for later release work rather than reopening it for new feature scope.
 
 Goal: turn the current preview seams into one explicit `1.0` compatibility boundary without broadening the architecture or cutting the release in this slice.
 
@@ -85,19 +70,11 @@ Use this slice for:
 - documentation and example alignment around the intended `1.0` boundary
 - release-readiness gates that stay grounded in current behavior
 
-Reference spec:
+The remaining post-release work lives outside this slice: keep the automated gate green, run the documented manual install-backed sanity checks, and handle later patch or release decisions separately.
 
-- `documents/specs/v1-stabilization-pass.md`
+### 3. GUI Read-Only Browsing Refinement
 
-The earlier integration and validation specs remain useful reference material for follow-up polish, but they are no longer the primary milestone definition.
-
-The checked-in repo now reflects that release-readiness alignment and compatibility-audit work. The remaining post-release work lives outside this slice: keep the automated gate green, run the documented manual install-backed sanity checks, and handle later patch or release decisions separately.
-
-Treat this as a close-out pass on the current preview contract, not as a new feature phase. If a proposed task needs a broader API or new capability to justify itself, it does not belong in this slice.
-
-### 2. GUI Read-Only Browsing Refinement
-
-Status: the first downstream breadth slice is already complete for the current checked-in repo state through the shipped diplomacy and religion helper pages.
+Status: the first downstream breadth slice is already complete for the current checked-in repo state through the shipped Kivy desktop shell and the read-only text-browser regression seam.
 
 Goal: keep future GUI follow-ons thin over the existing browser model rather than rebuild the shell.
 
@@ -107,49 +84,24 @@ Use this slice for:
 - better presentation of partial-install and unavailable-report states
 - thin GUI-side integration work that stays over `eu5miner.inspection`
 
-Do not treat this as the current next major phase while the post-`0.6.0` stabilization and manual-check follow-on is still the active priority.
+### 4. MCP Server Contract Consolidation
 
-### 3. MCP Server Contract Consolidation
-
-Status: the first downstream breadth slice is already complete for the current checked-in repo state through the shipped diplomacy and religion helper tools.
+Status: the first downstream breadth slice is already complete for the current checked-in repo state through the shipped grouped-helper tools for diplomacy and religion.
 
 Goal: tighten the current tool surface before promising larger MCP scope.
 
 Use this slice for:
 
 - clearer tool descriptors and request or response shaping
-- stronger separation between local shell behavior and future transport work
+- stronger separation between local shell behavior and transport work
 - targeted additions only when backed by stable core seams
-
-Do not treat this as the current next major phase while the post-`0.6.0` stabilization and manual-check follow-on is still the active priority.
-
-### 4. Cross-Repo Post-Release Validation And Contract Alignment
-
-Goal: keep the three preview repos aligned now that the coordinated `0.6.0` prereleases are published and the current preview surface is live.
-
-Use this slice for:
-
- - full validation, type-check, lint, and build execution in each repo
- - dependency and contract alignment across core, GUI, and MCP
- - changelog, roadmap, README, and spec-index truthfulness for patch follow-ons
- - targeted manual sanity-check evidence for the later `1.0` proposal
 
 ## Decision Rules
 
 Use these rules when choosing the next task:
 
-1. If the task affects stable imports, grouped package entrypoints, inspection helpers, or mod workflow seams, it belongs in the core repo.
-2. If the task is mostly contract clarification, synthetic tests, fixture design, or validation policy for existing seams, it belongs under the `1.0` stabilization pass in the core repo.
-3. If the task is about browse flow, report presentation, or install/session UX over existing library APIs, it belongs in the GUI repo.
-4. If the task is about MCP tool contracts, server boundaries, or transport readiness over existing library APIs, it belongs in the MCP repo.
+1. If the task affects stable imports, grouped package entrypoints, inspection helpers, or mod workflow seams, it belongs in `packages/core/`.
+2. If the task is mostly contract clarification, synthetic tests, fixture design, or validation policy for existing seams, it belongs under the `1.0` stabilization pass in `packages/core/`.
+3. If the task is about browse flow, report presentation, or install/session UX over existing library APIs, it belongs in `packages/gui/`.
+4. If the task is about MCP tool contracts, server boundaries, or transport readiness over existing library APIs, it belongs in `packages/mcp/`.
 5. If coordinated work needs a new downstream seam, land that seam in the core library first and only then consume it downstream.
-
-## Current Recommendation
-
-The immediate sequence should be:
-
-1. treat the current foundation specs as completed baseline and reference material
-2. treat the core stabilization pass as completed reference material for the intended `1.0` contract on the current curated seams
-3. treat the downstream diplomacy and religion grouped-helper slices as completed reference material rather than the next active feature phase
-4. treat the step-3 coherence sweep as completed release work and keep the resulting status docs truthful as post-release changes land
-5. make full validation, build, test, and targeted manual sanity checks the next major phase while collecting evidence for later `0.6.x` or `1.0` decisions

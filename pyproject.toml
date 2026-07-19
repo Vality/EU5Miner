@@ -1,62 +1,6 @@
 [build-system]
-requires = ["hatchling>=1.31.0"]
+requires = ["hatchling>=1.27.0"]
 build-backend = "hatchling.build"
 
-[project]
-name = "eu5miner"
-version = "0.6.0"
-description = "Text-first parsing and modding support library for Europa Universalis V data files"
-readme = "README.md"
-requires-python = ">=3.12"
-license = { text = "MIT" }
-authors = [
-  { name = "Val G and GitHub Copilot" },
-]
-dependencies = []
-
-[project.optional-dependencies]
-dev = [
-  "mypy>=1.15.0",
-  "pytest>=9.1.1",
-  "pytest-timeout>=2.3.1",
-  "ruff>=0.15.21",
-]
-
-[project.scripts]
-eu5miner = "eu5miner.cli:main"
-
-[tool.hatch.build.targets.wheel]
-packages = ["src/eu5miner"]
-
-[tool.hatch.build.targets.wheel.force-include]
-"__main__.py" = "__main__.py"
-
-[tool.pytest.ini_options]
-minversion = "8.0"
-testpaths = ["tests"]
-pythonpath = ["src"]
-addopts = ["--strict-markers"]
-markers = [
-  "broad: optional broad real-install coverage and integration sweep",
-  "timeout: per-test timeout override for performance-sensitive parser tests",
-]
-
-[tool.ruff]
-line-length = 100
-target-version = "py312"
-
-[tool.ruff.lint]
-select = [
-  "E",
-  "F",
-  "I",
-  "UP",
-  "B",
-  "SIM",
-]
-
-[tool.mypy]
-python_version = "3.12"
-strict = true
-packages = ["eu5miner"]
-warn_unused_configs = true
+[tool.uv.workspace]
+members = ["packages/core", "packages/mcp", "packages/gui"]

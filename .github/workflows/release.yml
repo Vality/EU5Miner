@@ -7,39 +7,35 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-and-attach:
+  build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v7
-
-      - name: Set up Python
-        uses: actions/setup-python@v6
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
+      - uses: astral-sh/setup-uv@v7
+      - run: uv sync --all-packages --extra=dev
 
-      - name: Set up uv
-        uses: astral-sh/setup-uv@v7
+      - name: Build all member wheels
+        run: |
+          for m in core mcp gui; do
+            echo "::group::Building $m"
+            (cd packages/$m && uv build --out-dir $PWD/dist)
+            echo "::endgroup::"
+          done
 
-      - name: Sync development dependencies
-        run: uv sync --extra dev
-
-      - name: Build distribution artifacts
-        run: uv build
-
-      - name: Attach build artifacts to GitHub release
+      - name: Attach all wheels and sdists to release
         if: github.event_name == 'release'
-        uses: softprops/action-gh-release@v3
+        uses: softprops/action-gh-release@v2
         with:
           files: |
-            dist/*.whl
-            dist/*.tar.gz
+            packages/*/dist/*.whl
+            packages/*/dist/*.tar.gz
 
-      - name: Upload workflow artifacts
-        uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@v7
         with:
           name: release-dist
-          path: dist/*
+        path: |
+          packages/*/dist/*.whl
+          packages/*/dist/*.tar.gz
