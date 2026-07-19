@@ -114,7 +114,7 @@ Cons:
 
 Examples:
 
-- `src/eu5miner_mcp/`
+- `src/eu5miner.mcp/`
 - or a sibling package directory such as `packages/eu5miner-mcp/`
 
 Pros:
@@ -161,7 +161,7 @@ One reasonable starting layout is:
 ```text
 src/
   eu5miner/
-  eu5miner_mcp/
+  eu5miner.mcp/
     __init__.py
     server.py
     serializers.py

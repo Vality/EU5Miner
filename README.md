@@ -1,66 +1,51 @@
 # EU5Miner
 
-A modular toolkit for working with Europa Universalis V game data, published as three coordinated Python packages from this single uv workspace.
+A modular toolkit for working with Europa Universalis V game data, distributed as a single Python package with optional MCP server and Kivy desktop UI surfaces.
 
-## Packages
+## Surfaces
 
-- **[`eu5miner`](packages/core/)** — Core library and CLI. Pure-Python, no runtime deps beyond the stdlib. Provides the data model, format readers, inspection utilities, and the `eu5miner` command-line entrypoint.
-- **[`eu5miner-mcp`](packages/mcp/)** — Model Context Protocol server exposing EU5Miner data to LLMs. CLI: `eu5miner-mcp`.
-- **[`eu5miner-gui`](packages/gui/)** — Desktop UI for browsing EU5 data. Built on Kivy. CLIs: `eu5miner-gui`, `eu5miner-gui-shell`.
+- **`eu5miner`** — Core library and CLI. Pure-Python, no runtime deps beyond the stdlib. Entry point: `eu5miner`.
+- **`eu5miner.mcp`** — Optional MCP server (installed via the `[mcp]` extra). Entry point: `eu5miner-mcp`.
+- **`eu5miner.gui`** — Optional Kivy desktop UI (installed via the `[gui]` extra). Entry points: `eu5miner-gui`, `eu5miner-gui-shell`.
 
 ## Install
 
-Requires Python 3.12 and [uv](https://docs.astral.sh/uv/).
+Requires Python 3.12+ and [uv](https://docs.astral.sh/uv/) (optional but recommended for dev work).
 
 ```bash
 # Core only (library + CLI)
 pip install eu5miner
 
-# Add MCP support (pulls in eu5miner-mcp)
+# Add MCP support
 pip install eu5miner[mcp]
 
-# Add GUI support (pulls in eu5miner-gui)
+# Add GUI support
 pip install eu5miner[gui]
 
 # Everything
 pip install eu5miner[all]
 ```
 
-Each package is also independently installable:
-
-```bash
-pip install eu5miner-mcp
-pip install eu5miner-gui
-```
+Without the matching extra, the corresponding submodule will raise an `ImportError` directing you to install the extra.
 
 ## Development
-
-This is a uv workspace. Clone and sync once:
 
 ```bash
 git clone https://github.com/Vality/EU5Miner.git
 cd EU5Miner
-uv sync --all-packages --extra=dev
-```
-
-Run tests, lint, type checks per package:
-
-```bash
-cd packages/core && uv run pytest
-cd ../mcp && uv run pytest
-cd ../gui && uv run pytest
-
+uv sync --extra=dev
+cd packages/core
+uv run pytest
 uv run ruff check .
-uv run mypy packages/core/src packages/mcp/src packages/gui/src
-```
-
-Build all three wheels:
-
-```bash
-uv build --all-packages
+uv run mypy src
+uv build
 ```
 
 A Windows setup script is provided at `scripts/setup-centralized-uv.ps1` for users who prefer a centralized venv under `%USERPROFILE%/.venvs/EU5Miner`.
+
+## Migration from earlier releases
+
+See [RENAMING.md](RENAMING.md). The `eu5miner-mcp` and `eu5miner-gui` Python distributions (≤ v0.7.x) are no longer published; their code now lives inside the unified `eu5miner` wheel.
 
 ## License
 
