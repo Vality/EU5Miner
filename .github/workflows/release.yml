@@ -36,9 +36,9 @@ jobs:
       - uses: actions/upload-artifact@v7
         with:
           name: release-dist
-        path: |
-          packages/*/dist/*.whl
-          packages/*/dist/*.tar.gz
+          path: |
+            packages/*/dist/*.whl
+            packages/*/dist/*.tar.gz
 
   publish:
     runs-on: ubuntu-latest
