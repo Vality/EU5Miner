@@ -29,7 +29,7 @@ jobs:
         uses: astral-sh/setup-uv@v7
 
       - name: Sync workspace + member extras
-        run: uv sync --all-packages --extra=dev
+        run: (cd packages/core && uv sync --extra=dev)
 
       - name: Run ${{ matrix.member }} tests
         working-directory: packages/${{ matrix.member }}
@@ -50,15 +50,13 @@ jobs:
         with:
           python-version: "3.12"
       - uses: astral-sh/setup-uv@v7
-      - run: uv sync --all-packages --extra=dev
+      - run: (cd packages/core && uv sync --extra=dev)
 
-      - name: Build all member wheels
+      - name: Build the unified wheel
         run: |
-          for m in core mcp gui; do
-            echo "::group::Building $m"
-            (cd packages/$m && uv build --out-dir $PWD/dist)
-            echo "::endgroup::"
-          done
+          echo "::group::Building core"
+          (cd packages/core && uv build --out-dir $PWD/dist)
+          echo "::endgroup::
       - uses: actions/upload-artifact@v7
         with:
           name: dist

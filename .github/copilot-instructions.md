@@ -34,11 +34,10 @@ Start with:
 ## Validation
 
 Run these required baseline checks before closing substantial work. Run
-them per affected workspace member (`packages/core`, `packages/mcp`,
-`packages/gui`):
+them within the single `packages/core/` project:
 
 ```powershell
-uv sync --all-packages --extra=dev
+(cd packages/core && uv sync --extra=dev)
 uv run pytest
 uv run ruff check .
 uv run mypy src
@@ -58,6 +57,5 @@ Notes:
 - The current public line is a preview release, not a frozen `1.0` API.
 - Root package imports, grouped domain packages, and `eu5miner.mods` are the
   main public seams to preserve.
-- MCP and GUI work live in their own workspace members
-  (`packages/mcp`, `packages/gui`) and depend on the core `eu5miner`
+- MCP and GUI live as submodules under `eu5miner.mcp` and `eu5miner.gui` inside `packages/core/src/eu5miner/`
   package; they should not duplicate core logic.
